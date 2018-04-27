@@ -1,0 +1,10 @@
+<resources>
+    <style name="login_box_size" parent="CardView">
+        <item name="contentPaddingLeft">16dp</item>
+        <item name="contentPaddingRight">16dp</item>
+        <item name="contentPaddingTop">32dp</item>
+        <item name="contentPaddingBottom">32dp</item>
+        <item name="android:layout_width">500dp</item>
+        <item name="android:layout_height">300dp</item>
+    </style>
+</resources>

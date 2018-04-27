@@ -6,14 +6,14 @@
 
 
     <color name="white">#ffffffff</color>
-    <color name="page_welcome">#ff21B8AC</color>
-    <color name="page_welcome_dark">#ff218AB8</color>
-    <color name="page_goals">#ffE75433</color>
-    <color name="page_goals_dark">#af452d</color>
+    <color name="page_welcome">#ff218AB8</color>
+    <color name="page_welcome_dark">#0b7294</color>
+    <color name="page_goals">#1abfb2</color>
+    <color name="page_goals_dark">#168b82</color>
     <color name="page_features">#ffF59709</color>
     <color name="page_features_dark">#b47516</color>
     <color name="page_development">#cecdcc</color>
     <color name="page_development_dark">#696968</color>
-    <color name="page_login">#e24646</color>
+    <color name="page_login">#e23434</color>
     <color name="page_login_dark">#af452d</color>
 </resources>
