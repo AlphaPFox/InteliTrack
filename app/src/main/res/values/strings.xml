@@ -1,22 +1,7 @@
 <resources>
-    <string name="app_name">InteliTrack</string>
+    <string name="app_name">Intelitrack</string>
 
-    <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password (optional)</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
-    <string name="title_activity_intro">InteliTrack</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- Login activity strings -->
     <string name="title_activity_login">Login</string>
     <string name="login_subtext">Forneça as credenciais de acesso para iniciar a utilização do sistema.</string>
     <string name="email_hint">Endereço de e-mail</string>
@@ -24,4 +9,260 @@
     <string name="login">Login</string>
     <string name="forgot_password">Esqueci senha</string>
     <string name="create_account">Criar conta</string>
+
+    <!--  Main activity strings -->
+    <string name="navigation_drawer_open">Abrir barra de navegação</string>
+    <string name="navigation_drawer_close">Fechar barra de navegação</string>
+    <string name="title_activity_main">Map</string>
+    <string name="TrackerImageDescription">Modelo do rastreador</string>
+    <string name="title_activity_cards">Tracker</string>
+    <string name="txtNoTracker">Nenhum rastreador</string>
+    <string name="txtNoTrackerDescription">Você pode utilizar o botão abaixo para adicionar novos rastreadores na unidade.</string>
+    <string name="btnAddTracker">Adicionar rastreador</string>
+    <string name="txtError">Falha na consulta</string>
+    <string name="txtErrorDescription">Não foi possível realizar a busca por rastreadores vinculados a esta conta.</string>
+    <string name="btnRefresh">Tentar novamente</string>
+    <string name="imgNoTracker">Nenhum rastreador localizado</string>
+    <string name="imgLoading">Carregando&#8230;</string>
+    <string name="txtLoading">Carregando informações&#8230;</string>
+    <string name="app_description">Sistema de Rastreamento - DPF/NVI/MS</string>
+
+    <!-- Main menu strings -->
+    <string name="menu_trackers">Dispositivos rastreadores</string>
+    <string name="menu_add">Adicionar rastreador</string>
+    <string name="menu_refresh">Atualizar lista</string>
+    <string name="menu_search">Pesquisar por nome</string>
+    <string name="menu_notifications">Opções de notificação</string>
+    <string name="menu_notification_sound">Som de notificação</string>
+    <string name="menu_notification_vibrate">Opções de vibração</string>
+    <string name="menu_notification_disable">Desativar notificações</string>
+    <string name="menu_tracker_commands">Comandos do rastreador</string>
+    <string name="menu_request_position">Solicitar localização atual</string>
+    <string name="menu_request_status">Solicitar status do dispositivo</string>
+    <string name="menu_reset">Reiniciar configurações</string>
+    <string name="menu_tracker_config">Configurações do rastreador</string>
+    <string name="menu_map_components">Componentes do mapa</string>
+    <string name="menu_map_path">Caminho entre coordenadas</string>
+    <string name="menu_map_radius">Raio de alcance de torres GSM</string>
+    <string name="menu_my_location">Minha localização</string>
+    <string name="menu_zoom_control">Controles de zoom</string>
+    <string name="menu_search_hint">Nome, modelo ou número</string>
+    <string name="menu_turn_off">Desligar temporariamente</string>
+    <string name="menu_maps">Tipos de mapa</string>
+    <string name="map_default">Mapa padrão</string>
+    <string name="map_satellite">Satélite</string>
+    <string name="map_terrain">Terreno</string>
+    <string name="map_hybrid">Híbrido</string>
+    <string name="menu_include">Incluir</string>
+    <string name="menu_delete">Excluir</string>
+    <string name="action_add">Adicionar</string>
+    <string name="action_refresh">Atualizar</string>
+    <string name="action_settings">Configurações</string>
+
+    <!--  CardView item strings -->
+    <string name="imgTracker">Modelo do rastreador</string>
+    <string name="imgBatteryLevel">Nível da bateria</string>
+    <string name="imgSignalLevel">Nível do sinal</string>
+    <string name="imgMap">Imagem do mapa</string>
+    <string name="lblTrackerConfig">Configurações do rastreador</string>
+
+
+    <!-- Add tracker activity -->
+    <string name="title_add_tracker">Adicionar rastreador</string>
+    <string name="selected_model">Modelo selecionado: %1$s</string>
+    <string name="lblTrackerPhone">Informe o nº de telefone inserido no rastreador</string>
+    <string name="txtTrackerPhoneHint">Ex: 6799998888</string>
+    <string name="mobile_networks">Qual operadora de telefonia do chip utilizado?</string>
+    <string name="lblIMEI">Informe o IMEI do dispositivo rastreador</string>
+    <string name="txtIMEIHint">Ex: 355160071705274</string>
+    <string name="lblIMEIInfo">Obs.: O IMEI representa um código de identificação único, geralmente encontrado em uma etiqueta colada no próprio dispositivo rastreador. </string>
+    <string name="lblSpotID">Informe o código do dispositivo (Feed ID):</string>
+    <string name="txtSpotIDHint">0I48pmHmVsrh88oe38f0etUjB8pJglLOp</string>
+    <string name="lblSpotInfo">Obs.: O código Feed ID pode ser obtido na página de compartilhamento do site SPOT, após realização de login. </string>
+    <string-array name="mobile_networks">
+        <item>VIVO</item>
+        <item>TIM</item>
+        <item>OI</item>
+        <item>CLARO</item>
+        <item>VODAFONE</item>
+        <item>VIVO M2M</item>
+        <item>TIM M2M</item>
+    </string-array>
+
+    <!-- Default settings activity -->
+    <string name="title_activity_settings">Novo rastreador</string>
+    <string name="lblBasicConfig">Configurações básicas</string>
+    <string name="lblTrackerName">Nome de identificação:</string>
+    <string name="txtTrackerDescriptionHint">(opcional)</string>
+    <string name="lblTrackerDescription">Descrição do rastreador:</string>
+    <string name="lblModel">Modelo</string>
+    <string name="model_tk102b">Coban TK102B</string>
+    <string name="model_tk1102">Powerpack TK1102</string>
+    <string name="model_st940">Suntech ST940</string>
+    <string name="model_spot">Spot TRACE</string>
+    <string name="model_tk306">Coban TK306B</string>
+    <string name="model_pt39">TechGPS PT39</string>
+    <string name="model_gt02">Coban TK110</string>
+    <string name="lblTrackerIdentification">Informações do rastreador</string>
+    <string name="lblPassword">Senha de configuração:</string>
+    <string name="lblPhoneNumber">Número de telefone:</string>
+    <string name="txtPhoneNumberHint">6799998888</string>
+    <string name="lblPhoneNumberSubtitle">Informe o número de telefone, IMEI (somente para modo GPRS) e a senha utilizada para configuração do rastreador.</string>
+    <string name="lblFeedID">Identificador (Feed ID):</string>
+    <string name="txtFieldIDHint">0I48pmHmVsrh88oe38f0etUjB8pJglLOp</string>
+    <string name="lblFeedIDSubtitle">Os campos acima devem ser preenchidos com o valor do FEED ID e da senha utilizados na página de compartilhamento da SPOT.</string>
+    <string name="lblSuntechID">Identificador (6 dígitos):</string>
+    <string name="txtSuntechHint">696478</string>
+    <string name="lblSuntechSubtitle">Informe o número de identificação do aparelho. Por padrão, o número é composto pelos 6 últimos dígitos do IMEI.</string>
+    <string name="lblEditIDSubtitle"><b>Alerta:</b> O campo de identificação do aparelho não deve ser alterado. Caso necessário, cadastre um novo rastreador com o número de identificação desejado.</string>
+    <string name="lblColorIdentification">Cor de identificação</string>
+    <string name="lblColorDescription">Selecione uma cor para facilitar a identificação a visualização do rastreador no mapa.</string>
+
+    <!--  Detail activity -->
+    <string name="title_activity_detail">Detalhes</string>
+    <string name="transition_drawable">BackgroundTransition</string>
+    <string name="transition_icon">IconTransition</string>
+    <string name="transition_title">TitleTransition</string>
+    <string name="transition_subtitle">SubTitleTransition</string>
+    <string name="transition_config_description">ConfigDescTransition</string>
+    <string name="transition_config_status">ConfigStatusTransition</string>
+    <string name="transition_config_image">ConfigImageTransition</string>
+    <string name="action_hide">Ocultar Painel</string>
+    <string name="action_show">Exibir Painel</string>
+    <string name="action_filter">Filtar resultados</string>
+    <string name="action_edit">Editar rastreador</string>
+    <string name="action_request_position">Solicitar posição atual</string>
+    <string name="imgInfo">Informações sobre a localização.</string>
+    <string name="txtWaitingTitle">Aguardando dados&#8230;</string>
+    <string name="txtWaitingSubtitle">Nenhuma resposta do rastreador foi recebida até o momento. Certifique-se que o mesmo esteja ligado e com sinal da rede de celular.</string>
+    <string name="txtFilterResult">Nenhuma coordenada disponível</string>
+    <string name="txtFilterResultSubtitle">Não foram encontradas coordenadas com os filtros selecionados. Altere as opções de filtros para exibir mais resultados.</string>
+    <string name="txtInterval">Intervalo de atualização</string>
+    <string name="txtInfoBattery">Bateria:</string>
+    <string name="txtInfoSignal">Sinal:</string>
+    <string name="txtModel"><b>Modelo: %s</b></string>
+
+    <!-- Filter activity -->
+    <string name="txtFilterTitle">Opções de exibição</string>
+    <string name="lblItemCount">Quantidade de itens</string>
+    <string name="swShowPolyline">Exibir linha entre as coordenadas</string>
+    <string name="swShowCircle">Exibir raio de cobertura GSM</string>
+    <string name="txtCoordinatesNumber">Exibir até %1$d coordenadas simultaneamente.</string>
+    <string name="lblItemCountDescription">Escolha quantas coordenadas serão exibidas simultaneamente. Um valor elevado pode dificultar a visualização do mapa.</string>
+    <string name="lblShowPolylineDesc">Exibe uma linha tracejada no mapa para demonstrar a sequência entre as coordenadas disponíveis.</string>
+    <string name="lblShowCircleDesc">Exibe um círculo no mapa representando o raio de cobertura da antena GSM mais próxima do rastreador (quando não há sinal GPS).</string>
+    <string name="txtDatetimeTitle">Intervalo de datas</string>
+    <string name="lblInitialDate">Data inicial</string>
+    <string name="lblEndingDate">Data final</string>
+    <string name="btnNext">Próxima</string>
+    <string name="btnPrevious">Anterior</string>
+    <string name="imgAddress">Endereço</string>
+    <string name="imgDatetime">Data/hora</string>
+    <string name="btnClose">Fechar</string>
+    <string name="menu_detail">Visualizar detalhes</string>
+    <string name="menu_default_settings">Opções de exibição</string>
+    <string name="menu_tracker_settings">Configurações do dispositivo</string>
+    <string name="menu_notification_settings">Opções de notificação</string>
+    <string name="menu_delete_tracker">Excluir rastreador</string>
+    <string name="imgEdit">Opções</string>
+    <string name="txtConfigurating">%1$d%%</string>
+    <string name="btnHide">Ocultar</string>
+    <string name="txtConfigLoading">Carregando informações</string>
+    <string name="txtConfigRequest">Realizando solicitação</string>
+    <string name="txtConfigStatus">Aguardando resposta do servidor</string>
+    <string name="imgStar">Fixar no topo</string>
+    <string name="menu_contacts">Buscar lista de contato</string>
+    <string name="txtPasswordHint">123456</string>
+    <string name="lblTrackerIMEI">IMEI do dispositivo:</string>
+    <string name="txtTrackerIMEIHint">(opcional)</string>
+
+    <!-- Tracker settings activity -->
+    <string name="tracker_settings_title">Configurações</string>
+    <string name="title_tracker_tk102b_settings">Configurações - TK 102B</string>
+    <string name="lblLowBattery">Ao atingir um nível crítico de bateria, o rastreador começará a enviar alertas periódicos.</string>
+    <string name="swLowBattery">Enviar alerta de bateria fraca</string>
+    <string name="lblShockAlert">Caso ativado, o rastreador enviará um alerta ao detectar qualquer vibração do dispositivo.</string>
+    <string name="swShockAlert">Ativar alerta de vibração</string>
+    <string name="swMoveoutAlert">Ativar alerta de evasão</string>
+    <string name="lblMeters">metros</string>
+    <string name="lblMoveoutAlert">O rastreador enviará alertas em sequência quando se movimentar acima de 200 metros da posição atual.</string>
+    <string name="swSpeedAlert">Ativar alerta de velocidade</string>
+    <string name="lblSpeedLimit">Limite de velocidade:</string>
+    <string name="txtSpeedLimitHint">120</string>
+    <string name="lblSpeedLimitUnit">km/h</string>
+    <string name="lblSpeedAlert">Quando o rastreado identificar uma velocidade acima do limite estabelecido, um alerta será enviado.</string>
+    <string name="swStatusCheck">Enviar atualização diária de status</string>
+    <string name="lblStatusCheck">Caso esta opção seja ativada, diariamente o rastreador deverá enviar uma atualização sobre o estado da bateria e a intesidade do sinal GSM.</string>
+    <string name="swUpdateInterval">Enviar localização periodicamente</string>
+    <string name="lblUpdateInterval"> <b>Alerta:</b> Caso ativado, o monitoramento será mais preciso, porém a duração da bateria do rastreador será diretamente afetada por esta opção.</string>
+    <string name="swNotifications">Exibir notificações deste rastreador</string>
+    <string name="lblNotificationTitle">Opções de notificação</string>
+    <string name="lblNotifications">Defina quais eventos gerados pelo rastreador que deverão resultar em uma notificação a ser exibida neste celular.</string>
+    <string name="cbMovement">Notificação de movimentação</string>
+    <string name="cbStopped">Notificação de permanência</string>
+    <string name="cbLowBattery">Notificação de bateria fraca</string>
+    <string name="cbMoveout">Notificação de evasão </string>
+    <string name="cbShockAlert">Notificação de vibração </string>
+    <string name="cbSpeedLimit">Notificação de limite de velocidade</string>
+    <string name="cbStatusCheck">Notificação de status</string>
+    <string name="cbAvailable">Notificação de disponibilidade</string>
+    <string name="lblAvailableDescription">Se esta opção for ativada, qualquer contato realizado pelo rastreador resultará na exibição de uma notificação neste celular."</string>
+
+    <string name="title_tracker_st940_settings">Configurações - ST 940</string>
+    <string name="swDeepsleep">Ativar ultra-economia de bateria</string>
+    <string name="lblDeepsleep">Caso ativado, o rastreador desativa a maior parte dos sensores e entra em hibernação, ativando poucas vezes ao dia para enviar usa localização.</string>
+    <string name="swShock">Ativar alerta de vibração</string>
+    <string name="lblShock">Neste modo, o rastreador enviará alertas constantemente a partir do momento que detectar qualquer vibração do dispositivo.</string>
+    <string name="swTurnOff">Permitir desligar pelo botão</string>
+    <string name="lblTurnOff">Define se será possível ou não desligar o rastreador pressionando o botão presente no próprio dispositivo.</string>
+    <string name="swMagnetAlert">Ativar alerta de magnetismo </string>
+    <string name="lblMagnetAlert">Quando ativo, o rastreador enviará um alerta ao detectar que o dispositivo foi acoplado ou desacoplado da base magnética.</string>
+    <string name="lblUpdateIdle">Dispositivo parado: </string>
+    <string name="lblUpdateActive">Dispositivo em movimento: </string>
+    <string name="cbShock">Notificação de vibração </string>
+    <string name="cbMagnet">Notificação de magnetismo</string>
+
+    <string name="title_tracker_spot_settings">Configurações - SPOT</string>
+    <string name="lblSpotConfig"><b>ALERTA:</b> Este modelo de rastreador não suporta configurações enviadas remotamente. Para realizar qualquer alteração nas configurações do dispositivo, conecte a um computador e utilize o software <b>Atualizador de dispositivo SPOT. \n\n  <a href='https://br.findmespot.com/pg/index.php?cid=225'>Clique aqui para mais informações </a>\n</b>"</string>
+    <string name="cbTurnOff">Notificação de desligamento</string>
+    <string name="cbFunctioning">Notificação de funcionamento</string>
+    <string name="lblFunctioning">Caso habilitada, ainda que o rastreador não detecte nenhum movimento, uma vez por dia ele enviará sua localização para confirmar o seu funcionamento.</string>
+
+    <string name="title_tracker_tk1102_settings">Configurações - TK 1102</string>
+    <string name="swProtocol">Ativar modo GPRS</string>
+    <string name="lblProtocol">Ao ativar este modo, o rastreador para de utilizar o modo de mensagens (SMS) e passa a utilizar o modo de dados (GPRS) para comunicação mais rápida com o servidor.</string>
+    <string name="swGPSAlert">Ativar alerta de ponto cego GPS</string>
+    <string name="lblGPSAlert">Este alerta, caso ativado, será enviado pelo rastreador caso ocorra a perda de sinal GPS.</string>
+    <string name="swSleep">Modo baixo consumo de bateria</string>
+    <string name="lblSleep">Neste modo, o rastreador desligará os LEDs e o módulo GPS, porém ficará disponível para receber novos comandos por SMS ou GPRS.</string>
+    <string name="swDeepSleep">Modo mínimo consumo de bateria</string>
+    <string name="lblDeepSleep">Neste modo, o rastreador desligará os LEDs, módulo GPS e o módulo GSM ficando indisponível por um tempo pré-determinado ou até que seja detectada uma vibração.</string>
+    <string name="cbGPSLow">Notificação de sinal GPS perdido </string>
+    <string name="lblUpdateTime">Se parado, enviar localização a cada: </string>
+    <string name="lblUpdateDistance">Em movimento, enviar localização a cada: </string>
+
+    <!-- String arrays -->
+    <string-array name="weekdays">
+        <item>Domingo</item>
+        <item>Segunda-feira</item>
+        <item>Terça-feira</item>
+        <item>Quarta-feira</item>
+        <item>Quinta-feira</item>
+        <item>Sexta-feira</item>
+        <item>Sábado</item>
+    </string-array>
+    <string-array name="short_weekdays">
+        <item>Domingo</item>
+        <item>Segunda</item>
+        <item>Terça</item>
+        <item>Quarta</item>
+        <item>Quinta</item>
+        <item>Sexta</item>
+        <item>Sábado</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
 </resources>

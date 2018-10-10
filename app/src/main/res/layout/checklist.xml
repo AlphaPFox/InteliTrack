@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center">
+
+    <TextView
+        android:id="@+id/txtStepNumber"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/rounded_checklist"
+        android:gravity="center"
+        android:text="1"
+        android:textAlignment="center"
+        android:textColor="#759CBB"
+        android:textSize="25sp"
+        android:textStyle="bold" />
+
+    <ProgressBar
+        android:id="@+id/pgrStepProgress"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:indeterminate="true"
+        android:background="@drawable/rounded_checklist"/>
+
+    <ImageView
+        android:id="@+id/imgStepStatus"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/status_ok"
+        android:background="@drawable/rounded_checklist"/>
+
+    <View
+        android:id="@+id/vwStep1Line"
+        android:layout_width="15dp"
+        android:layout_height="2dp"
+        android:background="#303030" />
+
+    <TextView
+        android:id="@+id/txtStepDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:background="#303030"
+        android:padding="10dp"
+        android:text="Descrição da etapa"
+        android:textColor="#FFF"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+</LinearLayout>

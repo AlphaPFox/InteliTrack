@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#4286F5</color>
+    <color name="colorPrimaryDark">#3367D4</color>
+    <color name="colorAccent">#fcdf09</color>
+    <color name="colorSelected">#50a7c5f7</color>
 
+    <color name="ToolbarTextColor">#FFF</color>
+    <color name="SecondaryTextColor">#000</color>
+    <color name="Transparent">#00000000</color>
 
-    <color name="white">#ffffffff</color>
-    <color name="page_welcome">#ff218AB8</color>
+    <color name="page_welcome">#218AB8</color>
     <color name="page_welcome_dark">#0b7294</color>
     <color name="page_goals">#1abfb2</color>
     <color name="page_goals_dark">#168b82</color>
@@ -16,4 +19,12 @@
     <color name="page_development_dark">#696968</color>
     <color name="page_login">#e23434</color>
     <color name="page_login_dark">#af452d</color>
+    <color name="page_tracker_add">#29c4cc</color>
+    <color name="page_tracker_add_dark">#058599</color>
+    <color name="page_tracker_select">#fafafa</color>
+    <color name="page_tracker_select_dark">#dadada</color>
+    <color name="page_tracker_id">#4286F5</color>
+    <color name="page_tracker_id_dark">#3367D4</color>
+    <color name="page_tracker_test">#3f9c53</color>
+    <color name="page_tracker_test_dark">#0e7424</color>
 </resources>

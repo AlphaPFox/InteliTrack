@@ -12,13 +12,14 @@ import com.heinrichreimersoftware.materialintro.slide.SimpleSlide;
 
 public class FirstStartActivity extends IntroActivity
 {
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        super.onCreate(savedInstanceState);
-
+        //Fullscreen
         setFullscreen(true);
+
+        //Base onCreate method
+        super.onCreate(savedInstanceState);
 
         //Define skip intro click behavior
         View.OnClickListener skipIntro = new View.OnClickListener() {

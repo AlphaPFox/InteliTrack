@@ -1,0 +1,71 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="br.gov.dpf.intelitrack.fragments.ModelFragment">
+
+    <TextView
+        android:id="@+id/txtTrackerError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="serif"
+        android:text="Escolha o modelo do rastreador"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/trackerLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.8" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/glTrackerHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.25" />
+
+    <br.gov.dpf.intelitrack.components.TrackerPager
+        android:id="@+id/trackerLayout"
+        android:background="@drawable/border_grey"
+        android:padding="10dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="12dp"
+        android:orientation="horizontal"
+        app:layout_constraintWidth_max="500dp"
+        app:layout_constraintBottom_toTopOf="@+id/glTrackerHeader2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/glTrackerHeader">
+
+    </br.gov.dpf.intelitrack.components.TrackerPager>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/glTrackerHeader2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.75" />
+
+    <TextView
+        android:id="@+id/txtErrorDescription"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="serif"
+        android:text="Certifique-se que o rastreador esteja ligado e em funcionamento antes de prosseguir para as etapas seguintes."
+        android:textAlignment="center"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.505"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/glTrackerHeader2"
+        app:layout_constraintVertical_bias="0.19999999" />
+</android.support.constraint.ConstraintLayout>

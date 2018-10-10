@@ -60,7 +60,7 @@
             android:inputType="textEmailAddress"
             android:padding="10dp"
             android:textAlignment="center"
-            android:textColor="@color/white"
+            android:textColor="#fff"
             android:textColorHint="#fff" />
 
 
@@ -74,24 +74,28 @@
             android:background="@drawable/rounded_edittext"
             android:hint="@string/password_hint"
             android:inputType="textPassword"
+            android:imeOptions="actionDone"
             android:padding="10dp"
             android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textColorHint="@color/white" />
+            android:textColor="#fff"
+            android:textColorHint="#fff" />
 
-
-        <Button
+        <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
             android:id="@+id/btnLogin"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="24dp"
-            android:background="@drawable/rounded_button"
             android:padding="10dp"
             android:text="@string/login"
             android:textColor="#fff"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:background="@drawable/rounded_button"
+            app:spinning_bar_width="2dp"
+            app:spinning_bar_color="#FFF"
+            app:spinning_bar_padding="5dp" />
+
 
         <LinearLayout
             android:layout_width="250dp"

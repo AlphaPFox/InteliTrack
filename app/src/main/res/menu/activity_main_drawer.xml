@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+    <item android:title="@string/menu_trackers">
+        <menu>
+            <group>
+                <item
+                    android:id="@+id/menu_add"
+                    android:icon="@drawable/ic_add_black_24dp"
+                    android:title="@string/menu_add" />
+                <item
+                    android:id="@+id/menu_refresh"
+                    android:icon="@drawable/ic_refresh_white_24dp"
+                    android:title="@string/menu_refresh" />
+                <item
+                    android:id="@+id/menu_search"
+                    android:icon="@drawable/ic_search_white_24dp"
+                    android:title="@string/menu_search" />
+            </group>
+        </menu>
+    </item>
+
+    <item android:title="@string/menu_notifications">
+        <menu>
+            <group android:id="@+id/menu_notifications">
+                <item
+                    android:id="@+id/menu_notification_sound"
+                    android:icon="@drawable/ic_music_note_black_24dp"
+                    android:title="@string/menu_notification_sound" />
+                <item
+                    android:id="@+id/menu_notification_vibrate"
+                    android:icon="@drawable/ic_vibration_black_24dp"
+                    android:title="@string/menu_notification_vibrate" />
+                <item
+                    android:id="@+id/menu_notifications_disable"
+                    android:icon="@drawable/ic_notifications_off_black_24dp"
+                    android:title="@string/menu_notification_disable" />
+            </group>
+        </menu>
+    </item>
+
+    <item android:title="@string/menu_maps" android:checkableBehavior="single">
+        <menu>
+            <group android:id="@+id/menu_map_layers" android:checkableBehavior="single">
+                <item
+                    android:id="@+id/map_default"
+                    android:icon="@drawable/ic_menu_gallery"
+                    android:title="@string/map_default" />
+                <item
+                    android:id="@+id/map_satellite"
+                    android:icon="@drawable/ic_satellite_black_24dp"
+                    android:title="@string/map_satellite" />
+                <item
+                    android:id="@+id/map_terrain"
+                    android:icon="@drawable/ic_terrain_black_24dp"
+                    android:title="@string/map_terrain" />
+                <item
+                    android:id="@+id/map_hybrid"
+                    android:icon="@drawable/ic_layers_black_24dp"
+                    android:title="@string/map_hybrid" />
+            </group>
+        </menu>
+    </item>
+
+</menu>
