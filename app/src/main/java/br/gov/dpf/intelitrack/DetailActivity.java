@@ -88,6 +88,8 @@ import br.gov.dpf.intelitrack.entities.Configuration;
 import br.gov.dpf.intelitrack.entities.Coordinates;
 import br.gov.dpf.intelitrack.entities.Tracker;
 import br.gov.dpf.intelitrack.firestore.CoordinatesAdapter;
+import br.gov.dpf.intelitrack.trackers.SettingsActivity;
+import br.gov.dpf.intelitrack.trackers.TK102BActivity;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static br.gov.dpf.intelitrack.MainActivity.REQUEST_UPDATE;
@@ -140,18 +142,6 @@ public class DetailActivity
     //Google maps components
     private GoogleMap mMap;
     private List<Marker> markers;
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mCoordinatesAdapter.startListening();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        mCoordinatesAdapter.stopListening();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -298,7 +288,7 @@ public class DetailActivity
                 //Set transition for configuration layout components
                 txtConfigDescription.setTransitionName(getString(R.string.transition_config_description));
                 txtConfigStatus.setTransitionName(getString(R.string.transition_config_status));
-                imgConfigStatus.setTransitionName(getString(R.string.transition_config_image));
+                //imgConfigStatus.setTransitionName(getString(R.string.transition_config_image));
             }
 
             //Components in toolbar for transition
@@ -348,14 +338,15 @@ public class DetailActivity
 
     public void monitorConfiguration(String step, String description, String status) {
         //Get tracker document reference
-        DocumentReference trackerRef = FirebaseFirestore.getInstance().document("Trackers/" + tracker.getIdentification());
+        DocumentReference trackerRef = FirebaseFirestore.getInstance().document("Tracker/" + tracker.getID());
 
         //Update message
         txtConfigDescription.setText(description);
         txtConfigStatus.setText(status);
 
         //Check configuration progress
-        switch (step) {
+        switch (step)
+        {
             case "ERROR":
                 //Configuration error
                 imgConfigStatus.setImageResource(R.drawable.status_error);
@@ -435,8 +426,6 @@ public class DetailActivity
 
                 //If configuration finished (no longer pending)
                 if (!configuration.get("step").equals("PENDING")) {
-                    //Remove listener
-                    listener.remove();
 
                     //Select image to represent configuration status
                     switch (configuration.get("step").toString()) {
@@ -875,7 +864,6 @@ public class DetailActivity
         onMarkerClick(markers.get(mCoordinatesAdapter.mSnapshots.indexOf(coordinates)));
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, final Intent intent) {
         // Collect data from the intent and use it
@@ -913,7 +901,6 @@ public class DetailActivity
         //Set map click event listener
         mMap.setOnMarkerClickListener(this);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -970,6 +957,27 @@ public class DetailActivity
         NavUtils.navigateUpFromSameTask(this);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mCoordinatesAdapter.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mCoordinatesAdapter.stopListening();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        //Remove db listener
+        if(listener != null) {
+            listener.remove();
+        }
+    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -989,7 +997,7 @@ public class DetailActivity
                 case R.id.menu_default_settings:
 
                     //Editing default settings
-                    editIntent.setClass(this, DefaultSettingsActivity.class);
+                    editIntent.setClass(this, SettingsActivity.class);
                     break;
 
                 case R.id.menu_notification_settings:
@@ -1000,14 +1008,14 @@ public class DetailActivity
                 case R.id.menu_tracker_settings:
 
                     //Editing default settings
-                    editIntent.setClass(this, TrackerSettingsActivity.class);
+                    editIntent.setClass(this, TK102BActivity.class);
             }
 
             //Start edit activity
             startActivityForResult(editIntent, REQUEST_UPDATE);
         } else if (item.getGroupId() == R.id.tracker_commands) {
             //Create empty configuration
-            final Configuration command = new Configuration("", "", null, true, Configuration.PRIORITY_MAX);
+            final Configuration command = new Configuration("", "", null, true);
 
             //Create empty alert strings
             String alertTitle = "", alertDescription = "";
@@ -1021,7 +1029,7 @@ public class DetailActivity
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             //Create intent to call next activity (Tracker Configurations)
-                            Intent intent = new Intent(DetailActivity.this, TrackerSettingsActivity.class);
+                            Intent intent = new Intent(DetailActivity.this, TK102BActivity.class);
 
                             //Put tracker data on intent
                             intent.putExtra("Tracker", tracker);
@@ -1043,7 +1051,7 @@ public class DetailActivity
                 case R.id.menu_request_position:
 
                     //Define request position command
-                    command.setName("Location");
+                    command.setName("PeriodicUpdate");
                     command.setDescription("Solicitando localização atual");
 
                     //Define alert strings
@@ -1364,10 +1372,11 @@ public class DetailActivity
         WriteBatch transaction = mFireStoreDB.batch();
 
         //Save configuration on DB
-        transaction.set(mFireStoreDB.document("Trackers/" + tracker.getIdentification() + "/Configurations/" + command.getName()), command);
+        transaction.update(mFireStoreDB.document("Tracker/" + tracker.getID() + "/Configurations/" + command.getName()),
+                "status.datetime", new Date(), "status.finished", false, "status.step", "REQUESTED");
 
         //Request new update to this tracker
-        transaction.update(mFireStoreDB.document("Trackers/" + tracker.getIdentification()), "lastConfiguration", null);
+        transaction.update(mFireStoreDB.document("Tracker/" + tracker.getID()), "lastConfiguration", null);
 
         //Create message to give user a feedback
         txtConfigDescription.setText(getString(R.string.txtConfigRequest));
@@ -1425,7 +1434,7 @@ public class DetailActivity
             setIntent(intent);
 
             //Define date relative search query
-            mQuery = mFireStoreDB.collection("Trackers/" + tracker.getIdentification() + "/Coordinates")
+            mQuery = mFireStoreDB.collection("Tracker/" + tracker.getID() + "/Coordinates")
                     .whereGreaterThan("datetime", startDate)
                     .whereLessThan("datetime", endDate)
                     .orderBy("datetime", Query.Direction.DESCENDING)
@@ -1438,7 +1447,7 @@ public class DetailActivity
         else
         {
             //Define search query
-            mQuery = mFireStoreDB.collection("Trackers/" + tracker.getIdentification() + "/Coordinates")
+            mQuery = mFireStoreDB.collection("Tracker/" + tracker.getID() + "/Coordinates")
                     .orderBy("datetime", Query.Direction.DESCENDING)
                     .limit(limit);
         }

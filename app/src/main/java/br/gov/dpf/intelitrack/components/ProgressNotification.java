@@ -56,13 +56,13 @@ public class ProgressNotification implements EventListener<DocumentSnapshot>, Ru
         Map<String, String> notificationData = new HashMap<>();
 
         //Save notification settings
-        notificationData.put("id", mTracker.getIdentification());
+        notificationData.put("id", mTracker.getID());
         notificationData.put("title", "Realizando solicitação...");
         notificationData.put("progress", "0");
         notificationData.put("datetime", String.valueOf(new Date().getTime()));
 
         //Build notification
-        notification = notificationController.showNotification(notificationData, "/topics/" + mTracker.getIdentification() +"_NotifyUpdate");
+        notification = notificationController.showNotification(notificationData, "/topics/" + mTracker.getID() +"_NotifyUpdate");
 
         //Check if notification is created (user can disable all notifications as preference)
         if(notification != null)
@@ -71,7 +71,7 @@ public class ProgressNotification implements EventListener<DocumentSnapshot>, Ru
             notification.progressNotification = ProgressNotification.this;
 
             //Get tracker document reference
-            DocumentReference trackerRef = mFireStoreDB.document("Trackers/" + mTracker.getIdentification());
+            DocumentReference trackerRef = mFireStoreDB.document("Tracker/" + mTracker.getID());
 
             //Listen for changes on tracker document
             listener = trackerRef.addSnapshotListener(ProgressNotification.this);
@@ -146,7 +146,7 @@ public class ProgressNotification implements EventListener<DocumentSnapshot>, Ru
         final WriteBatch transaction = mFireStoreDB.batch();
 
         //Set to update tracker configuration
-        transaction.set(mFireStoreDB.document("Trackers/" + mTracker.getIdentification()), mTracker);
+        transaction.set(mFireStoreDB.document("Tracker/" + mTracker.getID()), mTracker);
 
         //Update notification status
         notification.setTitle("Interrompendo processo...");
@@ -157,7 +157,7 @@ public class ProgressNotification implements EventListener<DocumentSnapshot>, Ru
 
         //Get each configuration from tracker
         mFireStoreDB
-                .collection("Trackers/" + mTracker.getIdentification() + "/Configurations")
+                .collection("Tracker/" + mTracker.getID() + "/Configurations")
                 .whereEqualTo("status.finished", false)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {

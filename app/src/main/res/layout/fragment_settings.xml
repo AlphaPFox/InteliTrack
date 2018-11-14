@@ -6,7 +6,6 @@
     tools:background="@color/page_tracker_id"
     tools:context="br.gov.dpf.intelitrack.fragments.SettingsFragment">
 
-
     <TextView
         android:id="@+id/lblSelectedModel"
         android:layout_width="wrap_content"
@@ -17,20 +16,21 @@
         android:layout_marginTop="8dp"
         android:text="Modelo selecionado: TK102B"
         android:textColor="#FFF"
-        android:textSize="18sp"
+        android:fontFamily="serif"
         android:textStyle="bold"
+        android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/gdlTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.6" />
+        app:layout_constraintVertical_bias="0.7" />
 
     <android.support.constraint.Guideline
         android:id="@+id/gdlTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.15" />
+        app:layout_constraintGuide_percent="0.1"  />
 
     <ImageView
         android:id="@+id/imgSelectedModel"
@@ -50,89 +50,148 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.5" />
+        app:layout_constraintGuide_percent="0.3" />
 
-    <TextView
-        android:id="@+id/lblIdentification"
+    <ScrollView
+        android:id="@+id/vwMainScroll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/gdlBottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/gdlContent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/lblTrackerName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:text="Digite um nome para identificar rastreador"
+                android:textColor="#FFF" />
+
+            <EditText
+                android:id="@+id/txtTrackerName"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/rounded_edittext"
+                android:hint="Ex.: Rastreador BIP 01"
+                android:padding="10dp"
+                android:textAlignment="center"
+                android:textColor="#fff"
+                android:textColorHint="#CCFDFDFD" />
+
+            <TextView
+                android:id="@+id/lblIdentification"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:text="Informe o nº de telefone inserido no aparelho"
+                android:textColor="#FFF" />
+
+            <EditText
+                android:id="@+id/txtIdentification"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/rounded_edittext"
+                android:hint="Ex: 6799998888"
+                android:inputType="number"
+                android:padding="10dp"
+                android:textAlignment="center"
+                android:textColor="#fff"
+                android:textColorHint="#CCFDFDFD" />
+
+            <TextView
+                android:id="@+id/lblInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="Qual operadora de telefonia do chip utilizado?"
+                android:textAlignment="center"
+                android:textColor="#FFF"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txtIdentification" />
+
+            <RelativeLayout
+                android:id="@+id/vwMobileNetworks"
+                android:layout_width="250dp"
+                android:layout_height="45dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/dropdown_border"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lblInfo">
+
+                <Spinner
+                    android:id="@+id/ddwMobileNetworks"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="10dp"
+                    android:background="@android:color/transparent"
+                    android:entries="@array/mobile_networks"
+                    android:gravity="center"
+                    android:popupBackground="@color/page_tracker_id_dark" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_arrow_down" />
+
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/gdlBottom"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:text="Informe o nº de telefone inserido no rastreador"
-        android:textColor="#FFF"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/gdlContent" />
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.85" />
 
-    <EditText
-        android:id="@+id/txtIdentification"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/rounded_edittext"
-        android:hint="Ex: 6799998888"
-        android:inputType="number"
-        android:padding="10dp"
-        android:textAlignment="center"
-        android:textColor="#fff"
-        android:textColorHint="#CCFDFDFD"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lblIdentification" />
-
-    <TextView
-        android:id="@+id/lblInfo"
+    <Button
+        android:id="@+id/btnImport"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        android:text="Qual operadora de telefonia do chip utilizado?"
-        android:textAlignment="center"
-        android:textColor="#FFF"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtIdentification" />
-
-    <RelativeLayout
-        android:id="@+id/vwMobileNetworks"
-        android:layout_width="250dp"
-        android:layout_height="45dp"
+        android:layout_height="35dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/dropdown_border"
-        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        android:background="@color/page_tracker_id_dark"
+        android:paddingEnd="15dp"
+        android:paddingStart="15dp"
+        android:text="Importar Contato"
+        android:textColor="#FFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lblInfo"
-        app:layout_constraintVertical_bias="0.100000024">
+        app:layout_constraintTop_toBottomOf="@+id/gdlBottom"
+        app:layout_constraintVertical_bias="0.3" />
 
-        <Spinner
-            android:id="@+id/ddwMobileNetworks"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_centerVertical="true"
-            android:layout_gravity="center"
-            android:layout_marginEnd="10dp"
-            android:background="@android:color/transparent"
-            android:entries="@array/mobile_networks"
-            android:gravity="center"
-            android:popupBackground="@color/page_tracker_id_dark" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_arrow_down" />
-
-    </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

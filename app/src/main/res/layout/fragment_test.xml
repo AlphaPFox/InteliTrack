@@ -7,16 +7,17 @@
     tools:context="br.gov.dpf.intelitrack.fragments.TestFragment">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/txtTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Realizar teste de comunicação"
+        android:fontFamily="serif"
+        android:text="Teste de comunicação"
         android:textColor="#FFF"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/gdlTitle"
         app:layout_constraintEnd_toEndOf="parent"
@@ -29,59 +30,78 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.15" />
+        app:layout_constraintGuide_percent="0.1" />
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:background="@drawable/rounded_edittext"
-        android:gravity="center_vertical"
-        android:orientation="vertical"
-        android:padding="25dp"
         app:layout_constraintBottom_toTopOf="@id/gdlBottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/gdlTitle">
 
-        <br.gov.dpf.intelitrack.components.CheckList
-            android:id="@+id/checkStep1"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@+id/gdlBottom"
-            app:layout_constraintStart_toStartOf="@+id/textView"
-            app:layout_constraintTop_toBottomOf="@+id/gdlTitle"
-            app:layout_constraintVertical_bias="0.13999999"
-            app:stepDescription="Conectar ao servidor"
-            app:stepNumber="1" />
+            android:background="@drawable/rounded_edittext"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:padding="25dp">
 
-        <br.gov.dpf.intelitrack.components.CheckList
-            android:id="@+id/checkStep2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            app:stepDescription="Enviar mensagem SMS"
-            app:stepNumber="2" />
+            <br.gov.dpf.intelitrack.components.CheckList
+                android:id="@+id/checkStep1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@+id/gdlBottom"
+                app:layout_constraintStart_toStartOf="@+id/txtTitle"
+                app:layout_constraintTop_toBottomOf="@+id/gdlTitle"
+                app:layout_constraintVertical_bias="0.13999999"
+                app:stepColor="@color/page_tracker_test_dark"
+                app:stepDescription="Conectar ao servidor"
+                app:stepNumber="1" />
 
-        <br.gov.dpf.intelitrack.components.CheckList
-            android:id="@+id/checkStep3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            app:stepDescription="Confirmação de entrega"
-            app:stepNumber="3" />
+            <br.gov.dpf.intelitrack.components.CheckList
+                android:id="@+id/checkStep2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                app:stepColor="@color/page_tracker_test_dark"
+                app:stepDescription="Autenticação do usuário"
+                app:stepNumber="2" />
+
+            <br.gov.dpf.intelitrack.components.CheckList
+                android:id="@+id/checkStep3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                app:stepColor="@color/page_tracker_test_dark"
+                app:stepDescription="Enviar mensagem SMS"
+                app:stepNumber="3" />
+
+            <br.gov.dpf.intelitrack.components.CheckList
+                android:id="@+id/checkStep4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                app:stepColor="@color/page_tracker_test_dark"
+                app:stepDescription="Confirmação de entrega"
+                app:stepNumber="4" />
 
 
-        <br.gov.dpf.intelitrack.components.CheckList
-            android:id="@+id/checkStep4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            app:stepDescription="Resposta do rastreador"
-            app:stepNumber="4" />
+            <br.gov.dpf.intelitrack.components.CheckList
+                android:id="@+id/checkStep5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                app:stepColor="@color/page_tracker_test_dark"
+                app:stepDescription="Resposta do rastreador"
+                app:stepNumber="5" />
 
-    </LinearLayout>
+        </LinearLayout>
+
+    </ScrollView>
 
     <android.support.constraint.Guideline
         android:id="@+id/gdlBottom"

@@ -49,6 +49,7 @@ public class CheckList extends LinearLayout
         //Set text values from attributes
         txtStepNumber.setText(a.getString(R.styleable.CheckList_stepNumber));
         txtStepDescription.setText(a.getString(R.styleable.CheckList_stepDescription));
+        txtStepNumber.setTextColor(Color.parseColor(a.getString(R.styleable.CheckList_stepColor)));
 
         //Set indeterminate color
         pgrStepProgress.getIndeterminateDrawable().setColorFilter(Color.parseColor("#759CBB"), android.graphics.PorterDuff.Mode.SRC_IN);

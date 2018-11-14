@@ -11,6 +11,15 @@
         <item name="actionBarSize">55dp</item>
     </style>
 
+    <style name="WhiteSwitch">
+        <!-- Active thumb color & Active track color(30% transparency) -->
+        <item name="colorControlActivated">#FFF</item>
+        <!-- Inactive thumb color -->
+        <item name="colorSwitchThumbNormal">#BBB</item>
+        <!-- Inactive track color(30% transparency) -->
+        <item name="android:colorForeground">#CCC</item>
+    </style>
+
     <!-- ToolBar -->
     <style name="ToolBarStyle" parent="Theme.AppCompat">
         <item name="android:textColorPrimary">@android:color/white</item>

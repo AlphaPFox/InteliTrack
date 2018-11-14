@@ -12,5 +12,6 @@
     <declare-styleable name="CheckList">
         <attr name="stepNumber" format="string" />
         <attr name="stepDescription" format="string" />
+        <attr name="stepColor" format="string" />
     </declare-styleable>
 </resources>

@@ -39,6 +39,7 @@
                 android:layout_margin="8dp">
 
                 <LinearLayout
+                    tools:background="#EEE"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
@@ -264,7 +265,7 @@
                                 <com.xw.repo.BubbleSeekBar
                                     android:id="@+id/sbSpeed"
                                     android:tag="Config_OverSpeed"
-                                    android:visibility="gone"
+                                    android:visibility="visible"
                                     android:layout_marginTop="8dp"
                                     android:layout_marginBottom="8dp"
                                     android:layout_width="match_parent"

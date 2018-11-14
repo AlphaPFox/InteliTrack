@@ -7,7 +7,7 @@ import com.heinrichreimersoftware.materialintro.app.IntroActivity;
 import com.heinrichreimersoftware.materialintro.slide.SimpleSlide;
 
 /**
- * Created by andre.arc on 27/04/2018.
+ * Created by André Costa on 27/04/2018.
  */
 
 public class FirstStartActivity extends IntroActivity

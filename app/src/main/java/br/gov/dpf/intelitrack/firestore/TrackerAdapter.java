@@ -76,10 +76,14 @@ public class TrackerAdapter extends BaseAdapter<TrackerAdapter.ViewHolder>  {
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
+    @SuppressWarnings("ConstantConditions")
     public void onBindViewHolder(final ViewHolder holder, final int position) {
 
         //Get tracker using index position
         final Tracker tracker = getSnapshot(position).toObject(Tracker.class);
+
+        //Save tracker ID
+        tracker.setID(getSnapshot(position).getId());
 
         //Get last configuration and last coordinates
         final Map<String, Object> configuration = tracker.getLastConfiguration();
@@ -318,7 +322,7 @@ public class TrackerAdapter extends BaseAdapter<TrackerAdapter.ViewHolder>  {
         }
 
         //Check if user wants to display this tracker at top
-        if(mActivity.sharedPreferences.getBoolean("Favorite_" + tracker.getIdentification(), false))
+        if(mActivity.sharedPreferences.getBoolean("Favorite_" + tracker.getID(), false))
         {
             //Change image resource and tag
             holder.imgFavorite.setImageResource(R.drawable.ic_star_grey_24dp);

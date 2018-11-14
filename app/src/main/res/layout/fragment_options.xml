@@ -1,0 +1,403 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@color/page_tracker_config"
+    tools:context="br.gov.dpf.intelitrack.fragments.OptionsFragment">
+
+    <TextView
+        android:id="@+id/txtTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="Opções de configuração"
+        android:textSize="18sp"
+        android:fontFamily="serif"
+        android:textStyle="bold"
+        android:textColor="#FFF"
+        app:layout_constraintBottom_toTopOf="@+id/gdlTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.506"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.7" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/gdlTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.1" />
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtTitle"
+        android:layout_marginBottom="30dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_edittext"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/vwBatteryTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="8dp">
+
+                    <android.support.v7.widget.AppCompatRadioButton
+                        android:id="@+id/rdbBatteryTime"
+                        android:tag="configBatteryTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginTop="4dp"
+                        app:buttonTint="#FFF" />
+
+                    <ImageView
+                        android:id="@+id/imgBatteryTime"
+                        android:layout_width="40dp"
+                        android:layout_height="50dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:src="@drawable/battery_green" />
+
+                    <TextView
+                        android:id="@+id/txtBatteryTimeLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/txtBatteryTime"
+                        android:layout_marginStart="4dp"
+                        android:layout_toEndOf="@+id/imgBatteryTime"
+                        android:text="Envia posições por tempo"
+                        android:textColor="#FFF"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/txtBatteryTime"
+                        android:layout_width="215dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_toEndOf="@+id/imgBatteryTime"
+                        android:drawableEnd="@drawable/ic_expand_more_white_24dp"
+                        android:tag="title"
+                        android:text="Priorizar duração da bateria"
+                        android:textColor="#FFF"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/imgBatteryTime"
+                        android:layout_margin="16dp"
+                        android:tag="description"
+                        android:text="Neste modo, o rastreador fica em hibernação (módulo GPRS e GPS desligados). A cada intervalo de tempo configurado, ele entra em atividade, envia sua posição atual e retorna para o modo hibernação novamente."
+                        android:textColor="#FFF"
+                        android:textSize="13sp"
+                        android:textStyle="italic"
+                        android:visibility="gone" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#FFF" />
+
+                <RelativeLayout
+                    android:id="@+id/vwBatteryMove"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="8dp">
+
+                    <android.support.v7.widget.AppCompatRadioButton
+                        android:id="@+id/rdbBatteryMove"
+                        android:tag="configBatteryMove"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginTop="4dp"
+                        app:buttonTint="#FFF" />
+
+                    <ImageView
+                        android:id="@+id/imgBatteryMove"
+                        android:layout_width="40dp"
+                        android:layout_height="50dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:src="@drawable/battery_green" />
+
+                    <TextView
+                        android:id="@+id/txtBatteryMove"
+                        android:layout_width="215dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_toEndOf="@+id/imgBatteryMove"
+                        android:drawableEnd="@drawable/ic_expand_more_white_24dp"
+                        android:tag="title"
+                        android:text="Priorizar duração da bateria"
+                        android:textColor="#FFF"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/txtBatteryMove"
+                        android:layout_marginStart="4dp"
+                        android:layout_toEndOf="@+id/imgBatteryMove"
+                        android:text="Envia posições por movimento"
+                        android:textColor="#FFF"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/imgBatteryMove"
+                        android:layout_margin="16dp"
+                        android:tag="description"
+                        android:text="Assim como no modo anterior, o rastreador fica em hibernação. Porém, neste modo o dispositivo entra em atividade ao detectar qualquer movimentação, envia sua posição atual e retorna para o modo hibernação."
+                        android:textColor="#FFF"
+                        android:textSize="13sp"
+                        android:textStyle="italic"
+                        android:visibility="gone" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#FFF" />
+
+                <RelativeLayout
+                    android:id="@+id/vwDefault"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <android.support.v7.widget.AppCompatRadioButton
+                        android:id="@+id/rdbDefault"
+                        android:tag="configDefault"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginTop="4dp"
+                        app:buttonTint="#FFF" />
+
+                    <ImageView
+                        android:id="@+id/imgDefault"
+                        android:layout_width="40dp"
+                        android:layout_height="50dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:src="@drawable/battery_yellow" />
+
+                    <TextView
+                        android:id="@+id/txtDefault"
+                        android:layout_width="215dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_toEndOf="@+id/imgDefault"
+                        android:drawableEnd="@drawable/ic_expand_less_white_24dp"
+                        android:tag="title"
+                        android:text="Utilizar configuração padrão"
+                        android:textColor="#FFF"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtDefaultLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/txtDefault"
+                        android:layout_marginStart="4dp"
+                        android:layout_toEndOf="@+id/imgDefault"
+                        android:text="Envia posições quando requisitado"
+                        android:textColor="#FFF"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/imgDefault"
+                        android:layout_margin="16dp"
+                        android:tag="description"
+                        android:text="O rastreador permanece ativo o tempo todo, enviando sua posição a cada intervalo de tempo programado ou quando requisitado."
+                        android:textColor="#FFF"
+                        android:textSize="13sp"
+                        android:textStyle="italic" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#FFF" />
+
+                <RelativeLayout
+                    android:id="@+id/vwRealTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <android.support.v7.widget.AppCompatRadioButton
+                        android:id="@+id/rdbRealTime"
+                        android:tag="configRealTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginTop="4dp"
+                        app:buttonTint="#FFF" />
+
+                    <ImageView
+                        android:id="@+id/imgRealTime"
+                        android:layout_width="40dp"
+                        android:layout_height="50dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:src="@drawable/battery_red" />
+
+                    <TextView
+                        android:id="@+id/txtRealTime"
+                        android:layout_width="215dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_toEndOf="@+id/imgRealTime"
+                        android:drawableEnd="@drawable/ic_expand_more_white_24dp"
+                        android:tag="title"
+                        android:text="Priorizar o rastreamento"
+                        android:textColor="#FFF"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/txtRealTime"
+                        android:layout_marginStart="4dp"
+                        android:layout_toEndOf="@+id/imgRealTime"
+                        android:text="Envia posições em tempo real"
+                        android:textColor="#FFF"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/imgRealTime"
+                        android:layout_margin="16dp"
+                        android:tag="description"
+                        android:text="Além de permanecer ativo o tempo todo, o rastreador envia sua posição a cada minuto. Neste modo, o consumo de energia é alto, resultando em menor duração da bateria do dispositivo."
+                        android:textColor="#FFF"
+                        android:textSize="13sp"
+                        android:textStyle="italic"
+                        android:visibility="gone" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:background="@drawable/rounded_edittext"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/vwNotification"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="8dp">
+
+                    <ImageView
+                        android:id="@+id/imgNotification"
+                        android:layout_width="40dp"
+                        android:layout_height="50dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:src="@drawable/notification_green" />
+
+                    <android.support.v7.widget.SwitchCompat
+                        android:id="@+id/swNotification"
+                        android:checked="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:theme="@style/WhiteSwitch"
+                        android:layout_alignTop="@+id/txtNotification"/>
+
+                    <TextView
+                        android:id="@+id/txtNotification"
+                        android:layout_width="215dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_toEndOf="@+id/imgNotification"
+                        android:drawableEnd="@drawable/ic_expand_more_white_24dp"
+                        android:tag="title"
+                        android:text="Exibir notificações"
+                        android:textColor="#FFF"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/txtNotification"
+                        android:layout_marginStart="4dp"
+                        android:layout_toEndOf="@+id/imgNotification"
+                        android:text="Alerta para movimentação do rastreador"
+                        android:textColor="#FFF"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/imgNotification"
+                        android:layout_margin="16dp"
+                        android:tag="description"
+                        android:text="Se ativado, qualquer registro de movimentação do rastreador irá gerar uma notificação exibida neste celular. Pode ser desativado posteriormente."
+                        android:textColor="#FFF"
+                        android:textSize="13sp"
+                        android:textStyle="italic"
+                        android:visibility="gone" />
+
+                </RelativeLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</android.support.constraint.ConstraintLayout>

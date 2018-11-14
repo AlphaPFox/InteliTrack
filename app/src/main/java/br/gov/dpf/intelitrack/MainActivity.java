@@ -46,6 +46,9 @@ import java.util.ArrayList;
 import br.gov.dpf.intelitrack.components.GridAutoLayoutManager;
 import br.gov.dpf.intelitrack.entities.Tracker;
 import br.gov.dpf.intelitrack.firestore.TrackerAdapter;
+import br.gov.dpf.intelitrack.trackers.AddTrackerActivity;
+import br.gov.dpf.intelitrack.trackers.SettingsActivity;
+import br.gov.dpf.intelitrack.trackers.TK102BActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -130,7 +133,7 @@ public class MainActivity
         String userID = FirebaseAuth.getInstance().getUid();
 
         // RecyclerView
-        mAdapter = new TrackerAdapter(this, mFireStoreDB.collection("Trackers").whereArrayContains("users", userID).orderBy("lastUpdate", Query.Direction.DESCENDING))
+        mAdapter = new TrackerAdapter(this, mFireStoreDB.collection("Tracker").whereArrayContains("users", userID).orderBy("lastUpdate", Query.Direction.DESCENDING))
         {
             @Override
             protected void onDataChanged()
@@ -177,14 +180,8 @@ public class MainActivity
             @Override
             public void onClick(View view) {
 
-                //Create intent to open settings activity
-                Intent intent = new Intent(getApplicationContext(), DefaultSettingsActivity.class);
-
-                //Define intent to insert a new tracker
-                intent.putExtra("Request", REQUEST_INSERT);
-
-                //Start settings activity and wait for the return
-                startActivity(intent);
+                //Method invoked to add tracker
+                addNewTracker();
             }
         });
 
@@ -424,47 +421,7 @@ public class MainActivity
             {
                 case R.id.menu_add:
 
-                    //Create single choice selection dialog
-                    new AlertDialog.Builder(this, R.style.Theme_AppCompat_Light_Dialog_Alert)
-                            .setIcon(R.drawable.ic_settings_grey_40dp)
-                            .setTitle("Método de inclusão")
-                            .setSingleChoiceItems(new String[] {"Utilizar passo a passo", "Utilizar modo avançado"}, 0, null)
-                            .setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                    // Create an intent to open Settings activity
-                                    Intent intent = new Intent();
-
-                                    //Check user option
-                                    if(((AlertDialog) dialog).getListView().getCheckedItemPosition() == 0)
-                                    {
-                                        // Set add tracker class (wizard)
-                                        intent.setClass(MainActivity.this, AddTrackerActivity.class);
-                                    }
-                                    else
-                                    {
-                                        // Set add tracker class (advanced)
-                                        intent.setClass(MainActivity.this, DefaultSettingsActivity.class);
-
-                                        // Define request intent to update an existing tracker
-                                        intent.putExtra("Request", REQUEST_INSERT);
-                                    }
-
-                                    // Start register activity and wait for result
-                                    startActivity(intent);
-                                }
-                            })
-                            .setNegativeButton("Cancelar", new DialogInterface.OnClickListener()
-                            {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which)
-                                {
-                                    //Dismiss dialog, no action
-                                    dialog.cancel();
-                                }
-                            })
-                            .show();
+                    addNewTracker();
 
                     break;
 
@@ -486,6 +443,54 @@ public class MainActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void addNewTracker()
+    {
+        //Create single choice selection dialog
+        new AlertDialog.Builder(this, R.style.Theme_AppCompat_Light_Dialog_Alert)
+                .setIcon(R.drawable.ic_settings_grey_40dp)
+                .setTitle("Método de inclusão")
+                .setSingleChoiceItems(new String[] {"Utilizar passo a passo", "Utilizar modo avançado"}, 0, null)
+                .setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        // Create an intent to open Settings activity
+                        Intent intent = new Intent();
+
+                        //Check user option
+                        if(((AlertDialog) dialog).getListView().getCheckedItemPosition() == 0)
+                        {
+                            // Set add tracker class (wizard)
+                            intent.setClass(MainActivity.this, AddTrackerActivity.class);
+
+                            // Start activity and wait for result
+                            startActivityForResult(intent, 0);
+                        }
+                        else
+                        {
+                            // Set add tracker class (advanced)
+                            intent.setClass(MainActivity.this, SettingsActivity.class);
+
+                            // Define request intent to update an existing tracker
+                            intent.putExtra("Request", REQUEST_INSERT);
+
+                            // Start register activity and wait for result
+                            startActivity(intent);
+                        }
+                    }
+                })
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        //Dismiss dialog, no action
+                        dialog.cancel();
+                    }
+                })
+                .show();
     }
 
 
@@ -542,7 +547,8 @@ public class MainActivity
         intent.putExtra("Tracker", tracker);
 
         //If device supports shared element transition
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        {
             getWindow().setEnterTransition(new Fade(Fade.IN));
             getWindow().setEnterTransition(new Fade(Fade.OUT));
 
@@ -604,7 +610,7 @@ public class MainActivity
     public void OnTrackerDelete(final Tracker tracker)
     {
         //Create confirmation dialog
-        new AlertDialog.Builder(this)
+        new AlertDialog.Builder(this, R.style.Theme_AppCompat_Light_Dialog_Alert)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setTitle("Deletar rastreador")
                 .setMessage("Confirma a exclusão do rastreador " + tracker.getName() + "?")
@@ -615,8 +621,8 @@ public class MainActivity
                     {
                         //Execute DB operation
                         mFireStoreDB
-                                .collection("Trackers")
-                                .document(tracker.getIdentification())
+                                .collection("Tracker")
+                                .document(tracker.getID())
                                 .delete()
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
@@ -677,8 +683,8 @@ public class MainActivity
 
                     case R.id.action_default_settings:
 
-                        //Set intent to open DefaultSettingsActivity
-                        intent.setClass(MainActivity.this, DefaultSettingsActivity.class);
+                        //Set intent to open SettingsActivity
+                        intent.setClass(MainActivity.this, SettingsActivity.class);
 
                         //Start edit activity
                         startActivity(intent);
@@ -693,8 +699,8 @@ public class MainActivity
 
                     case R.id.action_tracker_settings:
 
-                        //Set intent to open DefaultSettingsActivity
-                        intent.setClass(MainActivity.this, TrackerSettingsActivity.class);
+                        //Set intent to open SettingsActivity
+                        intent.setClass(MainActivity.this, TK102BActivity.class);
 
                         //Start edit activity
                         startActivity(intent);
@@ -721,7 +727,7 @@ public class MainActivity
     public void OnTrackerFavorite(final Tracker tracker)
     {
         //Get opposite of current preference from user to fix this tracker on top of list
-        final boolean favorite = !sharedPreferences.getBoolean("Favorite_" + tracker.getIdentification(), false);
+        final boolean favorite = !sharedPreferences.getBoolean("Favorite_" + tracker.getID(), false);
 
         //Create confirmation dialog
         new AlertDialog.Builder(this, R.style.Theme_AppCompat_Light_Dialog_Alert)
@@ -736,7 +742,7 @@ public class MainActivity
 
 
                         //On star image click, update user preference
-                        editor.putBoolean("Favorite_" + tracker.getIdentification(), favorite);
+                        editor.putBoolean("Favorite_" + tracker.getID(), favorite);
 
                         //Save preferences change
                         editor.apply();
@@ -829,5 +835,4 @@ public class MainActivity
                     .show();
         }
     }
-
 }

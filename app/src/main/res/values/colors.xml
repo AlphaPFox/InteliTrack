@@ -17,14 +17,16 @@
     <color name="page_features_dark">#b47516</color>
     <color name="page_development">#cecdcc</color>
     <color name="page_development_dark">#696968</color>
-    <color name="page_login">#e23434</color>
-    <color name="page_login_dark">#af452d</color>
     <color name="page_tracker_add">#29c4cc</color>
     <color name="page_tracker_add_dark">#058599</color>
-    <color name="page_tracker_select">#fafafa</color>
-    <color name="page_tracker_select_dark">#dadada</color>
+    <color name="page_tracker_select">#e1dfdf</color>
+    <color name="page_tracker_select_dark">#747474</color>
     <color name="page_tracker_id">#4286F5</color>
     <color name="page_tracker_id_dark">#3367D4</color>
-    <color name="page_tracker_test">#3f9c53</color>
-    <color name="page_tracker_test_dark">#0e7424</color>
+    <color name="page_tracker_test">#f1a349</color>
+    <color name="page_tracker_test_dark">#d4801f</color>
+    <color name="page_tracker_config">#277591</color>
+    <color name="page_tracker_config_dark">#094e6b</color>
+    <color name="page_tracker_success">#3b8b51</color>
+    <color name="page_tracker_success_dark">#1b5b2d</color>
 </resources>

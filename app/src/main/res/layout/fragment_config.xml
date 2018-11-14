@@ -1,0 +1,97 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:background="@color/page_tracker_success"
+    tools:context="br.gov.dpf.intelitrack.fragments.TestFragment">
+
+    <ImageView
+        android:id="@+id/imgTitle"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:src="@drawable/ic_config_icon"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/gdlBottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.2" />
+
+    <TextView
+        android:id="@+id/txtProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0%"
+        android:textColor="#FFF"
+        android:textSize="35sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/imgTitle"
+        app:layout_constraintEnd_toEndOf="@+id/imgTitle"
+        app:layout_constraintStart_toStartOf="@+id/imgTitle"
+        app:layout_constraintTop_toTopOf="@+id/imgTitle" />
+
+    <TextView
+        android:id="@+id/txtTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="Configuração do rastreador"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:textColor="#FFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/gdlBottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgTitle"
+        app:layout_constraintVertical_bias="0.19999999" />
+
+
+    <TextView
+        android:id="@+id/txtDescription"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center|top"
+        android:lineSpacingMultiplier="1.25"
+        android:text="O procedimento pode levar até 10 minutos e pode ser executado em segundo plano."
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        android:textColor="#FFF"
+        app:layout_constraintBottom_toTopOf="@+id/btnConfig"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtTitle" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/gdlBottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.85" />
+
+    <Button
+        android:id="@+id/btnConfig"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/page_tracker_success_dark"
+        android:paddingEnd="15dp"
+        android:paddingStart="15dp"
+        android:text="Iniciar configuração"
+        android:textColor="#FFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/gdlBottom" />
+
+</android.support.constraint.ConstraintLayout>

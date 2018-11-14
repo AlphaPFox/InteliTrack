@@ -5,13 +5,19 @@ import android.os.Parcelable;
 
 import com.google.firebase.firestore.GeoPoint;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import br.gov.dpf.intelitrack.components.GeoPointParcelable;
 
 public class Tracker implements Parcelable {
+
+    private String mID;
 
     private String mName;
 
@@ -29,7 +35,13 @@ public class Tracker implements Parcelable {
 
     private String mSignalLevel;
 
+    private String mNetwork;
+
     private String mBackgroundColor;
+
+    private List<String> mUsers;
+
+    private List<String> mAdmins;
 
     private Date mLastUpdate;
 
@@ -38,8 +50,19 @@ public class Tracker implements Parcelable {
     private Map<String, Object> mLastConfiguration;
 
     //Required by FireStore DB
-    public Tracker() {
+    public Tracker()
+    {
+        //Initialize tracker permission lists
+        mUsers = new ArrayList<>();
+        mAdmins = new ArrayList<>();
+    }
 
+    public String getID() {
+        return mID;
+    }
+
+    public void setID(String mID) {
+        this.mID = mID;
     }
 
     public String getName() {
@@ -88,11 +111,35 @@ public class Tracker implements Parcelable {
         this.mModel = mModel;
     }
 
+    public String getNetwork() {
+        return mNetwork;
+    }
+
+    public void setNetwork(String mNetwork) {
+        this.mNetwork = mNetwork;
+    }
+
     public String getBackgroundColor() {
         return mBackgroundColor;
     }
 
     public void setBackgroundColor(String mBackgroundColor) { this.mBackgroundColor = mBackgroundColor;  }
+
+    public List<String> getUsers() {
+        return mUsers;
+    }
+
+    public void setUsers(List<String> mUsers) {
+        this.mUsers = mUsers;
+    }
+
+    public List<String> getAdmins() {
+        return mAdmins;
+    }
+
+    public void setAdmins(List<String> mAdmins) {
+        this.mAdmins = mAdmins;
+    }
 
     public String getBatteryLevel()
     {
@@ -130,7 +177,14 @@ public class Tracker implements Parcelable {
 
     public void setLastConfiguration(Map<String, Object> mLastConfiguration) { this.mLastConfiguration = mLastConfiguration; }
 
-    protected Tracker(Parcel in) {
+    protected Tracker(Parcel in)
+    {
+        //Initialize tracker permission lists
+        mUsers = new ArrayList<>();
+        mAdmins = new ArrayList<>();
+
+        //Read from parcelable
+        mID = in.readString();
         mName = in.readString();
         mDescription = in.readString();
         mIdentification = in.readString();
@@ -139,7 +193,10 @@ public class Tracker implements Parcelable {
         mModel = in.readString();
         mBatteryLevel = in.readString();
         mSignalLevel = in.readString();
+        mNetwork = in.readString();
         mBackgroundColor = in.readString();
+        in.readStringList(mUsers);
+        in.readStringList(mAdmins);
         long tmpLastUpdate = in.readLong();
         mLastUpdate = tmpLastUpdate != -1 ? new Date(tmpLastUpdate) : null;
         long tmpLastCoordinate = in.readLong();
@@ -183,6 +240,7 @@ public class Tracker implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mID);
         dest.writeString(mName);
         dest.writeString(mDescription);
         dest.writeString(mIdentification);
@@ -191,7 +249,10 @@ public class Tracker implements Parcelable {
         dest.writeString(mModel);
         dest.writeString(mBatteryLevel);
         dest.writeString(mSignalLevel);
+        dest.writeString(mNetwork);
         dest.writeString(mBackgroundColor);
+        dest.writeStringList(mUsers);
+        dest.writeStringList(mAdmins);
         dest.writeLong(mLastUpdate != null ? mLastUpdate.getTime() : -1L);
         dest.writeLong(mLastCoordinate != null ? ((Date) mLastCoordinate.get("datetime")).getTime() : -1L);
         dest.writeString(mLastCoordinate != null ? mLastCoordinate.get("type").toString() : "");
@@ -240,5 +301,58 @@ public class Tracker implements Parcelable {
             default:
                 return "Modelo desconhecido";
         }
+    }
+
+    public String loadAPN()
+    {
+        switch(mNetwork)
+        {
+            case "VIVO":
+                return "zap.vivo.com.br";
+            case "TIM":
+                return "tim.br";
+            case "OI":
+                return "gprs.oi.com.br";
+            case "CLARO":
+                return "claro.com.br";
+            case "VODAFONE":
+                return "m2m.vodafone.com.br";
+            case "VIVO M2M":
+                return "smart.m2m.vivo.com.br";
+            default:
+                return "tim.br";
+        }
+    }
+
+    public String loadAPNUserPass()
+    {
+        switch(mNetwork)
+        {
+            case "VIVO":
+                return "vivo";
+            case "TIM":
+                return "tim";
+            case "OI":
+                return "oi";
+            case "CLARO":
+                return "claro";
+            case "VODAFONE":
+                return "vodafone";
+            case "VIVO M2M":
+                return "vivo";
+            default:
+                return "tim";
+        }
+    }
+
+    public void addUser(String userID)
+    {
+        //Add user to the permission list
+        mUsers.add(userID);
+    }
+    public void addAdmin(String userID)
+    {
+        //Add user to the admin list
+        mAdmins.add(userID);
     }
 }

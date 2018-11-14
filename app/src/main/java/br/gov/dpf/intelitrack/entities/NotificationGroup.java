@@ -83,7 +83,7 @@ public class NotificationGroup {
         try
         {
             //Try to get tracker data from firestore DB (wait for operation to finish)
-            DocumentSnapshot result = Tasks.await(FirebaseFirestore.getInstance().collection("Trackers").document(key).get());
+            DocumentSnapshot result = Tasks.await(FirebaseFirestore.getInstance().collection("Tracker").document(key).get());
 
             //Parse result to a tracker object
             tracker = result.toObject(Tracker.class);

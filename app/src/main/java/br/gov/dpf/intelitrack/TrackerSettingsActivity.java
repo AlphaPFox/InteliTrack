@@ -170,7 +170,7 @@ public class TrackerSettingsActivity extends AppCompatActivity
 
         // If editing an existing tracker
         firestoreDB
-                .collection("Trackers/" + tracker.getIdentification() + "/Configurations")
+                .collection("Tracker/" + tracker.getID() + "/Configurations")
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -252,7 +252,7 @@ public class TrackerSettingsActivity extends AppCompatActivity
             if(view instanceof CheckBox)
             {
                 //Get user defined option from shared preferences
-                boolean notificationActive = sharedPreferences.getBoolean(tracker.getIdentification() + "_" + view.getTag().toString(), false);
+                boolean notificationActive = sharedPreferences.getBoolean(tracker.getID() + "_" + view.getTag().toString(), false);
 
                 //Set option on checkbox
                 ((CheckBox) view).setChecked(notificationActive);
@@ -260,7 +260,7 @@ public class TrackerSettingsActivity extends AppCompatActivity
         }
 
         //Check user preference to hide notifications
-        ((SwitchCompat) findViewById(R.id.swNotifications)).setChecked(sharedPreferences.getBoolean(tracker.getIdentification() + "_Notifications", false));
+        ((SwitchCompat) findViewById(R.id.swNotifications)).setChecked(sharedPreferences.getBoolean(tracker.getID() + "_Notifications", false));
     }
 
     private void loadToolbar(String trackerTitle)
@@ -651,7 +651,7 @@ public class TrackerSettingsActivity extends AppCompatActivity
                 {
                     //Enable or disable according to option selected
                     checkBox.setEnabled(isChecked);
-                    checkBox.setChecked(sharedPreferences.getBoolean(tracker.getIdentification() + "_" + checkBox.getTag().toString(), isChecked));
+                    checkBox.setChecked(sharedPreferences.getBoolean(tracker.getID() + "_" + checkBox.getTag().toString(), isChecked));
                 }
 
                 //Find checkbox
@@ -843,7 +843,7 @@ public class TrackerSettingsActivity extends AppCompatActivity
         WriteBatch transaction = firestoreDB.batch();
 
         //Get configuration collection
-        final CollectionReference configCollection = firestoreDB.collection("Trackers/" + tracker.getIdentification() + "/Configurations");
+        final CollectionReference configCollection = firestoreDB.collection("Tracker/" + tracker.getID() + "/Configurations");
 
         //If activity is inserting a new tracker
         if (!editMode)
@@ -852,7 +852,7 @@ public class TrackerSettingsActivity extends AppCompatActivity
             configurations = new HashMap<>();
 
             //Insert tracker on DB
-            transaction.set(firestoreDB.collection("Trackers").document(tracker.getIdentification()), tracker);
+            transaction.set(firestoreDB.collection("Tracker").document(tracker.getID()), tracker);
         }
         else if (resetConfig)
         {
@@ -870,7 +870,7 @@ public class TrackerSettingsActivity extends AppCompatActivity
         boolean showNotifications = ((SwitchCompat) findViewById(R.id.swNotifications)).isChecked();
 
         //Save notification options
-        editor.putBoolean(tracker.getIdentification() + "_Notifications", showNotifications);
+        editor.putBoolean(tracker.getID() + "_Notifications", showNotifications);
 
         //Check model value
         switch (tracker.getModel())
@@ -890,18 +890,18 @@ public class TrackerSettingsActivity extends AppCompatActivity
                 if(configurations.isEmpty())
                 {
                     //Set initial configurations
-                    updateConfiguration("Reset", "Reiniciando configurações", Configuration.PRIORITY_MAX, true, null, configCollection, transaction);
-                    updateConfiguration("Begin", "Inicializando dispositivo", Configuration.PRIORITY_HIGH, true, null, configCollection, transaction);
-                    updateConfiguration("Admin", "Definindo usuário administrador", Configuration.PRIORITY_MEDIUM, true, null, configCollection, transaction);
-                    updateConfiguration("Location", "Solicitando localização atual", Configuration.PRIORITY_MIN, true, null, configCollection, transaction);
+                    updateConfiguration("Reset", "Reiniciando configurações", true, null, configCollection, transaction);
+                    updateConfiguration("Begin", "Inicializando dispositivo", true, null, configCollection, transaction);
+                    updateConfiguration("Admin", "Definindo usuário administrador", true, null, configCollection, transaction);
+                    updateConfiguration("Location", "Solicitando localização atual", true, null, configCollection, transaction);
                 }
 
                 //Update device configuration
-                updateConfiguration("Shock",  "Configurando: Alerta de vibração", Configuration.PRIORITY_LOW, swShockAlert.isChecked(), null, configCollection, transaction);
-                updateConfiguration("MoveOut",  "Configurando: Alerta de evasão", Configuration.PRIORITY_LOW, swMoveOutAlert.isChecked(), null, configCollection, transaction);
-                updateConfiguration("OverSpeed",  "Configurando: Alerta de velocidade", Configuration.PRIORITY_LOW, swSpeedAlert.isChecked(), format(Locale.getDefault(), "%03d", sbSpeedAlert.getProgress()), configCollection, transaction);
-                updateConfiguration("StatusCheck",  "Configurando: Atualização de status", Configuration.PRIORITY_LOW, swStatusCheck.isChecked(), null, configCollection, transaction);
-                updateConfiguration("PeriodicUpdate", "Configurando: Localização periódica", Configuration.PRIORITY_DEFAULT, swPeriodicUpdate.isChecked(), getUpdateIntervalBySection(sbPeriodicUpdate.getProgress()), configCollection, transaction);
+                updateConfiguration("Shock",  "Configurando: Alerta de vibração", swShockAlert.isChecked(), null, configCollection, transaction);
+                updateConfiguration("MoveOut",  "Configurando: Alerta de evasão", swMoveOutAlert.isChecked(), null, configCollection, transaction);
+                updateConfiguration("OverSpeed",  "Configurando: Alerta de velocidade", swSpeedAlert.isChecked(), format(Locale.getDefault(), "%03d", sbSpeedAlert.getProgress()), configCollection, transaction);
+                updateConfiguration("StatusCheck",  "Configurando: Atualização de status", swStatusCheck.isChecked(), null, configCollection, transaction);
+                updateConfiguration("PeriodicUpdate", "Configurando: Localização periódica", swPeriodicUpdate.isChecked(), getUpdateIntervalBySection(sbPeriodicUpdate.getProgress()), configCollection, transaction);
 
                 //Update user notification preferences
                 updateNotificationOption(R.id.cbMovement, showNotifications, editor);
@@ -926,12 +926,12 @@ public class TrackerSettingsActivity extends AppCompatActivity
                 BubbleSeekBar sbIdle = findViewById(R.id.seekBarIdle);
 
                 //Update device configuration
-                updateConfiguration("DeepSleep", "Modo sono profundo", Configuration.PRIORITY_DEFAULT, swDeepSleep.isChecked(), null, configCollection, transaction);
-                updateConfiguration("ShockEmergency", "Alerta de vibração", Configuration.PRIORITY_DEFAULT, swEmergency.isChecked(), null, configCollection, transaction);
-                updateConfiguration("TurnOff", "Opção de desligamento", Configuration.PRIORITY_DEFAULT, swTurnOff.isChecked(), null, configCollection, transaction);
-                updateConfiguration("Magnet", "Alerta de magnetismo", Configuration.PRIORITY_DEFAULT, swMagnetAlert.isChecked(), null, configCollection, transaction);
-                updateConfiguration("UpdateIdle", "Localização: ratreador parado", Configuration.PRIORITY_DEFAULT, swInterval.isChecked(), (swInterval.isChecked() ? valueOf(Math.max(sbIdle.getProgress(), 1)) : "0"), configCollection, transaction);
-                updateConfiguration("UpdateActive", "Localização, rastreador em movimento", Configuration.PRIORITY_DEFAULT, swInterval.isChecked(), (swInterval.isChecked() ? valueOf(Math.max(sbActive.getProgress(), 1)) : "0"), configCollection, transaction);
+                updateConfiguration("DeepSleep", "Modo sono profundo", swDeepSleep.isChecked(), null, configCollection, transaction);
+                updateConfiguration("ShockEmergency", "Alerta de vibração", swEmergency.isChecked(), null, configCollection, transaction);
+                updateConfiguration("TurnOff", "Opção de desligamento", swTurnOff.isChecked(), null, configCollection, transaction);
+                updateConfiguration("Magnet", "Alerta de magnetismo", swMagnetAlert.isChecked(), null, configCollection, transaction);
+                updateConfiguration("UpdateIdle", "Localização: ratreador parado", swInterval.isChecked(), (swInterval.isChecked() ? valueOf(Math.max(sbIdle.getProgress(), 1)) : "0"), configCollection, transaction);
+                updateConfiguration("UpdateActive", "Localização, rastreador em movimento", swInterval.isChecked(), (swInterval.isChecked() ? valueOf(Math.max(sbActive.getProgress(), 1)) : "0"), configCollection, transaction);
 
                 //Update user notification preferences
                 updateNotificationOption(R.id.cbMovement, showNotifications, editor);
@@ -957,7 +957,7 @@ public class TrackerSettingsActivity extends AppCompatActivity
         if(configChanged || resetConfig)
         {
             //Update tracker to request a new update from server
-            transaction.update(firestoreDB.document("Trackers/" + tracker.getIdentification()), "lastConfiguration", null);
+            transaction.update(firestoreDB.document("Tracker/" + tracker.getID()), "lastConfiguration", null);
         }
 
         //Execute DB operation
@@ -1111,7 +1111,7 @@ public class TrackerSettingsActivity extends AppCompatActivity
         }
     }
 
-    private void updateConfiguration(String configName, String description, int priority, boolean enabled, String value, CollectionReference collection, WriteBatch transaction)
+    private void updateConfiguration(String configName, String description, boolean enabled, String value, CollectionReference collection, WriteBatch transaction)
     {
         //Try to get config previously loaded
         Configuration config = configurations.get(configName);
@@ -1120,14 +1120,13 @@ public class TrackerSettingsActivity extends AppCompatActivity
         if(config == null)
         {
             //Insert new configuration
-            transaction.set(collection.document(configName), new Configuration(configName, description, value, enabled, priority));
+            transaction.set(collection.document(configName), new Configuration(configName, description, value, enabled));
         }
         else if(config.isEnabled() != enabled || !(config.getValue() == null ? value == null : config.getValue().equals(value)))
         {
             //User changed configuration, update data on DB
             config.setValue(value);
             config.setEnabled(enabled);
-            config.setPriority(priority);
             config.setDescription(description);
 
             //Initialize new status
@@ -1135,7 +1134,7 @@ public class TrackerSettingsActivity extends AppCompatActivity
 
             //Save new status settings
             status.put("step", "REQUESTED");
-            status.put("description", "Status: Aguardando envio...");
+            status.put("description", "Aguardando para ser enviado...");
             status.put("datetime", new Date());
             status.put("completed", false);
 
@@ -1159,18 +1158,18 @@ public class TrackerSettingsActivity extends AppCompatActivity
         if(checkBox.isChecked() && showNotifications)
         {
             //Subscribe to notification topic
-            notifications.subscribeToTopic(tracker.getIdentification() + "_" + checkBox.getTag().toString());
+            notifications.subscribeToTopic(tracker.getID() + "_" + checkBox.getTag().toString());
 
             //Save option on shared preferences
-            editor.putBoolean(tracker.getIdentification() + "_" + checkBox.getTag().toString(), true);
+            editor.putBoolean(tracker.getID() + "_" + checkBox.getTag().toString(), true);
         }
         else
         {
             //Unsubscribe to notification topic
-            notifications.unsubscribeFromTopic(tracker.getIdentification() + "_" + checkBox.getTag().toString());
+            notifications.unsubscribeFromTopic(tracker.getID() + "_" + checkBox.getTag().toString());
 
             //Remove option from shared preferences
-            editor.putBoolean(tracker.getIdentification() + "_" + checkBox.getTag().toString(), false);
+            editor.putBoolean(tracker.getID() + "_" + checkBox.getTag().toString(), false);
         }
     }
 

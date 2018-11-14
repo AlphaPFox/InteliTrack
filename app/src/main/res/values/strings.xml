@@ -86,8 +86,33 @@
         <item>CLARO</item>
         <item>VODAFONE</item>
         <item>VIVO M2M</item>
-        <item>TIM M2M</item>
     </string-array>
+    <string-array name="active_options">
+        <item>Sempre (ver configuração <b>FIX</b>)</item>
+    </string-array>
+    <string-array name="standby_options">
+        <item>Ao detectar movimento</item>
+        <item>A cada 15 minutos</item>
+        <item>A cada 30 minutos</item>
+        <item>A cada 1 hora</item>
+        <item>A cada 3 horas</item>
+    </string-array>
+    <string-array name="hibernate_options">
+        <item>Ao detectar movimento</item>
+        <item>A cada 1 hora</item>
+        <item>A cada 3 horas</item>
+        <item>A cada 6 horas</item>
+        <item>A cada 12 horas</item>
+        <item>A cada 24 horas</item>
+    </string-array>
+    <string-array name="configFIX_values">
+        <item>030s</item>
+        <item>060s</item>
+        <item>005m</item>
+        <item>015m</item>
+        <item>001h</item>
+    </string-array>
+
 
     <!-- Default settings activity -->
     <string name="title_activity_settings">Novo rastreador</string>
@@ -160,8 +185,8 @@
     <string name="imgDatetime">Data/hora</string>
     <string name="btnClose">Fechar</string>
     <string name="menu_detail">Visualizar detalhes</string>
-    <string name="menu_default_settings">Opções de exibição</string>
-    <string name="menu_tracker_settings">Configurações do dispositivo</string>
+    <string name="menu_default_settings">Configurações básicas</string>
+    <string name="menu_tracker_settings">Configurações avançadas</string>
     <string name="menu_notification_settings">Opções de notificação</string>
     <string name="menu_delete_tracker">Excluir rastreador</string>
     <string name="imgEdit">Opções</string>
@@ -263,6 +288,8 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_tk102_b">Configurações TK102B</string>
+    <string name="server">Servidor Intelitrack</string>
 
 
 </resources>

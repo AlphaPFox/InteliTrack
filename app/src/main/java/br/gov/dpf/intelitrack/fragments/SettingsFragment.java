@@ -1,13 +1,19 @@
 package br.gov.dpf.intelitrack.fragments;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.ActivityCompat;
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -16,24 +22,55 @@ import android.widget.TextView;
 
 import com.heinrichreimersoftware.materialintro.app.SlideFragment;
 
+import java.util.HashMap;
+
 import br.gov.dpf.intelitrack.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.OnTextChanged;
+
+import static br.gov.dpf.intelitrack.trackers.SettingsActivity.REQUEST_CONTACTS;
+import static br.gov.dpf.intelitrack.trackers.SettingsActivity.REQUEST_PERMISSION;
 
 public class SettingsFragment extends SlideFragment
 {
+    //Hash table containing tracker settings
+    private HashMap<String, String> settings;
+
+    //Indicates if user is allowed to go forward
     private boolean canProceed = false;
 
     @BindView(R.id.imgSelectedModel) ImageView imgSelectedModel;
     @BindView(R.id.lblSelectedModel) TextView lblSelectedModel;
     @BindView(R.id.lblIdentification) TextView lblIdentification;
     @BindView(R.id.txtIdentification) EditText txtIdentification;
+    @BindView(R.id.txtTrackerName) EditText txtTrackerName;
     @BindView(R.id.ddwMobileNetworks) Spinner ddwMobileNetworks;
     @BindView(R.id.vwMobileNetworks) View vwMobileNetworks;
     @BindView(R.id.lblInfo) TextView lblInfo;
 
-    public SettingsFragment() {
+    @OnClick(R.id.btnImport)
+    public void importData()
+    {
+        //Check if permission is granted to this app already
+        if (ActivityCompat.checkSelfPermission(getIntroActivity(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED)
+        {
+            //Build contacts intent
+            Intent contacts = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+
+            //Start android activity
+            startActivityForResult(contacts, REQUEST_CONTACTS);
+        }
+        else
+        {
+            //If no permission yet, request from user
+            ActivityCompat.requestPermissions(getIntroActivity(), new String[]{ Manifest.permission.READ_CONTACTS}, REQUEST_PERMISSION);
+        }
+    }
+
+    public SettingsFragment()
+    {
         // Required empty public constructor
     }
 
@@ -63,26 +100,35 @@ public class SettingsFragment extends SlideFragment
         return root;
     }
 
-    @OnTextChanged(R.id.txtIdentification)
-    protected void handleTextChange(Editable editable) {
-        if(editable.toString().length() > 10)
+    @OnTextChanged({R.id.txtIdentification, R.id.txtTrackerName})
+    protected void handleTextChange(Editable editable)
+    {
+        //Check name field
+        if(txtTrackerName.getText().length() >= 5)
         {
-            canProceed = true;
+            txtTrackerName.setError(null);
+        }
+
+        //Check ID field
+        if(txtIdentification.getText().length() == 11)
+        {
             txtIdentification.setError(null);
         }
-        else
-        {
-            canProceed = false;
-        }
+
+        //If both fields are filled, allow to proceed
+        canProceed = (txtTrackerName.getText().length() >= 5 && txtIdentification.getText().length() == 11);
     }
 
-    public void setModel(String model)
+    public void loadSettings(HashMap<String, String> previousSettings)
     {
         //Get resource manager
         Resources res = getResources();
 
+        //Save settings
+        settings = previousSettings;
+
         //Set image and title from each corresponding model
-        switch (model)
+        switch (settings.get("TrackerModel"))
         {
             case "tk102b":
                 lblSelectedModel.setText(res.getString(R.string.selected_model, "TK102B"));
@@ -111,7 +157,7 @@ public class SettingsFragment extends SlideFragment
         }
 
         //Set identification fields
-        switch (model)
+        switch (settings.get("TrackerModel"))
         {
             case "spot":
                 lblIdentification.setText(res.getString(R.string.lblSpotID));
@@ -140,27 +186,45 @@ public class SettingsFragment extends SlideFragment
         txtIdentification.setError(null);
     }
 
-    public String getTrackerID()
+    public void loadContact(String contactName, String contactPhone)
     {
-        //Remove focus from edit text
-        txtIdentification.clearFocus();
-
-        //Get identification value
-        return txtIdentification.getText().toString();
+        //Get resource manager
+        txtTrackerName.setText(contactName);
+        txtIdentification.setText(contactPhone);
     }
 
-    public String getMobileOperator()
+    public HashMap<String, String> getSettings()
     {
-        return ddwMobileNetworks.getSelectedItem().toString();
+        //If identification value present
+        if(txtIdentification != null)
+        {
+            //Get identification value
+            settings.put("TrackerID", txtIdentification.getText().toString());
+            settings.put("TrackerName", txtTrackerName.getText().toString());
+            settings.put("TrackerNetwork", ddwMobileNetworks.getSelectedItem().toString());
+
+            //Hide keyboard if visible
+            InputMethodManager imm =  (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(txtIdentification.getWindowToken(), 0);
+        }
+
+        //Return tracker settings
+        return settings;
     }
 
     public void showRequiredFields()
     {
+
         //Mark error on identification field
-        if(txtIdentification != null)
+        if(txtTrackerName != null && txtTrackerName.getText().length() < 5)
+        {
+            txtTrackerName.requestFocus();
+            txtTrackerName.setError("Campo obrigatório (mínimo 5 caracteres)");
+        }
+        else if(txtIdentification != null && txtIdentification.getText().length() != 11)
         {
             txtIdentification.requestFocus();
-            txtIdentification.setError("Campo obrigatório");
+            txtIdentification.setError("Preencha no formato: 6799998888");
         }
     }
 

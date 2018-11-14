@@ -91,7 +91,7 @@ public class TcpTask extends AsyncTask<TcpTask.OnMessageReceived, String, Boolea
     /**
      * Close the connection and release the members
      */
-    private void disconnect()
+    public void disconnect()
     {
         //Close previous connection
         try
@@ -163,13 +163,16 @@ public class TcpTask extends AsyncTask<TcpTask.OnMessageReceived, String, Boolea
             //Log connection start
             Log.d("TCP", "Connected");
 
+            //Update connection progress on UI
+            publishProgress("CONNECTED");
+
             //in this while the client listens for the messages sent by the server
             while (mRunning && !isCancelled()) {
 
                 //Waits for server response
                 String mServerMessage = mBufferIn.readLine();
 
-                //Update connection progress
+                //Update connection progress on UI
                 publishProgress(mServerMessage);
 
                 //Check if this response is expected from server

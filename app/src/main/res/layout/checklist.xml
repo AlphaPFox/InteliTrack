@@ -13,7 +13,6 @@
         android:gravity="center"
         android:text="1"
         android:textAlignment="center"
-        android:textColor="#759CBB"
         android:textSize="25sp"
         android:textStyle="bold" />
 
@@ -39,10 +38,11 @@
 
     <TextView
         android:id="@+id/txtStepDescription"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="40dp"
         android:background="#303030"
         android:padding="10dp"
+        android:textAlignment="center"
         android:text="Descrição da etapa"
         android:textColor="#FFF"
         android:textSize="14sp"

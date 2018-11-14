@@ -1,20 +1,13 @@
 package br.gov.dpf.intelitrack.entities;
 
+import com.google.firebase.firestore.FieldValue;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Configuration
 {
-    //Define config execution priority
-    public static int PRIORITY_MAX = 5;
-    public static int PRIORITY_HIGH = 4;
-    public static int PRIORITY_MEDIUM = 3;
-    public static int PRIORITY_DEFAULT = 2;
-    public static int PRIORITY_LOW = 1;
-    public static int PRIORITY_MIN = 0;
-
-
     private String mName;
 
     private String mDescription;
@@ -25,25 +18,36 @@ public class Configuration
 
     private boolean mEnabled;
 
-    private int mPriority;
-
     public Configuration()
     {
     }
 
-    public Configuration(String name, String description, String value, boolean enabled, int priority)
+    public Configuration(String name, String description, String value, boolean enabled)
     {
         mName = name;
         mValue = value;
         mEnabled = enabled;
-        mPriority = priority;
         mDescription = description;
 
         mStatus = new HashMap<>();
         mStatus.put("step", "REQUESTED");
-        mStatus.put("description", "Status: Aguardando envio...");
+        mStatus.put("description", "Aguardando envio para o rastreador");
         mStatus.put("datetime", new Date());
         mStatus.put("finished", false);
+    }
+
+    public Configuration(String name, String description, String value, boolean enabled, String finishedStatus)
+    {
+        mName = name;
+        mValue = value;
+        mEnabled = enabled;
+        mDescription = description;
+
+        mStatus = new HashMap<>();
+        mStatus.put("step", "SUCCESS");
+        mStatus.put("description", finishedStatus);
+        mStatus.put("datetime", new Date());
+        mStatus.put("finished", true);
     }
 
     public String getName() {
@@ -76,14 +80,6 @@ public class Configuration
 
     public void setEnabled(boolean mEnabled) {
         this.mEnabled = mEnabled;
-    }
-
-    public int getPriority() {
-        return mPriority;
-    }
-
-    public void setPriority(int mPriority) {
-        this.mPriority = mPriority;
     }
 
     public String getDescription() {

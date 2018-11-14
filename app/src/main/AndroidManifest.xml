@@ -67,7 +67,7 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".DefaultSettingsActivity"
+            android:name=".trackers.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -83,8 +83,13 @@
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".AddTrackerActivity"
+            android:name=".trackers.AddTrackerActivity"
             android:label="@string/title_add_tracker"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".trackers.TK102BActivity"
+            android:label="@string/title_activity_tk102_b"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>

@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 
 import com.heinrichreimersoftware.materialintro.app.SlideFragment;
 
+import java.util.HashMap;
+
 import br.gov.dpf.intelitrack.R;
 import br.gov.dpf.intelitrack.components.TrackerPager;
 
@@ -19,6 +21,9 @@ public class ModelFragment extends SlideFragment
 
     //Custom pager component
     private TrackerPager pager;
+
+    //Hash table containing tracker settings
+    private HashMap<String, String> settings;
 
     /**
      * Use this factory method to create a new instance of
@@ -38,14 +43,24 @@ public class ModelFragment extends SlideFragment
         // Find pager in root view
         pager = root.findViewById(R.id.trackerLayout);
 
+        // Initialize settings
+        settings = new HashMap<>();
+
         // Return root element
         return root;
     }
 
-    public String getSelectedModel()
+    public HashMap<String, String> getSettings()
     {
+        //If component loaded
+        if(pager != null)
+        {
+            //Save settings
+            settings.put("TrackerModel", pager.getSelectedModel());
+        }
+
         //Get selected model from view pager
-        return pager.getSelectedModel();
+        return settings;
     }
 
 }

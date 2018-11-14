@@ -1,17 +1,19 @@
-package br.gov.dpf.intelitrack;
+package br.gov.dpf.intelitrack.trackers;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.Toolbar;
@@ -19,22 +21,34 @@ import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Date;
 
+import br.gov.dpf.intelitrack.DetailActivity;
+import br.gov.dpf.intelitrack.MainActivity;
+import br.gov.dpf.intelitrack.R;
+import br.gov.dpf.intelitrack.TrackerSettingsActivity;
+import br.gov.dpf.intelitrack.components.AnimatingProgressBar;
+import br.gov.dpf.intelitrack.components.TcpTask;
 import br.gov.dpf.intelitrack.entities.Tracker;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-public class DefaultSettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity {
 
     //Default device model
     private String mModel = "tk102b";
@@ -45,62 +59,49 @@ public class DefaultSettingsActivity extends AppCompatActivity {
     //Menu item used to confirm settings
     private MenuItem confirmMenu;
 
+    //Async TCP connection task
+    private TcpTask mConnection;
+
     //Object representing the tracker to be inserted/updated
     private Tracker tracker;
 
-    //Flag indicating whether this activity is in edit mode
+    //Activity flags
     private boolean editMode;
 
-    //Layout text fields
-    private EditText txtTrackerName;
-    private EditText txtTrackerDescription;
-    private EditText txtTrackerID;
-    private EditText txtTrackerIMEI;
-    private EditText txtTrackerPassword;
-    private TextView lblTrackerID;
-    private TextView lblTrackerIMEI;
-    private TextView lblTrackerPassword;
-    private TextView lblTrackerSubtitle;
-
     //Static fields
-    static final int REQUEST_PERMISSION = 1;
-    static final int REQUEST_CONTACTS = 1;
+    public static final int REQUEST_PERMISSION = 1;
+    public static final int REQUEST_CONTACTS = 1;
+
+    //Bind views
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.vwLoading) View vwLoading;
+    @BindView(R.id.txtTrackerIdentification) EditText txtTrackerID;
+    @BindView(R.id.txtTrackerIMEI) EditText txtTrackerIMEI;
+    @BindView(R.id.txtTrackerPassword) EditText txtTrackerPassword;
+    @BindView(R.id.txtTrackerName) EditText txtTrackerName;
+    @BindView(R.id.txtMobileNetwork) EditText txtMobileNetwork;
+    @BindView(R.id.txtNoTrackerDescription) TextView txtTrackerDescription;
+    @BindView(R.id.lblTrackerIdentification) TextView lblTrackerID;
+    @BindView(R.id.lblTrackerIMEI) TextView lblTrackerIMEI;
+    @BindView(R.id.lblTrackerPassword) TextView lblTrackerPassword;
+    @BindView(R.id.lblTrackerIdentificationSubtitle) TextView lblTrackerSubtitle;
+    @BindView(R.id.lblTest) TextView lblTest;
+    @BindView(R.id.pgrTest) AnimatingProgressBar pgrTest;
+    @BindView(R.id.btnTest) Button btnTest;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
 
         //Set activity layout
         setContentView(R.layout.activity_settings);
 
+        //Bind views
+        ButterKnife.bind(this);
+
         //Load toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        //Load Floating Action Button
-        FloatingActionButton fab = findViewById(R.id.fab);
-
-        //Get text fields from layout
-        txtTrackerID = findViewById(R.id.txtTrackerIdentification);
-        txtTrackerIMEI = findViewById(R.id.txtTrackerIMEI);
-        txtTrackerPassword = findViewById(R.id.txtTrackerPassword);
-        txtTrackerName = findViewById(R.id.txtTrackerName);
-        txtTrackerDescription = findViewById(R.id.txtNoTrackerDescription);
-        lblTrackerID = findViewById(R.id.lblTrackerIdentification);
-        lblTrackerIMEI = findViewById(R.id.lblTrackerIMEI);
-        lblTrackerPassword = findViewById(R.id.lblTrackerPassword);
-        lblTrackerSubtitle = findViewById(R.id.lblTrackerIdentificationSubtitle);
-
-        //Set click event
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                //Method called to save data
-                onSettingsConfirmed();
-            }
-        });
 
         //Check action bar
         if(getSupportActionBar() != null)
@@ -122,7 +123,7 @@ public class DefaultSettingsActivity extends AppCompatActivity {
             loadData();
 
             //Hide add floating action button
-            fab.setVisibility(View.GONE);
+            findViewById(R.id.fab).setVisibility(View.GONE);
         }
         else
         {
@@ -137,6 +138,35 @@ public class DefaultSettingsActivity extends AppCompatActivity {
         loadModels((LinearLayout) findViewById(R.id.vwModels));
     }
 
+    @OnClick({R.id.fab, R.id.btnTest})
+    public void settingsConfirmed()
+    {
+        //Method called to submit form
+        onSettingsConfirmed();
+    }
+
+    @OnClick(R.id.txtMobileNetwork)
+    public void selectMobileNetwork()
+    {
+        //Get mobile network list
+        final String[] mobileNetworks = getResources().getStringArray(R.array.mobile_networks);
+
+        //Create single choice selection dialog
+        new AlertDialog.Builder(this, R.style.Theme_AppCompat_Light_Dialog_Alert)
+                .setTitle("Escolha a operadora")
+                .setSingleChoiceItems(mobileNetworks, 0, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //Update value on form
+                        txtMobileNetwork.setText(mobileNetworks[which]);
+
+                        //Close dialog
+                        dialog.dismiss();
+                    }
+                })
+                .setCancelable(true)
+                .show();
+    }
 
     //Called when editing an existing tracker
     public void loadData()
@@ -147,12 +177,7 @@ public class DefaultSettingsActivity extends AppCompatActivity {
         txtTrackerIMEI.setText(tracker.getIMEI());
         txtTrackerID.setText(tracker.getIdentification());
         txtTrackerDescription.setText(tracker.getDescription());
-
-        //Change subtitle to alert that tracker identification cannot change
-        ((TextView) findViewById(R.id.lblTrackerIdentificationSubtitle)).setText(getResources().getText(R.string.lblEditIDSubtitle));
-
-        //Disable update of tracker unique ID
-        txtTrackerID.setEnabled(false);
+        txtMobileNetwork.setText(tracker.getNetwork());
 
         //Hide model selected
         findViewById(R.id.vwModelCardView).setVisibility(View.GONE);
@@ -177,29 +202,48 @@ public class DefaultSettingsActivity extends AppCompatActivity {
         String trackerIMEI = txtTrackerIMEI.getText().toString();
         String trackerPassword = txtTrackerPassword.getText().toString();
         String trackerDescription = txtTrackerDescription.getText().toString();
+        String trackerNetwork = txtMobileNetwork.getText().toString();
 
         //Check user input
-        if(trackerName.isEmpty() || trackerIdentification.isEmpty())
-        {
-            //Alert user, not optional fields
-            Snackbar.make(findViewById(android.R.id.content), "Preencha os campos nome e identificação do aparelho", Snackbar.LENGTH_LONG).show();
-        }
-        else if(mModel.equals("pt39") || mModel.equals("gt02"))
+        if(mModel.equals("pt39") || mModel.equals("gt02"))
         {
             //Alert user, unsupported models
-            Snackbar.make(findViewById(android.R.id.content), "Modelo atualmente não suportado pela plataforma", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(txtTrackerName, "Modelo atualmente não suportado pela plataforma", Snackbar.LENGTH_LONG).show();
+        }
+        else if(trackerName.length() < 5)
+        {
+            //Show error
+            txtTrackerName.setError("Campo obrigatório (mínimo 5 caracteres)");
+            txtTrackerName.requestFocus();
+        }
+        else if(trackerIdentification.length() < 5)
+        {
+            //Show error
+            txtTrackerID.setError("Campo obrigatório (mínimo 5 caracteres)");
+            txtTrackerID.requestFocus();
+        }
+        else if(mModel.equals("tk102b") && trackerIdentification.length() != 11)
+        {
+            //Show error
+            txtTrackerID.setError("Preencha no formato: 6799998888");
+            txtTrackerID.requestFocus();
         }
         else
         {
-            //Check if user is changing tracker model
-            final boolean updatingModel = (editMode && !mModel.equals(tracker.getModel()));
-
             //Save tracker data
             tracker.setName(trackerName);
             tracker.setDescription(trackerDescription);
             tracker.setIdentification(trackerIdentification);
             tracker.setIMEI(trackerIMEI);
             tracker.setPassword(trackerPassword);
+            tracker.setNetwork(trackerNetwork);
+
+            //Check if user set password
+            if(tracker.getPassword().isEmpty())
+            {
+                //Set default password
+                tracker.setPassword("123456");
+            }
 
             //Save tracker model
             tracker.setModel(mModel);
@@ -215,49 +259,27 @@ public class DefaultSettingsActivity extends AppCompatActivity {
             {
                 // Perform update on DB
                 FirebaseFirestore.getInstance()
-                        .collection("Trackers")
-                        .document(tracker.getIdentification())
+                        .collection("Tracker")
+                        .document(tracker.getID())
                         .set(tracker)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        .addOnSuccessListener(new OnSuccessListener<Void>()
+                        {
                             @Override
                             public void onSuccess(Void aVoid) {
 
-                                //If changing tracker model, add a new step before finish
-                                if(updatingModel)
-                                {
-                                    //Save new tracker model
-                                    tracker.setModel(mModel);
+                                // Go to the details page for the selected restaurant
+                                Intent intent = new Intent(SettingsActivity.this, DetailActivity.class);
 
-                                    //Create intent to call next activity (Tracker Configurations)
-                                    Intent intent = new Intent(DefaultSettingsActivity.this, TrackerSettingsActivity.class);
+                                // Put tracker data on intent
+                                intent.putExtra("Tracker", tracker);
 
-                                    //Put tracker data on intent
-                                    intent.putExtra("Tracker", tracker);
-
-                                    //Inform activity intention: update existing tracker
-                                    intent.putExtra("Request", MainActivity.REQUEST_UPDATE);
-
-                                    //Inform activity intention: change tracker model
-                                    intent.putExtra("ResetConfig", true);
-
-                                    //Start next activity
-                                    startActivity(intent);
-                                }
-                                else
-                                {
-                                    // Go to the details page for the selected restaurant
-                                    Intent intent = new Intent(DefaultSettingsActivity.this, DetailActivity.class);
-
-                                    // Put tracker data on intent
-                                    intent.putExtra("Tracker", tracker);
-
-                                    // Start detail activity
-                                    startActivity(intent);
-                                }
+                                // Start detail activity
+                                startActivity(intent);
 
                             }
                         })
-                        .addOnFailureListener(new OnFailureListener() {
+                        .addOnFailureListener(new OnFailureListener()
+                        {
                             @Override
                             public void onFailure(@NonNull Exception e)
                             {
@@ -281,28 +303,94 @@ public class DefaultSettingsActivity extends AppCompatActivity {
             }
             else
             {
-                //Run query to check if there is already a tracker with this identification
-                FirebaseFirestore.getInstance()
-                        .collection("Trackers")
-                        .document(tracker.getIdentification())
-                        .get()
-                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                //Check if already performed a test before
+                if(mConnection != null)
+                {
+                    //Cancel previous test
+                    mConnection.cancel(true);
 
-                                //If there is a tracker with the same ID
-                                if(documentSnapshot.exists())
-                                {
-                                    // Show a snack bar on errors
-                                    Snackbar.make(findViewById(android.R.id.content), "Erro: Já existe um rastreador com o mesmo identificador.", Snackbar.LENGTH_LONG).show();
+                    //Reset progress
+                    pgrTest.resetProgress();
+                }
 
-                                    // Cancel loading indicator
-                                    confirmMenu.setActionView(null);
-                                }
-                                else
+                //Perform test to contact tracker
+                mConnection = new TcpTask("192.168.1.200", "5001");
+
+                //Add expected server communication pattern
+                mConnection.addResponse("AUTH: OK", "TEST_" + tracker.getModel() + "_" + tracker.getIdentification() + "_" + tracker.getPassword());
+
+                //Initialize first step
+                vwLoading.setVisibility(View.VISIBLE);
+
+                //Scroll to top
+                ((ScrollView) findViewById(R.id.vwMainScroll)).smoothScrollTo(0, 0);
+
+                //Initialize connection
+                mConnection.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new TcpTask.OnMessageReceived()
+                {
+                    @Override
+                    public void messageReceived(String message)
+                    {
+
+                        //Check message status
+                        if (message.equals("CONNECTED"))
+                        {
+                            //Connection OK -> Update status (step 1/5)
+                            pgrTest.setProgress(10);
+                            pgrTest.setSecondaryProgress(20);
+
+                            //Update text
+                            lblTest.setText("Autenticando com o servidor Intelitrack...");
+                        }
+                        else if (message.equals("AUTH: OK"))
+                        {
+                            //Authentication OK -> Update status (step 2/5)
+                            pgrTest.setProgress(20);
+                            pgrTest.setSecondaryProgress(45);
+
+                            //Update text
+                            lblTest.setText("Enviando mensagem ao rastreador...");
+                        }
+                        else if (message.equals("SMS SENT"))
+                        {
+                            //SMS sent to tracker -> Update status (step 3/5)
+                            pgrTest.setProgress(45);
+                            pgrTest.setSecondaryProgress(80);
+
+                            //Update text
+                            lblTest.setText("Aguardando confirmação de entrega...");
+                        }
+                        else if (message.equals("DELIVERY REPORT"))
+                        {
+                            //SMS delivered to tracker -> Update status (step 4/5)
+                            pgrTest.setProgress(80);
+                            pgrTest.setSecondaryProgress(90);
+
+                            //Update text
+                            lblTest.setText("Esperando resposta do rastreador...");
+                        }
+                        else if (message.startsWith("IMEI:"))
+                        {
+                            //Tracker IMEI received -> Update status (step 5/5)
+                            pgrTest.setIndeterminate(true);
+
+                            //Update text
+                            lblTest.setText("Teste finalizado, carregando configurações...");
+
+                            //Save IMEI from tracker
+                            tracker.setIMEI(message.substring(5).trim());
+
+                            //Test finished successfully, ending connection
+                            mConnection.cancel(true);
+
+                            //Start config activity after 1,5 secs
+                            btnTest.postDelayed(new Runnable()
+                            {
+                                @Override
+                                public void run()
                                 {
                                     //Create intent to call next activity (Tracker Configurations)
-                                    Intent intent = new Intent(DefaultSettingsActivity.this, TrackerSettingsActivity.class);
+                                    Intent intent = new Intent(SettingsActivity.this, TK102BActivity.class);
 
                                     //Save create date
                                     tracker.setLastUpdate(new Date());
@@ -316,19 +404,21 @@ public class DefaultSettingsActivity extends AppCompatActivity {
                                     //Start next activity
                                     startActivityForResult(intent, MainActivity.REQUEST_INSERT);
                                 }
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
+                            }, 1500);
+                        }
+                        else
+                        {
+                            //Unexpected step, show message error message to user
+                            pgrTest.setIndeterminate(true);
 
-                                // Cancel loading indicator
-                                confirmMenu.setActionView(null);
+                            //Show error message
+                            lblTest.setText(message);
 
-                                //Alert result editing result - ERROR
-                                Snackbar.make(findViewById(R.id.vwMainScroll), "Error ao cadastrar rastreador: " + e.toString(), Snackbar.LENGTH_LONG).show();
-                            }
-                        });
+                            // Hide loading indicator on menu
+                            confirmMenu.setActionView(null);
+                        }
+                    }
+                });
             }
         }
     }
@@ -424,8 +514,6 @@ public class DefaultSettingsActivity extends AppCompatActivity {
         //If in edit mode
         if(editMode)
         {
-            //Add a new option
-            menu.add(Menu.NONE, R.id.lblModel, Menu.NONE, "Alterar modelo do rastreador");
             menu.add(Menu.NONE, R.id.action_tracker_settings, Menu.NONE, "Configurações do dispositivo");
             menu.add(Menu.NONE, R.id.action_notification_settings, Menu.NONE, "Opções de notificação");
         }
@@ -458,19 +546,11 @@ public class DefaultSettingsActivity extends AppCompatActivity {
                 //End method
                 return true;
 
-            case R.id.lblModel:
-
-                //Method called to save data
-                findViewById(R.id.vwModelCardView).setVisibility(View.VISIBLE);
-
-                //End method
-                return true;
-
             case R.id.action_tracker_settings:
             case R.id.action_notification_settings:
 
                 //Create intent to call next activity (Tracker Configurations)
-                Intent intent = new Intent(DefaultSettingsActivity.this, TrackerSettingsActivity.class);
+                Intent intent = new Intent(SettingsActivity.this, TK102BActivity.class);
 
                 //Put tracker data on intent
                 intent.putExtra("Tracker", tracker);
@@ -515,6 +595,17 @@ public class DefaultSettingsActivity extends AppCompatActivity {
     {
         //End activity (returns to parent activity)
         finish();
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        if(mConnection != null)
+        {
+            mConnection.cancel(true);
+            mConnection.disconnect();
+        }
+        super.onDestroy();
     }
 
     public void changeLabels(String model)

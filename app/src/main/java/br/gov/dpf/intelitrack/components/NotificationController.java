@@ -1,6 +1,8 @@
 package br.gov.dpf.intelitrack.components;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -36,7 +38,7 @@ public class NotificationController
     private static final int SUMMARY_ID = 0;
 
     private final Context context;
-    private final NotificationManagerCompat notificationManager;
+    private final NotificationManager notificationManager;
     private final SharedPreferences sharedPreferences;
 
     //Simple way to track text for notifications that have already been issued
@@ -47,8 +49,16 @@ public class NotificationController
     private NotificationController(Context context)
     {
         this.context = context.getApplicationContext();
-        this.notificationManager = NotificationManagerCompat.from(context);
+        this.notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+        // If android version is 7.0 or superior
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            NotificationChannel channel = new NotificationChannel("MAIN", "Notificações gerais", NotificationManager.IMPORTANCE_HIGH);
+            channel.setDescription("Notificações do aplicativo");
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     public synchronized static NotificationController getInstance(Context context)
@@ -129,14 +139,13 @@ public class NotificationController
         //Build single notification style (shown if there is only one notification)
         NotificationCompat.Builder single_notification;
 
-        // If android version is 7.0 or superior
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
         {
             //Build notification using new features (bundle notifications)
-            single_notification = new NotificationCompat.Builder(context, "CHANEL")
+            single_notification = new NotificationCompat.Builder(context, "MAIN")
                     .setSmallIcon(R.drawable.ic_tracker_notification_24dp)
                     .setGroup(notificationGroup.getGroupKey())
-
+                    .setChannelId("MAIN")
                     .setContentTitle(notification.getTitle())
                     .setContentInfo(notificationGroup.tracker.getName() + " (" + notificationGroup.tracker.formatTrackerModel() + ")")
                     .setSubText(notificationGroup.tracker.getName() + " (" + notificationGroup.tracker.formatTrackerModel() + ")")
@@ -148,7 +157,7 @@ public class NotificationController
         else
         {
             //Build notification without using new features
-            single_notification = new NotificationCompat.Builder(context, "CHANEL")
+            single_notification = new NotificationCompat.Builder(context, "MAIN")
                     .setSmallIcon(R.drawable.ic_tracker_notification_24dp)
                     .setContentTitle(notificationGroup.tracker.getName() + " (" + notificationGroup.tracker.formatTrackerModel() + ")")
                     .setContentText(notification.getTitle())
@@ -207,7 +216,7 @@ public class NotificationController
         if(imgFile.exists())
         {
             //Return image disk path
-            single_notification.setLargeIcon(createRoundedBitmapDrawableWithBorder(BitmapFactory.decodeFile(imgFile.getAbsolutePath()), single_notification.getColor()));
+            single_notification.setLargeIcon(createRoundedBitmapDrawableWithBorder(BitmapFactory.decodeFile(imgFile.getAbsolutePath()), Color.parseColor(notificationGroup.tracker.getBackgroundColor())));
         }
 
         //Create dismiss event intent
@@ -327,6 +336,7 @@ public class NotificationController
         //Build and issue the group summary. Use inbox style so that all messages are displayed
         NotificationCompat.Builder summaryBuilder = new NotificationCompat.Builder(context, "CHANEL")
                 .setSmallIcon(R.drawable.ic_tracker_notification_24dp)
+                .setChannelId("MAIN")
                 .setShowWhen(true)
                 .setGroupSummary(true)
                 .setAutoCancel(true)
@@ -385,7 +395,7 @@ public class NotificationController
         if(imgFile.exists())
         {
             //Return image disk path
-            summaryBuilder.setLargeIcon(createRoundedBitmapDrawableWithBorder(BitmapFactory.decodeFile(imgFile.getAbsolutePath()), summaryBuilder.getColor()));
+            summaryBuilder.setLargeIcon(createRoundedBitmapDrawableWithBorder(BitmapFactory.decodeFile(imgFile.getAbsolutePath()), Color.parseColor(notificationGroup.tracker.getBackgroundColor())));
         }
 
         //Create dismiss event intent

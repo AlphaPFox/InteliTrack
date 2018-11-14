@@ -1,12 +1,16 @@
 package br.gov.dpf.intelitrack.fragments;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +18,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.heinrichreimersoftware.materialintro.app.SlideFragment;
+
+import java.util.HashMap;
 
 import br.gov.dpf.intelitrack.R;
 import br.gov.dpf.intelitrack.components.CheckList;
@@ -27,9 +33,14 @@ import butterknife.OnClick;
  */
 public class TestFragment extends SlideFragment
 {
+    //Hash table containing tracker settings
+    private HashMap<String, String> settings;
 
+    //Async TCP connection task
     private TcpTask mConnection;
-    private String mTrackerNetwork, mTrackerModel, mTrackerID;
+
+    //Indicates if user is allowed to go forward
+    private boolean canProceed = false;
 
     @BindView(R.id.txtStepDescription) TextView txtStepDescription;
     @BindView(R.id.btnTest) Button btnTest;
@@ -37,6 +48,7 @@ public class TestFragment extends SlideFragment
     @BindView(R.id.checkStep2) CheckList checkStep2;
     @BindView(R.id.checkStep3) CheckList checkStep3;
     @BindView(R.id.checkStep4) CheckList checkStep4;
+    @BindView(R.id.checkStep5) CheckList checkStep5;
 
     @OnClick(R.id.btnTest)
     public void performTest(View button)
@@ -58,7 +70,7 @@ public class TestFragment extends SlideFragment
         mConnection = new TcpTask("192.168.1.200", "5001");
 
         //Add expected server communication pattern
-        mConnection.addResponse("AUTH: OK", "TEST_" + mTrackerModel + "_" + mTrackerID + "_123456");
+        mConnection.addResponse("AUTH: OK", "TEST_" + settings.get("TrackerModel") + "_" + settings.get("TrackerID") + "_123456");
 
         //Initialize first step
         checkStep1.startProgress();
@@ -69,38 +81,54 @@ public class TestFragment extends SlideFragment
             @Override
             public void messageReceived(String message)
             {
-                //Authentication accepted
-                if (message.equals("AUTH: OK"))
+
+                //Check message status
+                if (message.equals("CONNECTED"))
                 {
-                    //Update status (step 1/4)
+                    //Connection OK -> Update status (step 1/5)
                     checkStep1.setResult(resources.getDrawable(R.drawable.status_ok));
 
                     //Initialize second step
                     checkStep2.startProgress();
                 }
-                else if (message.equals("SMS SENT"))
+                else if (message.equals("AUTH: OK"))
                 {
-                    //Update status (step 2/4)
+                    //Authentication OK -> Update status (step 2/5)
                     checkStep2.setResult(resources.getDrawable(R.drawable.status_ok));
 
                     //Initialize third step
                     checkStep3.startProgress();
                 }
-                else if (message.equals("DELIVERY REPORT"))
+                else if (message.equals("SMS SENT"))
                 {
-                    //Update status (step 3/4)
+                    //SMS sent to tracker -> Update status (step 3/5)
                     checkStep3.setResult(resources.getDrawable(R.drawable.status_ok));
 
-                    //Initialize last step
+                    //Initialize fourth step
                     checkStep4.startProgress();
+                }
+                else if (message.equals("DELIVERY REPORT"))
+                {
+                    //SMS delivered to tracker -> Update status (step 4/5)
+                    checkStep4.setResult(resources.getDrawable(R.drawable.status_ok));
+
+                    //Initialize last step
+                    checkStep5.startProgress();
                 }
                 else if (message.startsWith("IMEI:"))
                 {
-                    //Update status (step 4/4)
-                    checkStep4.setResult(resources.getDrawable(R.drawable.status_ok));
+                    //Tracker IMEI received -> Update status (step 5/5)
+                    checkStep5.setResult(resources.getDrawable(R.drawable.status_ok));
 
                     //Test finished successfully, ending connection
                     mConnection.cancel(true);
+                    mConnection.disconnect();
+
+                    //Save IMEI from tracker
+                    settings.put("TrackerIMEI", message.substring(5).trim());
+
+                    //Test finished
+                    canProceed = true;
 
                     //Enable button
                     btnTest.setText("Testar novamente");
@@ -109,7 +137,7 @@ public class TestFragment extends SlideFragment
                 else
                 {
                     //Unexpected step, show message error message to user
-                    Snackbar.make(checkStep1, message, Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(btnTest, message, Snackbar.LENGTH_LONG).show();
 
                     //Enable button
                     btnTest.setText("Tentar novamente");
@@ -120,6 +148,17 @@ public class TestFragment extends SlideFragment
                 }
             }
         });
+
+        //Allow to restart test after 30 seconds
+        btnTest.postDelayed(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                btnTest.setText("Reinciar teste");
+                btnTest.setEnabled(true);
+            }
+        }, 30000);
     }
 
 
@@ -133,7 +172,7 @@ public class TestFragment extends SlideFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_test, container, false);
@@ -144,18 +183,17 @@ public class TestFragment extends SlideFragment
         return root;
     }
 
-    public void setTrackerID(final String trackerID, String trackerMobileNetwork, final String trackerModel)
+    public void loadSettings(HashMap<String, String> previousSettings)
     {
-        //Save tracker settings
-        mTrackerID = trackerID;
-        mTrackerNetwork = trackerMobileNetwork;
-        mTrackerModel = trackerModel;
+        //Save settings
+        settings = previousSettings;
 
         //Check if connection started previously
         if(mConnection != null)
         {
             //Cancel previous connection
             mConnection.cancel(true);
+            mConnection.disconnect();
         }
 
         //Reset any checklist previous status
@@ -164,6 +202,24 @@ public class TestFragment extends SlideFragment
         //Set default button text
         btnTest.setText("Iniciar teste");
         btnTest.setEnabled(true);
+
+        //Reset flag
+        canProceed = false;
+    }
+
+
+    public HashMap<String, String> getSettings()
+    {
+        //Check if connection started previously
+        if(mConnection != null)
+        {
+            //Cancel previous connection
+            mConnection.cancel(true);
+            mConnection.disconnect();
+        }
+
+        //Return current fragment settings
+        return settings;
     }
 
     private void resetChecklist()
@@ -173,12 +229,51 @@ public class TestFragment extends SlideFragment
         checkStep2.setDefault();
         checkStep3.setDefault();
         checkStep4.setDefault();
+        checkStep5.setDefault();
     }
     private void updateChecklist(Drawable drawable)
     {
+        //Search running step and update status
         if(checkStep1.isRunning()) checkStep1.setResult(drawable);
         else if (checkStep2.isRunning()) checkStep2.setResult(drawable);
         else if (checkStep3.isRunning()) checkStep3.setResult(drawable);
         else if (checkStep4.isRunning()) checkStep4.setResult(drawable);
+        else if (checkStep5.isRunning()) checkStep5.setResult(drawable);
+    }
+
+    public void showAlert(Context context)
+    {
+        //Create alert with options
+        new AlertDialog.Builder(context, R.style.Theme_AppCompat_Light_Dialog_Alert)
+                .setTitle("Teste não finalizado!")
+                .setMessage("Finalize o teste de comunicação antes de prosseguir.")
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        //Close dialog
+                        dialogInterface.dismiss();
+                    }
+                })
+                .create()
+                .show();
+    }
+
+    @Override
+    public boolean canGoForward()
+    {
+        return canProceed;
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        if(mConnection != null)
+        {
+            mConnection.cancel(true);
+            mConnection.disconnect();
+        }
+        super.onDestroy();
     }
 }
