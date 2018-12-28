@@ -25,7 +25,9 @@ import com.google.android.gms.maps.GoogleMap;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import br.gov.dpf.intelitrack.entities.NotificationGroup;
@@ -52,13 +54,8 @@ public class NotificationController
         this.notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
-        // If android version is 7.0 or superior
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-            NotificationChannel channel = new NotificationChannel("MAIN", "Notificações gerais", NotificationManager.IMPORTANCE_HIGH);
-            channel.setDescription("Notificações do aplicativo");
-            notificationManager.createNotificationChannel(channel);
-        }
+        //Create notification channels (categories), required by Android O
+        createNotificationChannels();
     }
 
     public synchronized static NotificationController getInstance(Context context)
@@ -83,10 +80,13 @@ public class NotificationController
             NotificationMessage notification = new NotificationMessage(getNotificationId(), notificationData, topic);
 
             //If this group already exists (created on a previous notification)
-            if (notificationGroups.containsKey(notification.getGroupKey())) {
+            if (notificationGroups.containsKey(notification.getGroupKey()))
+            {
                 //Get notification group corresponding to this tracker
                 notificationGroup = notificationGroups.get(notification.getGroupKey());
-            } else {
+            }
+            else
+            {
                 //Create a notification group
                 notificationGroup = new NotificationGroup(notificationGroups.size(), notification.getGroupKey());
 
@@ -98,18 +98,21 @@ public class NotificationController
             notificationGroup.addNotification(notification, this);
 
             //Check if tracker was successfully retrieved from FireStore DB
-            if (notificationGroup.tracker != null) {
+            if (notificationGroup.tracker != null)
+            {
                 //Check how many notifications are available and device android version (pré-Nougat devices do not support bundled notifications)
-                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                {
                     //Build single notification
                     notificationManager.notify(notification.getNotificationID(), buildNotification(notification, notificationGroup));
-
-                    //Build notification summary
-                    notificationManager.notify(notificationGroup.getGroupID(), buildSummary(notificationGroup));
-                } else if (notificationGroup.notifications.size() == 1) {
+                }
+                else if (notificationGroup.notifications.size() == 1)
+                {
                     //Build single notification
                     notificationManager.notify(notification.getNotificationID(), buildNotification(notification, notificationGroup));
-                } else {
+                }
+                else
+                {
                     //Build notification summary
                     notificationManager.notify(notificationGroup.getGroupID(), buildSummary(notificationGroup));
                 }
@@ -142,10 +145,9 @@ public class NotificationController
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
         {
             //Build notification using new features (bundle notifications)
-            single_notification = new NotificationCompat.Builder(context, "MAIN")
+            single_notification = new NotificationCompat.Builder(context, notification.getChannel())
                     .setSmallIcon(R.drawable.ic_tracker_notification_24dp)
                     .setGroup(notificationGroup.getGroupKey())
-                    .setChannelId("MAIN")
                     .setContentTitle(notification.getTitle())
                     .setContentInfo(notificationGroup.tracker.getName() + " (" + notificationGroup.tracker.formatTrackerModel() + ")")
                     .setSubText(notificationGroup.tracker.getName() + " (" + notificationGroup.tracker.formatTrackerModel() + ")")
@@ -157,7 +159,7 @@ public class NotificationController
         else
         {
             //Build notification without using new features
-            single_notification = new NotificationCompat.Builder(context, "MAIN")
+            single_notification = new NotificationCompat.Builder(context, notification.getChannel())
                     .setSmallIcon(R.drawable.ic_tracker_notification_24dp)
                     .setContentTitle(notificationGroup.tracker.getName() + " (" + notificationGroup.tracker.formatTrackerModel() + ")")
                     .setContentText(notification.getTitle())
@@ -177,13 +179,19 @@ public class NotificationController
             {
                 //Build google maps static API URL
                 String mapsURL = "https://maps.googleapis.com/maps/api/staticmap?" +
-                        "center=" + notification.getCoordinates() +
+                        "center=" + notification.getCoordinates().substring(6) +
                         "&zoom=14" +
                         "&size=512x512" +
                         "&scale=2" +
                         "&maptype=" + getMapType() +
-                        "&markers=color:0x" + notificationGroup.tracker.getBackgroundColor().substring(3)+ "%7C" + notification.getCoordinates() +
                         "&key=" + context.getResources().getString(R.string.google_maps_static_key);
+
+                //Check if coordinates from GPS positioning
+                if(notification.getCoordinates().startsWith("(GPS)"))
+                {
+                    //Append marker to map
+                    mapsURL += "&markers=color:0x" + notificationGroup.tracker.getBackgroundColor().substring(3)+ "%7C" + notification.getCoordinates().substring(6);
+                }
 
                 //Perform download from URL
                 InputStream in = new java.net.URL(mapsURL).openStream();
@@ -244,7 +252,7 @@ public class NotificationController
         clickIntent.putExtra("Tracker", notificationGroup.tracker);
 
         //If notification has progress indicator
-        if(notification.getTopic().contains("_NotifyUpdate"))
+        if(notification.getTopic().contains("_Notify_Update"))
         {
             //Set max priority to this progress notification
             single_notification.setPriority(Notification.PRIORITY_MAX);
@@ -331,12 +339,12 @@ public class NotificationController
         return single_notification.build();
     }
 
-    private Notification buildSummary(NotificationGroup notificationGroup) {
-
+    private Notification buildSummary(NotificationGroup notificationGroup)
+    {
         //Build and issue the group summary. Use inbox style so that all messages are displayed
-        NotificationCompat.Builder summaryBuilder = new NotificationCompat.Builder(context, "CHANEL")
+        NotificationCompat.Builder summaryBuilder = new NotificationCompat.Builder(context, "Notify_Group")
+                .setChannelId("Notify_Group")
                 .setSmallIcon(R.drawable.ic_tracker_notification_24dp)
-                .setChannelId("MAIN")
                 .setShowWhen(true)
                 .setGroupSummary(true)
                 .setAutoCancel(true)
@@ -607,5 +615,46 @@ public class NotificationController
 
         // Return the rounded bitmap
         return output;
+    }
+
+    private void createNotificationChannels()
+    {
+        // If android version is 8.0 or superior
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            NotificationChannel notifyMove = new NotificationChannel("Notify_Move", "Notificação de movimentação", NotificationManager.IMPORTANCE_HIGH);
+            notifyMove.setDescription("Notifica o usuário sobre a movimentação do rastreador.");
+
+            NotificationChannel notifySOS = new NotificationChannel("Notify_SOS", "Notificação de S.O.S.", NotificationManager.IMPORTANCE_HIGH);
+            notifySOS.setDescription("Exibe notificação quando o botão de S.O.S. for pressionado no rastreador.");
+
+            NotificationChannel notifyAlert = new NotificationChannel("Notify_Alert", "Notificação de alerta", NotificationManager.IMPORTANCE_HIGH);
+            notifyAlert.setDescription("Exibe notificação quando o rastreador gerar um alerta (ex.: bateria fraca, vibração, velocidade).");
+
+            NotificationChannel notifyStopped = new NotificationChannel("Notify_Stopped", "Notificação de mesma posição", NotificationManager.IMPORTANCE_HIGH);
+            notifyStopped.setDescription("Notifica o usuário mesmo quando o rastreador se manter na mesma posição.");
+
+            NotificationChannel notifyAvailable = new NotificationChannel("Notify_Available", "Notificação de disponibilidade", NotificationManager.IMPORTANCE_LOW);
+            notifyAvailable.setDescription("Notifica o usuário sempre que o rastreador estiver disponível (enviar ou receber mensagens).");
+
+            NotificationChannel notifyStatusCheck = new NotificationChannel("Notify_StatusCheck", "Notificação de status", NotificationManager.IMPORTANCE_LOW);
+            notifyStatusCheck.setDescription("Exibe notificação quando o rastreador enviar o status (bateria, nível de sinal, entre outros)");
+
+            NotificationChannel notifyUpdate = new NotificationChannel("Notify_Update", "Progresso da solicitação", NotificationManager.IMPORTANCE_LOW);
+            notifyUpdate.setDescription("Exibe o progresso de uma solicitação ao rastreador (ex.: alterar configuração, solicitar posição)");
+
+            NotificationChannel notifyGroup = new NotificationChannel("Notify_Group", "Agrupar notificações", NotificationManager.IMPORTANCE_LOW);
+            notifyGroup.setDescription("Agrupa as notificações de um determinado rastreador em uma única notificação.");
+
+            //Add channels to notification manager
+            notificationManager.createNotificationChannel(notifyMove);
+            notificationManager.createNotificationChannel(notifySOS);
+            notificationManager.createNotificationChannel(notifyAlert);
+            notificationManager.createNotificationChannel(notifyStopped);
+            notificationManager.createNotificationChannel(notifyAvailable);
+            notificationManager.createNotificationChannel(notifyStatusCheck);
+            notificationManager.createNotificationChannel(notifyUpdate);
+            notificationManager.createNotificationChannel(notifyGroup);
+        }
     }
 }

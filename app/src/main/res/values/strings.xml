@@ -74,7 +74,7 @@
     <string name="txtTrackerPhoneHint">Ex: 6799998888</string>
     <string name="mobile_networks">Qual operadora de telefonia do chip utilizado?</string>
     <string name="lblIMEI">Informe o IMEI do dispositivo rastreador</string>
-    <string name="txtIMEIHint">Ex: 355160071705274</string>
+    <string name="txtIMEIHint">Ex: 355160071705274 (opcional)</string>
     <string name="lblIMEIInfo">Obs.: O IMEI representa um código de identificação único, geralmente encontrado em uma etiqueta colada no próprio dispositivo rastreador. </string>
     <string name="lblSpotID">Informe o código do dispositivo (Feed ID):</string>
     <string name="txtSpotIDHint">0I48pmHmVsrh88oe38f0etUjB8pJglLOp</string>
@@ -121,27 +121,35 @@
     <string name="txtTrackerDescriptionHint">(opcional)</string>
     <string name="lblTrackerDescription">Descrição do rastreador:</string>
     <string name="lblModel">Modelo</string>
-    <string name="model_tk102b">Coban TK102B</string>
-    <string name="model_tk1102">Powerpack TK1102</string>
+    <string name="model_tk102">Powerpack TK102</string>
+    <string name="model_tk103">Coban TK102B</string>
+    <string name="model_tk306">Coban TK306</string>
     <string name="model_st940">Suntech ST940</string>
     <string name="model_spot">Spot TRACE</string>
-    <string name="model_tk306">Coban TK306B</string>
     <string name="model_pt39">TechGPS PT39</string>
-    <string name="model_gt02">Coban TK110</string>
+    <string name="model_pt50x">TechGPS PT50X</string>
     <string name="lblTrackerIdentification">Informações do rastreador</string>
     <string name="lblPassword">Senha de configuração:</string>
+    <string name="lblNetwork">Operadora telefônica:</string>
+    <string name="lblDefaultNetwork">Padrão: VIVO</string>
     <string name="lblPhoneNumber">Número de telefone:</string>
-    <string name="txtPhoneNumberHint">6799998888</string>
-    <string name="lblPhoneNumberSubtitle">Informe o número de telefone, IMEI (somente para modo GPRS) e a senha utilizada para configuração do rastreador.</string>
+    <string name="txtPhoneNumberHint">Ex.: 6799998888</string>
     <string name="lblFeedID">Identificador (Feed ID):</string>
-    <string name="txtFieldIDHint">0I48pmHmVsrh88oe38f0etUjB8pJglLOp</string>
-    <string name="lblFeedIDSubtitle">Os campos acima devem ser preenchidos com o valor do FEED ID e da senha utilizados na página de compartilhamento da SPOT.</string>
-    <string name="lblSuntechID">Identificador (6 dígitos):</string>
-    <string name="txtSuntechHint">696478</string>
-    <string name="lblSuntechSubtitle">Informe o número de identificação do aparelho. Por padrão, o número é composto pelos 6 últimos dígitos do IMEI.</string>
-    <string name="lblEditIDSubtitle"><b>Alerta:</b> O campo de identificação do aparelho não deve ser alterado. Caso necessário, cadastre um novo rastreador com o número de identificação desejado.</string>
+    <string name="txtFeedIDHint">Ex.: 0I48pmHmVsrh88oe38f0etUjB8pJglLOp</string>
+    <string name="lblTKSubtitle">Necessário informar o número da linha telefônica ou o número IMEI do dispositivo rastreador. Caso o IMEI não seja preenchido, o servidor tentará realizar contato com o rastreador para obter esta informação.</string>
+    <string name="lblSpotSubtitle">Os campos acima devem ser preenchidos com o valor do FEED ID e da senha utilizados na página de compartilhamento da SPOT.</string>
+    <string name="lblSuntechSubtitle">Necessário informar o número IMEI do dispositivo rastreador. O IMEI informado deve conter 15 dígitos e geralmente está disponível na parte de trás do rastreador.</string>
+    <string name="lblTechGPSSubtitle">Informe o número IMEI do dispositivo rastreador. O IMEI informado deve conter 15 dígitos e geralmente está disponível em uma etiqueta colada no rastreador.</string>
     <string name="lblColorIdentification">Cor de identificação</string>
     <string name="lblColorDescription">Selecione uma cor para facilitar a identificação a visualização do rastreador no mapa.</string>
+    <string name="lblObtainingIMEI">Solicitando IMEI do rastreador</string>
+    <string name="lblConnecting">Conectando ao servidor Intelitrack&#8230;</string>
+    <string name="lblAuth">"Autenticando com o servidor Intelitrack&#8230;</string>
+    <string name="lblSending">Enviando mensagem ao rastreador&#8230;</string>
+    <string name="lblWaitingDelivery">Aguardando confirmação de entrega&#8230;</string>
+    <string name="lblWaitingResponse">Esperando resposta do rastreador&#8230;</string>
+    <string name="lblLoading">Teste finalizado, carregando configurações&#8230;</string>
+    <string name="btnTryAgain">Testar novamente</string>
 
     <!--  Detail activity -->
     <string name="title_activity_detail">Detalhes</string>
@@ -197,7 +205,7 @@
     <string name="txtConfigStatus">Aguardando resposta do servidor</string>
     <string name="imgStar">Fixar no topo</string>
     <string name="menu_contacts">Buscar lista de contato</string>
-    <string name="txtPasswordHint">123456</string>
+    <string name="txtPasswordHint">Padrão: 123456</string>
     <string name="lblTrackerIMEI">IMEI do dispositivo:</string>
     <string name="txtTrackerIMEIHint">(opcional)</string>
 
@@ -288,8 +296,24 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_tk102_b">Configurações TK102B</string>
+    <string name="title_activity_tk102">Configurações TK102</string>
+    <string name="title_activity_tk103">Configurações TK103</string>
     <string name="server">Servidor Intelitrack</string>
+    <string name="lblConnectionSettings">Configurações de conexão</string>
+    <string name="lblCommunicationMode">Modo de comunicação (GPRS/SMS)</string>
+    <string name="lblStatusDescription">Status da configuração</string>
+    <string name="lblValue">Valor atual:</string>
+    <string name="lblSMSMode">Comunicação por mensagem (SMS)</string>
+    <string name="lblGPRSMode">Comunicação por internet (GRPS)</string>
+    <string name="lblEditConfig">Editar configuração</string>
+    <string name="lblStatusSMS">Status (SMS):</string>
+    <string name="lblWaiting">- Aguardando para ser enviada ao rastreador</string>
+    <string name="lblCanceled">- Configuração não solicitada ao rastreador</string>
+    <string name="lblStatusGPRS">Status (GPRS):</string>
+    <string name="lblCommandsAvailable">Comandos disponíveis:</string>
+    <string name="btnEdit">Editar</string>
+    <string name="btnSendConfig">Enviar configuração</string>
+    <string name="lblStatus">Status:</string>
 
 
 </resources>

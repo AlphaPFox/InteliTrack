@@ -72,14 +72,13 @@
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".TrackerSettingsActivity"
-            android:label="@string/tracker_settings_title"
-            android:noHistory="true"
+            android:name=".DetailActivity"
+            android:label="@string/title_activity_detail"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".DetailActivity"
-            android:label="@string/title_activity_detail"
+            android:name=".FilterActivity"
+            android:label="@string/txtFilterTitle"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -88,10 +87,15 @@
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".trackers.TK102BActivity"
-            android:label="@string/title_activity_tk102_b"
+            android:name=".trackers.TK102Activity"
+            android:label="@string/title_activity_tk102"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".trackers.TK103Activity"
+            android:label="@string/title_activity_tk103"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />/>
     </application>
 
 </manifest>

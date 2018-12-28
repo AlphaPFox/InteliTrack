@@ -2,13 +2,14 @@ package br.gov.dpf.intelitrack.trackers;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatRadioButton;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
@@ -21,9 +22,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -32,36 +31,35 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.xw.repo.BubbleSeekBar;
 
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
+import java.util.List;
 import java.util.Map;
 
 import br.gov.dpf.intelitrack.DetailActivity;
 import br.gov.dpf.intelitrack.MainActivity;
 import br.gov.dpf.intelitrack.R;
-import br.gov.dpf.intelitrack.TrackerSettingsActivity;
 import br.gov.dpf.intelitrack.components.ProgressNotification;
 import br.gov.dpf.intelitrack.entities.Configuration;
 import br.gov.dpf.intelitrack.entities.Tracker;
-import br.gov.dpf.intelitrack.fragments.ConfigFragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 
-public class TK102BActivity extends AppCompatActivity implements EventListener<QuerySnapshot>
+public class TK103Activity extends AppCompatActivity implements EventListener<QuerySnapshot>
 {
+
     //Object representing the tracker to be inserted/updated
     private Tracker tracker;
 
@@ -74,38 +72,38 @@ public class TK102BActivity extends AppCompatActivity implements EventListener<Q
     //Menu item used to confirm and refresh settings
     private MenuItem confirmMenu, refreshMenu;
 
+    //List of user confirmed configurations
+    private List<String> confirmedConfigs;
+
     //Flag indicating if a DB operation is running
     private boolean loading;
 
     //Bind views
     @BindView(R.id.vwMain) View vwMain;
     @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.txtAPN) EditText txtAPN;
+    @BindView(R.id.txtAPN)  EditText txtAPN;
     @BindView(R.id.txtAPNUser) EditText txtAPNUser;
     @BindView(R.id.txtAPNPassword) EditText txtAPNPassword;
     @BindView(R.id.txtAdmin) EditText txtAdmin;
     @BindView(R.id.txtAdminIP) EditText txtAdminIP;
     @BindView(R.id.txtAdminIPPort) EditText txtAdminIPPort;
-    @BindView(R.id.communicationMode) RadioGroup rdgCommunicationMode;
     @BindView(R.id.lblStatusCheck) TextView lblStatusCheck;
     @BindView(R.id.lblIMEI) TextView lblIMEI;
-    @BindView(R.id.rdgOperationMode) RadioGroup rdgOperationMode;
-    @BindView(R.id.rdgFix) RadioGroup rdgFix;
+    @BindView(R.id.communicationMode)  RadioGroup rdgCommunicationMode;
+    @BindView(R.id.rdgTimer) RadioGroup rdgTimer;
     @BindView(R.id.swAdmin) SwitchCompat swAdmin;
-    @BindView(R.id.swLessGprs) SwitchCompat swLessGprs;
     @BindView(R.id.swMove) SwitchCompat swMove;
     @BindView(R.id.swSpeed) SwitchCompat swSpeed;
     @BindView(R.id.swShock) SwitchCompat swShock;
-    @BindView(R.id.sbMove) BubbleSeekBar sbMove;
     @BindView(R.id.sbSpeed) BubbleSeekBar sbSpeed;
+    @BindView(R.id.vwNotifications) ViewGroup vwNotificationPanel;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         //Load layout
-        setContentView(R.layout.activity_tk102_b);
+        setContentView(R.layout.activity_tk103);
 
         //Bind views
         ButterKnife.bind(this);
@@ -133,17 +131,23 @@ public class TK102BActivity extends AppCompatActivity implements EventListener<Q
             //Set activity in edit mode
             editMode = true;
 
-            //Set loading indicator
-            loading = true;
+            //Check if intent is to edit notification options
+            if(getIntent().getBooleanExtra("UpdateNotifications", false))
+            {
+                //Load notification options
+                loadNotificationOptions();
+            }
+            else
+            {
+                //Set loading indicator
+                loading = true;
 
-            //Monitor tracker configurations
-            firestoreDB.collection("Tracker/" + tracker.getID() + "/Configurations").addSnapshotListener(this);
+                //Load and monitor tracker configurations from DB
+                firestoreDB.collection("Tracker/" + tracker.getID() + "/Configurations").addSnapshotListener(this);
 
-            //Show general configuration settings
-            findViewById(R.id.vwGeneralConfigurations).setVisibility(View.VISIBLE);
-
-            //Hide fab
-            findViewById(R.id.fab).setVisibility(View.GONE);
+                //Show general configuration settings
+                findViewById(R.id.vwGeneralCard).setVisibility(View.VISIBLE);
+            }
         }
         else
         {
@@ -151,110 +155,14 @@ public class TK102BActivity extends AppCompatActivity implements EventListener<Q
             txtAPN.setText(tracker.loadAPN());
             txtAPNUser.setText(tracker.loadAPNUserPass());
             txtAPNPassword.setText(tracker.loadAPNUserPass());
+
+            //Initialize list
+            confirmedConfigs = new ArrayList<>();
         }
     }
 
-    @OnCheckedChanged({R.id.operationActive, R.id.operationStandBy, R.id.operationHibernate})
-    public void onOperationModeChanged(CompoundButton button, boolean checked)
-    {
-        //Index to operation mode options
-        int index_first = 0, index_last = 0;
 
-        //If checked
-        if(checked)
-        {
-            switch (button.getId())
-            {
-                case R.id.operationActive:
-                    //Allow more precise tracking
-                    index_first = 0;
-                    index_last = 5;
-
-                    //Check LESS GPRS mode option
-                    swLessGprs.setChecked(false);
-
-                    //Check default option
-                    rdgFix.check(R.id.fix030s);
-                    break;
-                case R.id.operationStandBy:
-                    //Stand by mode
-                    index_first = 5;
-                    index_last = 6;
-
-                    //Check LESS GPRS mode option
-                    swLessGprs.setChecked(true);
-
-                    //Check default option
-                    rdgFix.check(R.id.rdRequest);
-                    break;
-                case R.id.operationHibernate:
-                    //Allow to save battery
-                    index_first = 6;
-                    index_last = 11;
-
-                    //Check LESS GPRS mode option
-                    swLessGprs.setChecked(true);
-
-                    //Check default option
-                    rdgFix.check(R.id.rdShock);
-                    break;
-            }
-
-            //Disable option to change less GPRS config
-            swLessGprs.setEnabled(false);
-
-            //For every operation mode options
-            for(int i = 0; i < rdgFix.getChildCount(); i++)
-            {
-                //Change visibility
-                rdgFix.getChildAt(i).setVisibility(i >= index_first && i <= index_last ? View.VISIBLE : View.GONE);
-            }
-        }
-    }
-
-    @OnClick(R.id.btnEditLessGPRS)
-    public void editLessGPRS(View button)
-    {
-        //Check operation mode
-        if(rdgCommunicationMode.getCheckedRadioButtonId() == R.id.modeSMS)
-        {
-            //Warn user
-            Snackbar.make(button, "Não editável no modo de comunicação SMS.", Snackbar.LENGTH_LONG).show();
-        }
-        else if(rdgOperationMode.getCheckedRadioButtonId() == R.id.operationStandBy)
-        {
-            //Warn user
-            Snackbar.make(button, "Não editável no modo de operação Stand-by.", Snackbar.LENGTH_LONG).show();
-        }
-        else if(rdgOperationMode.getCheckedRadioButtonId() == R.id.operationHibernate)
-        {
-            //Warn user
-            Snackbar.make(button, "Não editável no modo de hibernação.", Snackbar.LENGTH_LONG).show();
-        }
-        else
-        {
-            //Config available for edit
-            onEditClick(button);
-        }
-    }
-
-    @OnClick(R.id.btnEditShock)
-    public void editShock(View button)
-    {
-        //Check operation mode
-        if(rdgFix.getCheckedRadioButtonId() == R.id.rdShock)
-        {
-            //Warn user
-            Snackbar.make(button, "Não editável no modo de operação atual (FIX).", Snackbar.LENGTH_LONG).show();
-        }
-        else
-        {
-            //Config available for edit
-            onEditClick(button);
-        }
-    }
-
-    @OnClick({R.id.btnEditAPN, R.id.btnEditUP, R.id.btnEditAdminIP})
+    @OnClick({R.id.btnEditAPN, R.id.btnEditAdminIP})
     public void editGPRSSettings(View button)
     {
         //Check operation mode
@@ -262,6 +170,13 @@ public class TK102BActivity extends AppCompatActivity implements EventListener<Q
         {
             //Warn user
             Snackbar.make(button, "Não editável no modo de comunicação SMS.", Snackbar.LENGTH_LONG).show();
+        }
+        else if(button.getId() == R.id.btnEditAPN)
+        {
+            //Enable controls for editing APN
+            txtAPN.setEnabled(true);
+            txtAPNUser.setEnabled(true);
+            txtAPNPassword.setEnabled(true);
         }
         else
         {
@@ -293,28 +208,6 @@ public class TK102BActivity extends AppCompatActivity implements EventListener<Q
         findViewById(R.id.vwAdminSettings).setVisibility(checked ? View.VISIBLE : View.GONE);
     }
 
-    @OnCheckedChanged(R.id.rdShock)
-    public void onShockSelected(CompoundButton button, boolean checked)
-    {
-        //Change shock alert
-        if(checked && rdgCommunicationMode.getCheckedRadioButtonId() == R.id.modeSMS && !swShock.isEnabled())
-        {
-            //Create alert with options
-            new AlertDialog.Builder(TK102BActivity.this, R.style.Theme_AppCompat_Light_Dialog_Alert)
-                    .setTitle("Alerta de vibração")
-                    .setIcon(R.drawable.ic_settings_grey_40dp)
-                    .setMessage("Ative o alerta de vibração (SHOCK) para utilizar este modo de operação.")
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int id) {
-                            //Close dialog
-                            dialog.dismiss();
-                        }
-                    }).create()
-                    .show();
-        }
-    }
-
     @OnCheckedChanged({R.id.swMove, R.id.swSpeed, R.id.swShock})
     public void onAlertChange(CompoundButton button, boolean checked)
     {
@@ -322,7 +215,7 @@ public class TK102BActivity extends AppCompatActivity implements EventListener<Q
         if(checked && rdgCommunicationMode.getCheckedRadioButtonId() == R.id.modeSMS && !swAdmin.isEnabled())
         {
             //Create alert with options
-            new AlertDialog.Builder(TK102BActivity.this, R.style.Theme_AppCompat_Light_Dialog_Alert)
+            new AlertDialog.Builder(TK103Activity.this, R.style.Theme_AppCompat_Light_Dialog_Alert)
                     .setTitle("Modo de comunicação SMS")
                     .setIcon(R.drawable.ic_settings_grey_40dp)
                     .setMessage("Ative o administrador de SMS (ADMIN) para receber alertas no modo SMS.")
@@ -334,6 +227,11 @@ public class TK102BActivity extends AppCompatActivity implements EventListener<Q
                         }
                     }).create()
                     .show();
+        }
+        else if(button.getId() == R.id.swSpeed)
+        {
+            //Change visibility from seek bar
+            sbSpeed.setVisibility(checked ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -409,107 +307,221 @@ public class TK102BActivity extends AppCompatActivity implements EventListener<Q
         }
     }
 
-    public void onActionClick(View editButton)
+    public void onActionClick(final View editButton)
     {
-        //Get config name
+        //Get config_edit name
         final String configName = editButton.getTag().toString().substring(4);
 
         //Create a new popup menu
         PopupMenu popup = new PopupMenu(this, editButton);
 
-        //Get layout inflater
-        popup.getMenuInflater().inflate(R.menu.config, popup.getMenu());
+        if(editMode)
+        {
+            //Get layout inflater
+            popup.getMenuInflater().inflate(R.menu.config_edit, popup.getMenu());
 
-        //Define click actions
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item)
-            {
-                switch (item.getItemId())
+            //Define click actions
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item)
                 {
-                    case R.id.menu_confirm:
+                    switch (item.getItemId())
+                    {
+                        case R.id.menu_confirm:
 
-                        //Show dialog before confirm configuration
-                        showAlert("Confirmar manualmente?", "Deseja confirmar que o rastreador executou esta configuração?", R.drawable.ic_settings_grey_40dp, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i)
-                            {
-                                //Update configuration status to confirmed
-                                firestoreDB
-                                        .document("Tracker/" + tracker.getID() + "/Configurations/" + configName)
-                                        .update("status.finished", true,"status.step", "SUCCESS",
-                                                "status.description", "Confirmado manualmente às " + new SimpleDateFormat("HH:mm - dd/MM", Locale.getDefault()).format(new Date()));
+                            //Show dialog before confirm configuration
+                            showAlert("Confirmar manualmente?", "Deseja confirmar que o rastreador executou esta configuração?", R.drawable.ic_settings_grey_40dp, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i)
+                                {
+                                    //Update configuration status to confirmed
+                                    firestoreDB
+                                            .document("Tracker/" + tracker.getID() + "/Configurations/" + configName)
+                                            .update("status.finished", true,"status.step", "SUCCESS", "status.datetime", FieldValue.serverTimestamp(),
+                                                    "status.description", "Confirmado manualmente")
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
 
-                                //Update tracker
-                                firestoreDB
-                                        .document("Tracker/" + tracker.getID())
-                                        .update("lastConfiguration", null);
+                                                    //Show update to user
+                                                    Snackbar.make(vwMain, "Configuração alterada com sucesso.", Snackbar.LENGTH_LONG).show();
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
 
-                                //Set loading indicator
-                                confirmMenu.setActionView(new ProgressBar(TK102BActivity.this));
-                            }
-                        });
+                                                    //Show update to user
+                                                    Snackbar.make(vwMain, "Erro ao alterar configuração.", Snackbar.LENGTH_LONG).show();
+                                                }
+                                            });
 
-                        //End method
-                        return true;
+                                    //Set loading indicator
+                                    confirmMenu.setActionView(new ProgressBar(TK103Activity.this));
+                                }
+                            });
 
-                    case R.id.menu_cancel:
+                            //End method
+                            return true;
 
-                        //Show dialog before cancel configuration
-                        showAlert("Cancelar configuração?", "Deseja cancelar a configuração?", R.drawable.status_warning, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i)
-                            {
-                                //Update configuration status to canceled
-                                firestoreDB
-                                        .document("Tracker/" + tracker.getID() + "/Configurations/" + configName)
-                                        .update("status.finished", true,"status.step", "CANCELED",
-                                                "status.description", "Configuração cancelada às " + new SimpleDateFormat("HH:mm - dd/MM", Locale.getDefault()).format(new Date()));
+                        case R.id.menu_cancel:
 
-                                //Update tracker
-                                firestoreDB
-                                        .document("Tracker/" + tracker.getID())
-                                        .update("lastConfiguration", null);
+                            //Show dialog before cancel configuration
+                            showAlert("Cancelar configuração?", "Deseja cancelar a configuração?", R.drawable.status_warning, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i)
+                                {
+                                    //Update configuration status to canceled
+                                    firestoreDB
+                                            .document("Tracker/" + tracker.getID() + "/Configurations/" + configName)
+                                            .update("status.finished", true,"status.step", "CANCELED", "status.datetime", FieldValue.serverTimestamp(),
+                                                    "status.description", "Configuração cancelada")
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
 
-                                //Set loading indicator
-                                confirmMenu.setActionView(new ProgressBar(TK102BActivity.this));
-                            }
-                        });
+                                                    //Show update to user
+                                                    Snackbar.make(vwMain, "Configuração cancelada com sucesso.", Snackbar.LENGTH_LONG).show();
+                                                }
+                                            }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
 
-                        //End method
-                        return true;
+                                            //Show update to user
+                                            Snackbar.make(vwMain, "Erro ao alterar configuração.", Snackbar.LENGTH_LONG).show();
+                                        }
+                                    });
 
-                    case R.id.menu_resend:
 
-                        //Show dialog before resend configuration
-                        showAlert("Reenviar configuração?", "Deseja reenviar configuração para o rastreador?", R.drawable.ic_refresh_grey_24dp, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i)
-                            {
-                                //Update configuration status to canceled
-                                firestoreDB
-                                        .document("Tracker/" + tracker.getID() + "/Configurations/" + configName)
-                                        .update("status.finished", false,"status.step", "REQUESTED",
-                                                "timestamp", FieldValue.serverTimestamp(),
-                                                "status.description", "Aguardando envio para o rastreador.");
+                                    //Set loading indicator
+                                    confirmMenu.setActionView(new ProgressBar(TK103Activity.this));
+                                }
+                            });
 
-                                //Update tracker
-                                firestoreDB
-                                        .document("Tracker/" + tracker.getID())
-                                        .update("lastConfiguration", FieldValue.delete());
+                            //End method
+                            return true;
 
-                                //Set loading indicator
-                                confirmMenu.setActionView(new ProgressBar(TK102BActivity.this));
-                            }
-                        });
+                        case R.id.menu_resend:
 
-                        //End method
-                        return true;
+                            //Show dialog before resend configuration
+                            showAlert("Reenviar configuração?", "Deseja reenviar configuração para o rastreador?", R.drawable.ic_refresh_grey_24dp, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i)
+                                {
+                                    //Update configuration status to canceled
+                                    firestoreDB
+                                            .document("Tracker/" + tracker.getID() + "/Configurations/" + configName)
+                                            .update("status.finished", false,"status.step", "REQUESTED",
+                                                    "timestamp", FieldValue.serverTimestamp(),
+                                                    "status.description", "Aguardando envio para o rastreador.")
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
 
+                                                    //Show update to user
+                                                    Snackbar.make(vwMain, "Solicitação realizada com sucesso.", Snackbar.LENGTH_LONG).show();
+                                                }
+                                            }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+
+                                            //Show update to user
+                                            Snackbar.make(vwMain, "Erro ao alterar configuração.", Snackbar.LENGTH_LONG).show();
+                                        }
+                                    });
+
+                                    //Update tracker
+                                    firestoreDB
+                                            .document("Tracker/" + tracker.getID())
+                                            .update("lastConfiguration", FieldValue.delete());
+
+                                    //Set loading indicator
+                                    confirmMenu.setActionView(new ProgressBar(TK103Activity.this));
+                                }
+                            });
+
+                            //End method
+                            return true;
+
+                    }
+                    return false;
                 }
-                return false;
+            });
+        }
+        else
+        {
+            //Get layout inflater
+            popup.getMenuInflater().inflate(R.menu.config_insert, popup.getMenu());
+
+            //Find text view for this config
+            final TextView lblStatus = vwMain.findViewWithTag("txt" + configName);
+
+            //Find image representing the status
+            final ImageView imgStatus = vwMain.findViewWithTag("img" + configName);
+
+            if(lblStatus.getText().toString().contains("não solicitada"))
+            {
+                //Show option to request config
+                popup.getMenu().getItem(0).setVisible(false);
+                popup.getMenu().getItem(1).setVisible(true);
             }
-        });
+            else
+            {
+                //Show option to cancel config
+                popup.getMenu().getItem(0).setVisible(true);
+                popup.getMenu().getItem(1).setVisible(false);
+            }
+
+            //Define click actions
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item)
+                {
+                    switch (item.getItemId())
+                    {
+                        case R.id.menu_ignore:
+
+                            //Update text view
+                            lblStatus.setText(R.string.lblCanceled);
+
+                            //If image available
+                            if(imgStatus != null)
+                            {
+                                //Set status canceled
+                                imgStatus.setImageResource(R.drawable.status_ok);
+                            }
+
+                            //Add to array of confirmed configurations
+                            confirmedConfigs.add(configName);
+
+                            //End method
+                            return true;
+
+                        case R.id.menu_request:
+
+                            //Update text view
+                            lblStatus.setText(R.string.lblWaiting);
+
+                            //If image available
+                            if(imgStatus != null)
+                            {
+                                //Set status canceled
+                                imgStatus.setImageResource(R.drawable.ic_settings_grey_40dp);
+                            }
+
+                            //Remove from array of confirmed configurations
+                            confirmedConfigs.remove(configName);
+
+                            //End method
+                            return true;
+
+                    }
+                    return false;
+                }
+            });
+
+        }
+
 
         //Show popup menu
         popup.show();
@@ -517,63 +529,59 @@ public class TK102BActivity extends AppCompatActivity implements EventListener<Q
 
     public void onSendClick(View sendButton)
     {
-        //Get config name
+        //Get config_edit name
         final String configName = sendButton.getTag().toString().substring(4);
 
-        //For each config
+        //For each config_edit
         switch (configName)
         {
             case "Admin":
-                //Update config value
-                updateConfigValue(sendButton, new Configuration("Admin", "Configurando: Administrador SMS", txtAdmin.getText().toString(), swAdmin.isEnabled()));
+                //Update config_edit value
+                updateConfigValue(sendButton, new Configuration("Admin", "Configurando: Administrador SMS", txtAdmin.getText().toString(), swAdmin.isEnabled(), null));
                 break;
             case "AccessPoint":
-                //Update config value
-                updateConfigValue(sendButton, new Configuration("AccessPoint", "Configurando: APN", txtAPN.getText().toString(), true));
-                break;
-            case "APNUserPass":
-                //Update config value
-                updateConfigValue(sendButton, new Configuration("APNUserPass", "Configurando: Usuário da APN", txtAPNUser.getText().toString() + " " + txtAPNPassword.getText().toString(), true));
+                //Update config_edit value
+                updateConfigValue(sendButton, new Configuration("AccessPoint", "Configurando: APN", txtAPN.getText().toString() + " " + txtAPNUser.getText().toString() + " " + txtAPNPassword.getText().toString(), true, null));
                 break;
             case "AdminIP":
-                //Update config value
-                updateConfigValue(sendButton, new Configuration("AdminIP", "Configurando: IP do servidor", txtAdminIP.getText().toString().isEmpty() ? null : txtAdminIP.getText().toString() + " " + txtAdminIPPort.getText().toString(), true));
-                break;
-            case "LessGPRS":
-                //Update config value
-                updateConfigValue(sendButton, new Configuration("LessGPRS", "Configurando: Uso reduzido de dados", null, swLessGprs.isChecked()));
+                //Update config_edit value
+                updateConfigValue(sendButton, new Configuration("AdminIP", "Configurando: IP do servidor", txtAdminIP.getText().toString().isEmpty() ? null : txtAdminIP.getText().toString() + " " + txtAdminIPPort.getText().toString(), true, null));
                 break;
             case "Move":
-                //Update config value
-                updateConfigValue(sendButton, new Configuration("Move", swMove.isChecked() ? "Ativando: " : "Desativando: " + "Alerta de movimentação", String.valueOf(sbMove.getProgress()), swMove.isChecked()));
+                //Update config_edit value
+                updateConfigValue(sendButton, new Configuration("Move", (swMove.isChecked() ? "Ativando: " : "Desativando: ") + "Alerta de movimentação", null, swMove.isChecked(), null));
                 break;
             case "Speed":
-                //Update config value
-                updateConfigValue(sendButton, new Configuration("Speed", swSpeed.isChecked() ? "Ativando: " : "Desativando: " + "Alerta de velocidade", String.valueOf(sbSpeed.getProgress()), swSpeed.isChecked()));
+                //Update config_edit value
+                updateConfigValue(sendButton, new Configuration("Speed", (swSpeed.isChecked() ? "Ativando: " : "Desativando: ") + "Alerta de velocidade", String.valueOf(sbSpeed.getProgress()), swSpeed.isChecked(), null));
                 break;
             case "Shock":
-                //Update config value
-                updateConfigValue(sendButton, new Configuration("Shock", swShock.isChecked() ? "Ativando: " : "Desativando: " + "Alerta de vibração", null, swShock.isChecked()));
+                //Update config_edit value
+                updateConfigValue(sendButton, new Configuration("Shock", (swShock.isChecked() ? "Ativando: " : "Desativando: ") + "Alerta de vibração", null, swShock.isChecked(), null));
                 break;
             case "StatusCheck":
-                //Update config value
-                updateConfigValue(sendButton, new Configuration("StatusCheck", "Solicitando informações", null, true));
+                //Update config_edit value
+                updateConfigValue(sendButton, new Configuration("StatusCheck", "Solicitando informações", null, true, null));
                 break;
             case "Begin":
-                //Update config value
-                updateConfigValue(sendButton, new Configuration("Begin", "Inicializando dispositivo", null, true));
+                //Update config_edit value
+                updateConfigValue(sendButton, new Configuration("Begin", "Inicializando dispositivo", null, true, null));
                 break;
             case "IMEI":
-                //Update config value
+                //Update config_edit value
                 updateConfigValue(sendButton, new Configuration("IMEI", "Configurando: IMEI do dispositivo", tracker.getIMEI(), true, "Confirmado durante durante a inclusão."));
                 break;
             case "TimeZone":
-                //Update config value
-                updateConfigValue(sendButton, new Configuration("TimeZone", "Configurando: Fuso horário", null, true));
+                //Update config_edit value
+                updateConfigValue(sendButton, new Configuration("TimeZone", "Configurando: Fuso horário", null, true, null));
                 break;
             case "Reset":
-                //Update config value
-                updateConfigValue(sendButton, new Configuration("Reset", "Solicitando reinicialização", null, true));
+                //Update config_edit value
+                updateConfigValue(sendButton, new Configuration("Reset", "Solicitando reinicialização", null, true, null));
+                break;
+            case "Timer":
+                //Update config_edit value
+                updateConfigValue(sendButton, new Configuration("Timer", "Configurando: Envio de posições", findViewById(rdgTimer.getCheckedRadioButtonId()).getTag().toString(), true, null));
                 break;
         }
     }
@@ -654,104 +662,6 @@ public class TK102BActivity extends AppCompatActivity implements EventListener<Q
                 .show();
     }
 
-    @OnClick(R.id.btnSendOperationMode)
-    public void sendOperationConfig(final View button)
-    {
-        //Create alert with options
-        new AlertDialog.Builder(this, R.style.Theme_AppCompat_Light_Dialog_Alert)
-                .setTitle("Enviar configuração?")
-                .setIcon(R.drawable.ic_settings_grey_40dp)
-                .setMessage("Esta alteração modifica as configurações SLEEP, SCHEDULE e FIX deseja continuar?")
-                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                        // Initialize a new DB transaction
-                        WriteBatch transaction = firestoreDB.batch();
-
-                        // Get tracker reference
-                        final DocumentReference trackerReference = firestoreDB.document("Tracker/" + tracker.getID());
-
-                        // Create configuration collection
-                        final CollectionReference configCollection = trackerReference.collection("Configurations");
-
-                        // Load operation mode configuration
-                        loadOperationMode(configCollection, transaction);
-
-                        //Request a new configuration from server
-                        transaction.update(trackerReference, "lastConfiguration", FieldValue.delete());
-
-                        //Execute DB operation
-                        transaction
-                                .commit()
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-
-                                        //Show update to user
-                                        Snackbar.make(vwMain, "Configuração alterada com sucesso.", Snackbar.LENGTH_LONG).show();
-
-                                        // Disable controls
-                                        enableControls(button, false);
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-
-                                        //If user not allowed to edit
-                                        if(e.getMessage().contains("PERMISSION_DENIED"))
-                                        {
-                                            //Show error to user
-                                            Snackbar.make(vwMain, "Permissão de alteração negada.", Snackbar.LENGTH_LONG).show();
-                                        }
-                                        else
-                                        {
-                                            //Show error to user
-                                            Snackbar.make(vwMain, "Erro ao alterar dados do rastreador.", Snackbar.LENGTH_LONG).show();
-                                        }
-
-                                        // Hide loading indicator on menu
-                                        confirmMenu.setActionView(null);
-                                    }
-                                });
-
-                        //Close dialog
-                        dialogInterface.dismiss();
-                    }
-                })
-                .setNegativeButton("Não", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        //Close dialog
-                        dialog.dismiss();
-                    }
-                }).create()
-                .show();
-    }
-
-    @OnClick(R.id.btnSendPeriodicUpdate)
-    public void sendPeriodicUpdateConfig(final View button)
-    {
-        switch (rdgOperationMode.getCheckedRadioButtonId())
-        {
-            case R.id.operationActive:
-                //Set FIX 'request' for active mode
-                updateConfigValue(button, new Configuration("PeriodicUpdate", "Configurando: Localização periódica", findViewById(rdgFix.getCheckedRadioButtonId()).getTag().toString(), true));
-                break;
-
-            case R.id.operationStandBy:
-                //Set FIX 'request' for standby mode
-                updateConfigValue(button, new Configuration("PeriodicUpdate", "Configurando: Localização periódica", "fix060s001n", true));
-                break;
-
-            case R.id.operationHibernate:
-                //Set default FIX option to hibernate configuration
-                updateConfigValue(button, new Configuration("PeriodicUpdate", "Configurando: Localização periódica", "fix060s***n", true));
-                break;
-        }
-    }
-
     @Override
     public boolean onSupportNavigateUp()
     {
@@ -820,7 +730,7 @@ public class TK102BActivity extends AppCompatActivity implements EventListener<Q
     public void showAlert(String title, String description, int icon, DialogInterface.OnClickListener positiveButton)
     {
         //Create alert with options
-        new AlertDialog.Builder(TK102BActivity.this, R.style.Theme_AppCompat_Light_Dialog_Alert)
+        new AlertDialog.Builder(TK103Activity.this, R.style.Theme_AppCompat_Light_Dialog_Alert)
                 .setTitle(title)
                 .setIcon(icon)
                 .setMessage(description)
@@ -838,13 +748,13 @@ public class TK102BActivity extends AppCompatActivity implements EventListener<Q
     //Update individual configuration on DB
     private void updateConfigValue(final View button, final Configuration config)
     {
-        //Ask for user confirmation before send config
+        //Ask for user confirmation before send config_edit
         showAlert("Enviar configuração?", "Deseja enviar esta configuração ao rastreador?", R.drawable.ic_settings_grey_40dp, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i)
             {
                 // Set loading indicator
-                confirmMenu.setActionView(new ProgressBar(TK102BActivity.this));
+                confirmMenu.setActionView(new ProgressBar(TK103Activity.this));
 
                 //Update configuration status to confirmed
                 firestoreDB
@@ -869,7 +779,7 @@ public class TK102BActivity extends AppCompatActivity implements EventListener<Q
 
 
                 //Set loading indicator
-                confirmMenu.setActionView(new ProgressBar(TK102BActivity.this));
+                confirmMenu.setActionView(new ProgressBar(TK103Activity.this));
             }
         });
     }
@@ -880,6 +790,9 @@ public class TK102BActivity extends AppCompatActivity implements EventListener<Q
         //If editing existing tracker
         if(editMode)
         {
+            //Update user notification options
+            updateNotificationOptions();
+
             //Close activity
             finish();
         }
@@ -905,11 +818,17 @@ public class TK102BActivity extends AppCompatActivity implements EventListener<Q
             }
             else
             {
-                //Create a new tracker reference;
-                trackerReference = firestoreDB.collection("Tracker").document();
-
                 //Get firebase user ID
                 String userID = FirebaseAuth.getInstance().getUid();
+
+                //On TK 103 models, ID is composed by 0 + 11 IMEI digits
+                String trackerID  = "0" + tracker.getIMEI().substring(4);
+
+                //Create a new tracker reference;
+                trackerReference = firestoreDB.collection("Tracker").document(trackerID);
+
+                //Set tracker ID
+                tracker.setID(trackerID);
 
                 //Set tracker permission settings
                 tracker.addUser(userID);
@@ -923,29 +842,27 @@ public class TK102BActivity extends AppCompatActivity implements EventListener<Q
             final CollectionReference configCollection = trackerReference.collection("Configurations");
 
             //Inserting new tracker, load general configs
-            transaction.set(configCollection.document("Begin"), new Configuration("Begin", "Inicializando dispositivo", null, true));
-            transaction.set(configCollection.document("TimeZone"), new Configuration("TimeZone", "Configurando: Fuso horário", null, true));
-            transaction.set(configCollection.document("StatusCheck"), new Configuration("StatusCheck", "Solicitando informações", null, true));
-            transaction.set(configCollection.document("IMEI"), new Configuration("IMEI", "Configurando: IMEI do dispositivo", tracker.getIMEI(), true, "Confirmado durante durante a inclusão."));
-            transaction.set(configCollection.document("Reset"), new Configuration("Reset", "Reiniciando dispositivo", null, true, "Configuração não solicitada até o momento."));
+            transaction.set(configCollection.document("Begin"), new Configuration("Begin", "Inicializando dispositivo", null, true, "Configuração não solicitada ao rastreador."));
+            transaction.set(configCollection.document("TimeZone"), new Configuration("TimeZone", "Configurando: Fuso horário", null, true, confirmedConfigs.contains("TimeZone") ? "Configuração não solicitada ao rastreador." : null));
+            transaction.set(configCollection.document("StatusCheck"), new Configuration("StatusCheck", "Solicitando informações", null, true, confirmedConfigs.contains("StatusCheck") ? "Configuração não solicitada ao rastreador." : null));
+            transaction.set(configCollection.document("IMEI"), new Configuration("IMEI", "Configurando: IMEI do dispositivo", tracker.getIMEI(), true, getIntent().getBooleanExtra("UserIMEI", false) ? "Preenchido manualmente durante a inclusão." : "Confirmado durante a inclusão"));
+            transaction.set(configCollection.document("Reset"), new Configuration("Reset", "Reiniciando dispositivo", null, true, "Configuração não solicitada ao rastreador."));
 
             //Load communication configs
-            transaction.set(configCollection.document("AccessPoint"), new Configuration("AccessPoint", "Configurando: APN", txtAPN.getText().toString(), true));
-            transaction.set(configCollection.document("APNUserPass"), new Configuration("APNUserPass", "Configurando: Usuário / Senha", txtAPNUser.getText().toString() + " " + txtAPNPassword.getText().toString(), true));
-            transaction.set(configCollection.document("AdminIP"), new Configuration("AdminIP", "Configurando: Acesso ao Intelitrack", txtAdminIP.getText().toString().isEmpty() ? null : txtAdminIP.getText().toString() + " " + txtAdminIPPort.getText().toString(), true));
-            transaction.set(configCollection.document("Admin"), new Configuration("Admin", swAdmin.isChecked() ? "Ativando: " : "Desativando: " + "Administrador SMS", txtAdmin.getText().toString().isEmpty() ? null : txtAdmin.getText().toString(), swAdmin.isEnabled()));
-            transaction.set(configCollection.document("LessGPRS"), new Configuration("LessGPRS", swAdmin.isChecked() ? "Ativando: " : "Desativando: " + "Uso reduzido GPRS", null, swLessGprs.isChecked()));
+            transaction.set(configCollection.document("AccessPoint"), new Configuration("AccessPoint", "Configurando: APN", txtAPN.getText().toString()  + " " + txtAPNUser.getText().toString() + " " + txtAPNPassword.getText().toString(), true, confirmedConfigs.contains("AccessPoint") ? "Configuração não solicitada ao rastreador." : null));
+            transaction.set(configCollection.document("AdminIP"), new Configuration("AdminIP", "Configurando: Acesso ao Intelitrack", txtAdminIP.getText().toString().isEmpty() ? null : txtAdminIP.getText().toString() + " " + txtAdminIPPort.getText().toString(), true, confirmedConfigs.contains("AdminIP") ? "Configuração não solicitada ao rastreador." : null));
+            transaction.set(configCollection.document("Admin"), new Configuration("Admin", (swAdmin.isChecked() ? "Ativando: " : "Desativando: ") + "Administrador SMS", txtAdmin.getText().toString().isEmpty() ? null : txtAdmin.getText().toString(), swAdmin.isEnabled(), confirmedConfigs.contains("Admin") ? "Configuração não solicitada ao rastreador." : null));
+
+            //Load alert configs
+            transaction.set(configCollection.document("Shock"), new Configuration("Shock", (swShock.isChecked() ? "Ativando: " : "Desativando: ") + "Alerta de vibração", null, swShock.isChecked(), confirmedConfigs.contains("Shock") ? "Configuração não solicitada ao rastreador." : null));
+            transaction.set(configCollection.document("Move"), new Configuration("Move", (swMove.isChecked() ? "Ativando: " : "Desativando: ") + "Alerta de movimentação", null, swMove.isChecked(), confirmedConfigs.contains("Move") ? "Configuração não solicitada ao rastreador." : null));
+            transaction.set(configCollection.document("Speed"), new Configuration("Speed", (swSpeed.isChecked() ? "Ativando: " : "Desativando: ") + "Alerta de velocidade", String.valueOf(sbSpeed.getProgress()), swSpeed.isChecked(), confirmedConfigs.contains("Speed") ? "Configuração não solicitada ao rastreador." : null));
 
             //Load communication mode configurations
             loadCommunicationMode(configCollection, transaction);
 
-            //Load SLEEP/SCHEDULE/FIX configuration
-            loadOperationMode(configCollection, transaction);
-
-            //Load alert configs
-            transaction.set(configCollection.document("Shock"), new Configuration("Shock", swShock.isChecked() ? "Ativando: " : "Desativando: " + "Alerta de vibração", null, swShock.isChecked()));
-            transaction.set(configCollection.document("Move"), new Configuration("Move", swMove.isChecked() ? "Ativando: " : "Desativando: " + "Alerta de movimentação", String.valueOf(sbMove.getProgress()), swMove.isChecked()));
-            transaction.set(configCollection.document("Speed"), new Configuration("Speed", swSpeed.isChecked() ? "Ativando: " : "Desativando: " + "Alerta de velocidade", String.valueOf(sbSpeed.getProgress()), swSpeed.isChecked()));
+            //Load TIMER configuration
+            transaction.set(configCollection.document("Timer"), new Configuration("Timer", "Configurando: Envio de posições", findViewById(rdgTimer.getCheckedRadioButtonId()).getTag().toString(), true, confirmedConfigs.contains("Timer") ? "Configuração não solicitada ao rastreador." : null));
 
             //Execute DB operation
             transaction
@@ -954,14 +871,14 @@ public class TK102BActivity extends AppCompatActivity implements EventListener<Q
                         @Override
                         public void onSuccess(Void aVoid) {
 
-                            //Retrieve tracker ID
-                            tracker.setID(trackerReference.getId());
+                            //Save notification options
+                            updateNotificationOptions();
 
                             // Go to the details page for the selected restaurant
-                            Intent intent = new Intent(TK102BActivity.this, DetailActivity.class);
+                            Intent intent = new Intent(TK103Activity.this, DetailActivity.class);
 
                             //Initialize progressNotification
-                            ProgressNotification updateIndicator = new ProgressNotification(TK102BActivity.this, tracker);
+                            ProgressNotification updateIndicator = new ProgressNotification(TK103Activity.this, tracker);
 
                             //Request configuration update
                             updateIndicator.initialize();
@@ -1010,79 +927,21 @@ public class TK102BActivity extends AppCompatActivity implements EventListener<Q
         }
     }
 
-    //Save SCHEDULE/SLEEP/FIX/SHOCK configurations
-    private void loadOperationMode(CollectionReference configCollection, WriteBatch transaction)
-    {
-        //Load SLEEP/SCHEDULE/FIX configuration
-        switch (rdgOperationMode.getCheckedRadioButtonId())
-        {
-            case R.id.operationActive:
-                //Disable SLEEP/SCHEDULE
-                transaction.set(configCollection.document("Sleep"), new Configuration("Sleep", "Desativando: Modo de stand-by", null, false));
-                transaction.set(configCollection.document("Schedule"), new Configuration("Schedule", "Desativando: Modo de hibernação", null, false));
-
-                //Set FIX according to user option
-                transaction.set(configCollection.document("PeriodicUpdate"), new Configuration("PeriodicUpdate", "Configurando: Localização periódica", findViewById(rdgFix.getCheckedRadioButtonId()).getTag().toString(), true));
-                break;
-
-            case R.id.operationStandBy:
-
-                //Disable SCHEDULE
-                transaction.set(configCollection.document("Schedule"), new Configuration("Schedule", "Desativando: Modo de hibernação", null, false));
-
-                //Check FIX option
-                if(rdgFix.getCheckedRadioButtonId() == R.id.rdShock)
-                {
-                    //Set SLEEP shock option
-                    transaction.set(configCollection.document("Sleep"), new Configuration("Sleep", "Ativando: Modo de stand-by por movimento", "shock", true));
-                }
-                else
-                {
-                    //Set SLEEP time option
-                    transaction.set(configCollection.document("Sleep"), new Configuration("Sleep", "Ativando: Modo de stand-by por requisição", "time", true));
-                }
-
-                //Set FIX 'request' option
-                transaction.set(configCollection.document("PeriodicUpdate"), new Configuration("PeriodicUpdate", "Configurando: Localização periódica", "fix060s001n", true));
-                break;
-
-            case R.id.operationHibernate:
-
-                //Check FIX option
-                if(rdgFix.getCheckedRadioButtonId() == R.id.rdShock)
-                {
-                    //Config 'deep shock'
-                    transaction.set(configCollection.document("Sleep"), new Configuration("Sleep", "Ativando: Modo de hibernação", "deepshock", true));
-                    transaction.set(configCollection.document("Schedule"), new Configuration("Schedule", "Desativando: Agendamento", null, false));
-                }
-                else
-                {
-                    //Config 'schedule'
-                    transaction.set(configCollection.document("Sleep"), new Configuration("Sleep", "Desativando: Modo standby", null, false));
-                    transaction.set(configCollection.document("Schedule"), new Configuration("Schedule", "Ativando: Modo de hibernação", findViewById(rdgFix.getCheckedRadioButtonId()).getTag().toString(), true));
-                }
-
-                //Default FIX option to hibernate configuration
-                transaction.set(configCollection.document("PeriodicUpdate"), new Configuration("PeriodicUpdate", "Configurando: Localização periódica", "fix060s***n", true));
-                break;
-        }
-    }
-
-    //Save GPRS/SMS/LessGPRS/Admin configurations
+    //Set GPRS/SMS configurations
     private void loadCommunicationMode(CollectionReference configCollection, WriteBatch transaction)
     {
         //Check communication option
         if(rdgCommunicationMode.getCheckedRadioButtonId() == R.id.modeGPRS)
         {
             //Set GPRS mode
-            transaction.set(configCollection.document("SMS"), new Configuration("SMS", "Desativando: Modo SMS", null, false, "Configuração desativada na configuração inicial"));
-            transaction.set(configCollection.document("GPRS"), new Configuration("GPRS", "Ativando: Modo GPRS", null, true));
+            transaction.set(configCollection.document("SMS"), new Configuration("SMS", "Desativando: Modo SMS", null, false, "Configuração desativada no modo GPRS"));
+            transaction.set(configCollection.document("GPRS"), new Configuration("GPRS", "Ativando: Modo GPRS", null, true, confirmedConfigs != null && confirmedConfigs.contains("GPRS") ? "Configuração não solicitada ao rastreador." : null));
         }
         else
         {
             //Set SMS mode
-            transaction.set(configCollection.document("SMS"), new Configuration("SMS", "Ativando: Modo SMS", null, true));
-            transaction.set(configCollection.document("GPRS"), new Configuration("GPRS", "Desativando: Modo GPRS", null, false, "Configuração desativada na configuração inicial"));
+            transaction.set(configCollection.document("SMS"), new Configuration("SMS", "Ativando: Modo SMS", null, true, confirmedConfigs != null && confirmedConfigs.contains("SMS") ? "Configuração não solicitada ao rastreador." : null));
+            transaction.set(configCollection.document("GPRS"), new Configuration("GPRS", "Desativando: Modo GPRS", null, false, "Configuração desativada no modo GPS"));
         }
     }
 
@@ -1158,7 +1017,7 @@ public class TK102BActivity extends AppCompatActivity implements EventListener<Q
         // If available
         if(editConfig != null)
         {
-            //Hide edit indicator if config finished
+            //Hide edit indicator if config_edit finished
             editConfig.setVisibility((boolean) config.getStatus().get("finished") ? View.GONE : View.VISIBLE);
         }
 
@@ -1179,7 +1038,7 @@ public class TK102BActivity extends AppCompatActivity implements EventListener<Q
         if(txtStatus != null)
         {
             //Update status
-            txtStatus.setText("- " + config.getStatus().get("description").toString());
+            txtStatus.setText(String.format("- %s", config.getStatus().get("description").toString()));
             txtStatus.setTextColor((boolean) config.getStatus().get("finished") ? Color.parseColor("#3f9d2c") : Color.RED);
         }
 
@@ -1195,44 +1054,25 @@ public class TK102BActivity extends AppCompatActivity implements EventListener<Q
                 rdgCommunicationMode.check(config.isEnabled() ? R.id.modeGPRS : R.id.modeSMS);
                 break;
             case "Admin":
-                //Set sms admin config
+                //Set sms admin config_edit
                 swAdmin.setChecked(config.isEnabled());
                 txtAdmin.setText(config.getValue() != null ? config.getValue() : "");
                 break;
             case "AdminIP":
-                //Set ip admin config
+                //Set ip admin config_edit
                 txtAdminIP.setText(config.getValue() != null ? config.getValue().split(" ")[0] : "");
                 txtAdminIPPort.setText(config.getValue() != null ? config.getValue().split(" ")[1] : "");
                 break;
             case "AccessPoint":
-                //Set APN config
-                txtAPN.setText(config.getValue());
+                //Set APN config_edit
+                txtAPN.setText(config.getValue() != null ? config.getValue().split(" ")[0] : "");
+                txtAPNUser.setText(config.getValue() != null ? config.getValue().split(" ")[1] : "");
+                txtAPNPassword.setText(config.getValue() != null ? config.getValue().split(" ")[2] : "");
                 break;
-            case "APNUserPass":
-                //Set APN user and password config
-                txtAPNUser.setText(config.getValue() != null ? config.getValue().split(" ")[0] : "");
-                txtAPNPassword.setText(config.getValue() != null ? config.getValue().split(" ")[1] : "");
-                break;
-            case "Schedule":
-                //If hibernation mode
-                if(config.isEnabled())
-                {
-                    //Set both config options
-                    rdgOperationMode.check(R.id.operationHibernate);
-                    rdgFix.check(vwMain.findViewWithTag(config.getValue()).getId());
-                }
-            case "Sleep":
-                //Set stand-by mode
-                if(config.isEnabled()) rdgOperationMode.check(R.id.operationStandBy);
-                break;
-            case "PeriodicUpdate":
-                //Set periodic update option
-                View fixOption = vwMain.findViewWithTag(config.getValue());
-                if(fixOption != null) rdgFix.check(fixOption.getId());
-                break;
-            case "LessGPRS":
-                //Set less gprs config
-                swLessGprs.setChecked(config.isEnabled());
+            case "Timer":
+                //Set timer option
+                View timerOption = vwMain.findViewWithTag(config.getValue());
+                if(timerOption != null) rdgTimer.check(timerOption.getId());
                 break;
             case "Move":
                 //Set alert configuration
@@ -1256,4 +1096,64 @@ public class TK102BActivity extends AppCompatActivity implements EventListener<Q
                 break;
         }
     }
+
+    //Load user notification options
+    private void loadNotificationOptions()
+    {
+        //Get shared preferences
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        //For each switch on notification panel
+        for(int i = 0; i < vwNotificationPanel.getChildCount(); i+=3)
+        {
+            //Set checked if saved on shared preferences
+            ((SwitchCompat) vwNotificationPanel.getChildAt(i)).setChecked(sharedPreferences.getBoolean(tracker.getID() + "_" + vwNotificationPanel.getChildAt(i).getTag().toString(), true));
+        }
+
+        //Show only notification panel
+        findViewById(R.id.vwNotificationCard).setVisibility(View.VISIBLE);
+        findViewById(R.id.vwConnectionCard).setVisibility(View.GONE);
+        findViewById(R.id.vwBatteryCard).setVisibility(View.GONE);
+        findViewById(R.id.vwAlertCard).setVisibility(View.GONE);
+        findViewById(R.id.vwGeneralCard).setVisibility(View.GONE);
+    }
+
+    //Save user notification options
+    private void updateNotificationOptions()
+    {
+        //Get shared preferences editor
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+
+        //Get messaging service
+        FirebaseMessaging notifications = FirebaseMessaging.getInstance();
+
+        //For each notification option (switch)
+        for(int i = 0; i < vwNotificationPanel.getChildCount(); i+=3)
+        {
+            //Get notification switch
+            SwitchCompat swNotificationOption = (SwitchCompat) vwNotificationPanel.getChildAt(i);
+
+            //If user wants to receive this notification
+            if(swNotificationOption.isChecked())
+            {
+                //Subscribe to notification topic
+                notifications.subscribeToTopic(tracker.getID() + "_" + swNotificationOption.getTag().toString());
+
+                //Save option on shared preferences
+                editor.putBoolean(tracker.getID() + "_" + swNotificationOption.getTag().toString(), true);
+            }
+            else
+            {
+                //Unsubscribe to notification topic
+                notifications.unsubscribeFromTopic(tracker.getID() + "_" + swNotificationOption.getTag().toString());
+
+                //Remove option from shared preferences
+                editor.putBoolean(tracker.getID() + "_" + swNotificationOption.getTag().toString(), false);
+            }
+        }
+
+        //Commit changes to shared preferences
+        editor.apply();
+    }
 }
+

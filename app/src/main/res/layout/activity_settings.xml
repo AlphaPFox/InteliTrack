@@ -52,14 +52,13 @@
                     android:orientation="vertical"
                     android:padding="8dp">
 
-
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
                         android:fontFamily="serif"
-                        android:text="Teste de comunicação"
+                        android:text="@string/lblObtainingIMEI"
                         android:textAllCaps="true"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:textSize="14sp"
@@ -79,7 +78,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="4dp"
                         android:fontFamily="serif"
-                        android:text="Conectando ao servidor Intelitrack..."
+                        android:text="@string/lblConnecting"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
                     <br.gov.dpf.intelitrack.components.AnimatingProgressBar
@@ -95,7 +94,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Testar novamente" />
+                        android:text="@string/btnTryAgain" />
 
                 </LinearLayout>
 
@@ -110,101 +109,101 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <android.support.constraint.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/lblBasicConfig"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:fontFamily="serif"
-                    android:text="@string/lblBasicConfig"
-                    android:textAllCaps="true"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:textSize="14sp"
-                    android:typeface="monospace"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="Configurações básicas" />
-
-                <View
-                    android:id="@+id/splitter"
                     android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:background="#644286f5"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/lblBasicConfig">
+                    android:layout_height="match_parent">
 
-                </View>
+                    <TextView
+                        android:id="@+id/lblBasicConfig"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="serif"
+                        android:text="@string/lblBasicConfig"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        android:textSize="14sp"
+                        android:typeface="monospace"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="Configurações básicas" />
 
-                <TextView
-                    android:id="@+id/lblTrackerName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:fontFamily="serif"
-                    android:labelFor="@+id/lblTrackerName"
-                    android:text="@string/lblTrackerName"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/splitter"
-                    tools:text="Nome de identificação:" />
+                    <View
+                        android:id="@+id/splitter"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:background="#644286f5"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/lblBasicConfig">
 
-                <TextView
-                    android:id="@+id/lblDescription"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="18dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="24dp"
-                    android:fontFamily="serif"
-                    android:labelFor="@id/txtNoTrackerDescription"
-                    android:text="@string/lblTrackerDescription"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/lblTrackerName" />
+                    </View>
 
-                <EditText
-                    android:id="@+id/txtTrackerName"
-                    android:layout_width="0dp"
-                    android:layout_height="38dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="4dp"
-                    android:ems="10"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
-                    android:inputType="textPersonName"
-                    android:singleLine="true"
-                    android:textAlignment="viewStart"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/lblTrackerName"
-                    app:layout_constraintTop_toBottomOf="@+id/splitter" />
+                    <TextView
+                        android:id="@+id/lblTrackerName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="serif"
+                        android:labelFor="@+id/txtTrackerName"
+                        android:text="@string/lblTrackerName"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/splitter"
+                        tools:text="Nome de identificação:" />
 
-                <EditText
-                    android:id="@+id/txtNoTrackerDescription"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:ems="10"
-                    android:hint="@string/txtTrackerDescriptionHint"
-                    android:inputType="text"
-                    android:textColor="#999"
-                    android:textSize="14sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@+id/txtTrackerName"
-                    app:layout_constraintTop_toBottomOf="@+id/lblTrackerName" />
+                    <TextView
+                        android:id="@+id/lblDescription"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="18dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="24dp"
+                        android:fontFamily="serif"
+                        android:labelFor="@id/txtNoTrackerDescription"
+                        android:text="@string/lblTrackerDescription"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/lblTrackerName" />
+
+                    <EditText
+                        android:id="@+id/txtTrackerName"
+                        android:layout_width="0dp"
+                        android:layout_height="38dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="4dp"
+                        android:ems="10"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:inputType="textPersonName"
+                        android:singleLine="true"
+                        android:textAlignment="viewStart"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/lblTrackerName"
+                        app:layout_constraintTop_toBottomOf="@+id/splitter" />
+
+                    <EditText
+                        android:id="@+id/txtNoTrackerDescription"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:ems="10"
+                        android:hint="@string/txtTrackerDescriptionHint"
+                        android:inputType="text"
+                        android:textColor="#999"
+                        android:textSize="14sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/txtTrackerName"
+                        app:layout_constraintTop_toBottomOf="@+id/lblTrackerName" />
 
             </android.support.constraint.ConstraintLayout>
 
@@ -266,7 +265,7 @@
                                 android:layout_height="match_parent"
                                 android:layout_margin="4dp"
                                 android:orientation="vertical"
-                                android:tag="tk102b">
+                                android:tag="tk102">
 
                                 <ImageView
                                     android:layout_width="match_parent"
@@ -275,7 +274,7 @@
                                     android:background="@drawable/border_blue"
                                     android:contentDescription="@string/lblModel"
                                     android:padding="6dp"
-                                    android:src="@drawable/model_tk102b" />
+                                    android:src="@drawable/model_tk102" />
 
                                 <TextView
                                     android:layout_width="match_parent"
@@ -286,7 +285,65 @@
                                     android:gravity="center"
                                     android:paddingEnd="8dp"
                                     android:paddingStart="8dp"
-                                    android:text="@string/model_tk102b"
+                                    android:text="@string/model_tk102"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="100dp"
+                                android:layout_height="match_parent"
+                                android:layout_margin="4dp"
+                                android:orientation="vertical"
+                                android:tag="tk103">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0dp"
+                                    android:layout_weight="0.7"
+                                    android:background="@drawable/border_blue"
+                                    android:contentDescription="@string/lblModel"
+                                    android:padding="6dp"
+                                    android:src="@drawable/model_tk103" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0dp"
+                                    android:layout_gravity="bottom"
+                                    android:layout_weight="0.3"
+                                    android:background="@drawable/border_blue"
+                                    android:gravity="center"
+                                    android:paddingEnd="8dp"
+                                    android:paddingStart="8dp"
+                                    android:text="@string/model_tk103"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="100dp"
+                                android:layout_height="match_parent"
+                                android:layout_margin="4dp"
+                                android:orientation="vertical"
+                                android:tag="tk306">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0dp"
+                                    android:layout_weight="0.7"
+                                    android:background="@drawable/border_blue"
+                                    android:contentDescription="@string/lblModel"
+                                    android:padding="6dp"
+                                    android:src="@drawable/model_tk306" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0dp"
+                                    android:layout_gravity="bottom"
+                                    android:layout_weight="0.3"
+                                    android:background="@drawable/border_blue"
+                                    android:gravity="center"
+                                    android:paddingEnd="8dp"
+                                    android:paddingStart="8dp"
+                                    android:text="@string/model_tk306"
                                     android:textStyle="bold" />
                             </LinearLayout>
 
@@ -353,35 +410,6 @@
                                 android:layout_height="match_parent"
                                 android:layout_margin="4dp"
                                 android:orientation="vertical"
-                                android:tag="tk306">
-
-                                <ImageView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="0dp"
-                                    android:layout_weight="0.7"
-                                    android:background="@drawable/border_blue"
-                                    android:contentDescription="@string/lblModel"
-                                    android:padding="6dp"
-                                    android:src="@drawable/model_tk306" />
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="0dp"
-                                    android:layout_gravity="bottom"
-                                    android:layout_weight="0.3"
-                                    android:background="@drawable/border_blue"
-                                    android:gravity="center"
-                                    android:paddingEnd="8dp"
-                                    android:paddingStart="8dp"
-                                    android:text="@string/model_tk306"
-                                    android:textStyle="bold" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="100dp"
-                                android:layout_height="match_parent"
-                                android:layout_margin="4dp"
-                                android:orientation="vertical"
                                 android:tag="pt39">
 
                                 <ImageView
@@ -411,7 +439,7 @@
                                 android:layout_height="match_parent"
                                 android:layout_margin="4dp"
                                 android:orientation="vertical"
-                                android:tag="gt02">
+                                android:tag="pt50x">
 
                                 <ImageView
                                     android:layout_width="match_parent"
@@ -420,7 +448,7 @@
                                     android:background="@drawable/border_blue"
                                     android:contentDescription="@string/lblModel"
                                     android:padding="6dp"
-                                    android:src="@drawable/model_gt02" />
+                                    android:src="@drawable/model_pt50x" />
 
                                 <TextView
                                     android:layout_width="match_parent"
@@ -429,9 +457,9 @@
                                     android:layout_weight="0.3"
                                     android:background="@drawable/border_blue"
                                     android:gravity="center"
-                                    android:paddingEnd="12dp"
-                                    android:paddingStart="12dp"
-                                    android:text="@string/model_gt02"
+                                    android:paddingEnd="8dp"
+                                    android:paddingStart="8dp"
+                                    android:text="@string/model_pt50x"
                                     android:textStyle="bold" />
                             </LinearLayout>
 
@@ -448,156 +476,196 @@
                 android:layout_margin="8dp">
 
                 <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:fontFamily="serif"
-                    android:text="@string/lblTrackerIdentification"
-                    android:textAllCaps="true"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:textSize="14sp"
-                    android:typeface="monospace" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:background="#644286f5" />
-
-                <android.support.constraint.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:padding="16dp"
-                    android:layout_height="wrap_content">
+                    android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/lblTrackerIdentification"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
                         android:fontFamily="serif"
-                        android:labelFor="@+id/txtTrackerIdentification"
-                        android:text="@string/lblPhoneNumber"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/txtTrackerIdentification" />
-
-                    <TextView
-                        android:id="@+id/lblMobileOperator"
-                        android:layout_width="wrap_content"
-                        android:layout_height="17dp"
-                        android:layout_marginTop="10dp"
-                        android:fontFamily="serif"
-                        android:labelFor="@id/txtTrackerIMEI"
-                        android:text="Operadora telefônica:"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/txtMobileNetwork" />
-
-                    <TextView
-                        android:id="@+id/lblTrackerIMEI"
-                        android:layout_width="wrap_content"
-                        android:layout_height="17dp"
-                        android:layout_marginTop="10dp"
-                        android:fontFamily="serif"
-                        android:labelFor="@id/txtTrackerIMEI"
-                        android:text="@string/lblTrackerIMEI"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/txtTrackerIMEI" />
-
-                    <TextView
-                        android:id="@+id/lblTrackerPassword"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:fontFamily="serif"
-                        android:labelFor="@id/txtTrackerPassword"
-                        android:text="@string/lblPassword"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/txtTrackerPassword" />
-
-                    <EditText
-                        android:id="@+id/txtTrackerIdentification"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="24dp"
-                        android:ems="10"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true"
-                        android:hint="@string/txtPhoneNumberHint"
-                        android:inputType="phone"
-                        android:singleLine="true"
-                        android:textAlignment="viewStart"
+                        android:text="@string/lblTrackerIdentification"
+                        android:textAllCaps="true"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:textSize="14sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/lblTrackerIdentification"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:typeface="monospace" />
 
-                    <EditText
-                        android:id="@+id/txtMobileNetwork"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="24dp"
-                        android:focusable="false"
-                        android:inputType="none"
-                        android:singleLine="true"
-                        android:text="VIVO"
-                        android:textAlignment="viewStart"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                        android:textSize="14sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/lblTrackerIdentification"
-                        app:layout_constraintTop_toBottomOf="@+id/txtTrackerPassword" />
-
-                    <EditText
-                        android:id="@+id/txtTrackerIMEI"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
-                        android:ems="10"
-                        android:hint="@string/txtTrackerIMEIHint"
-                        android:inputType="number"
-                        android:textSize="14sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="@+id/txtTrackerIdentification"
-                        app:layout_constraintTop_toBottomOf="@+id/txtTrackerIdentification" />
+                        android:background="#644286f5" />
 
-                    <EditText
-                        android:id="@+id/txtTrackerPassword"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:ems="10"
-                        android:hint="@string/txtPasswordHint"
-                        android:inputType="numberPassword"
-                        android:textSize="14sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="@+id/txtTrackerIdentification"
-                        app:layout_constraintTop_toBottomOf="@+id/txtTrackerIMEI" />
+                    <LinearLayout
+                        android:padding="16dp"
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
+                        <LinearLayout
+                            android:id="@+id/vwPhoneNumber"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/lblTrackerIdentificationSubtitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="@string/lblPhoneNumberSubtitle"
-                        android:textSize="12sp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/txtMobileNetwork" />
+                            <TextView
+                                android:layout_width="160dp"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="serif"
+                                android:labelFor="@+id/txtPhoneNumber"
+                                android:text="@string/lblPhoneNumber"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
-                </android.support.constraint.ConstraintLayout>
+                            <EditText
+                                android:id="@+id/txtPhoneNumber"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="5dp"
+                                android:ems="10"
+                                android:focusable="true"
+                                android:focusableInTouchMode="true"
+                                android:hint="@string/txtPhoneNumberHint"
+                                android:inputType="phone"
+                                android:singleLine="true"
+                                android:textAlignment="viewStart"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/vwIMEI"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="160dp"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="serif"
+                                android:labelFor="@+id/txtIMEI"
+                                android:text="@string/lblTrackerIMEI"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+                            <EditText
+                                android:id="@+id/txtIMEI"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="5dp"
+                                android:ems="10"
+                                android:focusable="true"
+                                android:focusableInTouchMode="true"
+                                android:hint="@string/txtIMEIHint"
+                                android:inputType="phone"
+                                android:singleLine="true"
+                                android:textAlignment="viewStart"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/vwFeedID"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:visibility="gone">
+
+                            <TextView
+                                android:layout_width="160dp"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="serif"
+                                android:labelFor="@+id/txtFeedID"
+                                android:text="@string/lblFeedID"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+                            <EditText
+                                android:id="@+id/txtFeedID"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="5dp"
+                                android:ems="10"
+                                android:focusable="true"
+                                android:focusableInTouchMode="true"
+                                android:hint="@string/txtFeedIDHint"
+                                android:singleLine="true"
+                                android:textAlignment="viewStart"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/vwPassword"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="160dp"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="serif"
+                                android:labelFor="@+id/txtPassword"
+                                android:text="@string/lblPassword"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+                            <EditText
+                                android:id="@+id/txtPassword"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="5dp"
+                                android:ems="10"
+                                android:focusable="true"
+                                android:focusableInTouchMode="true"
+                                android:inputType="numberPassword"
+                                android:hint="@string/txtPasswordHint"
+                                android:singleLine="true"
+                                android:textAlignment="viewStart"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/vwNetwork"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="160dp"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="serif"
+                                android:labelFor="@+id/txtNetwork"
+                                android:text="@string/lblNetwork"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+                            <EditText
+                                android:id="@+id/txtNetwork"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="5dp"
+                                android:focusable="false"
+                                android:inputType="none"
+                                android:singleLine="true"
+                                android:hint="@string/lblDefaultNetwork"
+                                android:textAlignment="viewStart"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/lblSubtitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/lblTKSubtitle"
+                            android:textSize="12sp" />
+
+                    </LinearLayout>
+
             </LinearLayout>
+
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
@@ -769,8 +837,7 @@
 
         </android.support.v7.widget.CardView>
 
-
-    </LinearLayout>
+        </LinearLayout>
 
     </ScrollView>
 

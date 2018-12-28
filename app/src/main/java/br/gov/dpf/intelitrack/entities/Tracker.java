@@ -5,15 +5,15 @@ import android.os.Parcelable;
 
 import com.google.firebase.firestore.GeoPoint;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import br.gov.dpf.intelitrack.components.GeoPointParcelable;
+import br.gov.dpf.intelitrack.trackers.TK102Activity;
+import br.gov.dpf.intelitrack.trackers.TK103Activity;
 
 public class Tracker implements Parcelable {
 
@@ -23,11 +23,13 @@ public class Tracker implements Parcelable {
 
     private String mDescription;
 
-    private String mIdentification;
-
     private String mPassword;
 
     private String mIMEI;
+
+    private String mPhoneNumber;
+
+    private String mFeedID;
 
     private String mModel;
 
@@ -81,12 +83,6 @@ public class Tracker implements Parcelable {
         this.mDescription = mDescription;
     }
 
-    public String getIdentification() {
-        return mIdentification;
-    }
-
-    public void setIdentification(String mIdentification) { this.mIdentification = mIdentification;  }
-
     public String getPassword() {
         return mPassword;
     }
@@ -102,6 +98,14 @@ public class Tracker implements Parcelable {
     public void setIMEI(String mIMEI) {
         this.mIMEI = mIMEI;
     }
+
+    public String getPhoneNumber() { return mPhoneNumber; }
+
+    public void setPhoneNumber(String mPhoneNumber) {this.mPhoneNumber = mPhoneNumber; }
+
+    public String getFeedID() { return mFeedID; }
+
+    public void setFeedID(String mFeedID) { this.mFeedID = mFeedID; }
 
     public String getModel() {
         return mModel;
@@ -187,9 +191,10 @@ public class Tracker implements Parcelable {
         mID = in.readString();
         mName = in.readString();
         mDescription = in.readString();
-        mIdentification = in.readString();
         mPassword = in.readString();
         mIMEI = in.readString();
+        mPhoneNumber = in.readString();
+        mFeedID = in.readString();
         mModel = in.readString();
         mBatteryLevel = in.readString();
         mSignalLevel = in.readString();
@@ -243,9 +248,10 @@ public class Tracker implements Parcelable {
         dest.writeString(mID);
         dest.writeString(mName);
         dest.writeString(mDescription);
-        dest.writeString(mIdentification);
         dest.writeString(mPassword);
         dest.writeString(mIMEI);
+        dest.writeString(mPhoneNumber);
+        dest.writeString(mFeedID);
         dest.writeString(mModel);
         dest.writeString(mBatteryLevel);
         dest.writeString(mSignalLevel);
@@ -277,29 +283,45 @@ public class Tracker implements Parcelable {
         }
     };
 
-    public String formatName() {
-        if (mName.length() > 10)
-            return mName;
-        else
-            return "Rastreador: " + mName;
-    }
-
     public String formatTrackerModel()
     {
         switch (mModel)
         {
-            case "tk102b":
+            case "tk102":
+                return "TK 102";
+            case "tk103":
                 return "TK 102B";
             case "spot":
                 return "SPOT Trace";
-            case "pt39":
-                return "PT-39";
             case "st940":
                 return "ST-940";
-            case "gt02":
-                return "GT-02";
+            case "pt39":
+                return "PT-39";
+            case "pt50x":
+                return "PT-50x";
             default:
                 return "Modelo desconhecido";
+        }
+    }
+
+    public Class<?> loadActivity()
+    {
+        switch (mModel)
+        {
+            case "tk102":
+                return TK102Activity.class;
+            case "tk103":
+                return TK103Activity.class;
+            case "spot":
+                return null;
+            case "st940":
+                return null;
+            case "pt39":
+                return null;
+            case "pt50x":
+                return null;
+            default:
+                return null;
         }
     }
 

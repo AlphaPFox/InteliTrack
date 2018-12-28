@@ -22,19 +22,6 @@ public class Configuration
     {
     }
 
-    public Configuration(String name, String description, String value, boolean enabled)
-    {
-        mName = name;
-        mValue = value;
-        mEnabled = enabled;
-        mDescription = description;
-
-        mStatus = new HashMap<>();
-        mStatus.put("step", "REQUESTED");
-        mStatus.put("description", "Aguardando envio para o rastreador");
-        mStatus.put("datetime", new Date());
-        mStatus.put("finished", false);
-    }
 
     public Configuration(String name, String description, String value, boolean enabled, String finishedStatus)
     {
@@ -43,11 +30,22 @@ public class Configuration
         mEnabled = enabled;
         mDescription = description;
 
-        mStatus = new HashMap<>();
-        mStatus.put("step", "SUCCESS");
-        mStatus.put("description", finishedStatus);
-        mStatus.put("datetime", new Date());
-        mStatus.put("finished", true);
+        if(finishedStatus != null)
+        {
+            mStatus = new HashMap<>();
+            mStatus.put("step", "SUCCESS");
+            mStatus.put("description", finishedStatus);
+            mStatus.put("datetime", new Date());
+            mStatus.put("finished", true);
+        }
+        else
+        {
+            mStatus = new HashMap<>();
+            mStatus.put("step", "REQUESTED");
+            mStatus.put("description", "Aguardando envio para o rastreador");
+            mStatus.put("datetime", new Date());
+            mStatus.put("finished", false);
+        }
     }
 
     public String getName() {

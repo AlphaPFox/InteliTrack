@@ -11,8 +11,7 @@ import br.gov.dpf.intelitrack.components.ProgressNotification;
 public class NotificationMessage
 {
     private int id, progress;
-    private String topic;
-    private String groupKey;
+    private String topic, channel, groupKey;
     private String title, content, expanded, coordinates;
     private Long datetime;
 
@@ -25,6 +24,7 @@ public class NotificationMessage
         this.topic = topic;
         this.groupKey = data.get("id");
         this.title = data.get("title");
+        this.channel = data.get("channel");
         this.content = data.get("content");
         this.expanded = data.get("expanded");
         this.coordinates = data.get("coordinates");
@@ -38,7 +38,16 @@ public class NotificationMessage
 
     public String getTitle() { return title; }
 
-    public String getTopic() { return topic; }
+    public String getTopic()
+    {
+        //Merge Move and Stopped topics to avoid duplicate notifications
+        if(topic.contains("Move") || topic.contains("Stopped"))
+            return "/topics/" + this.groupKey + "_Notify_Position";
+        else
+            return topic;
+    }
+
+    public String getChannel() { return channel; }
 
     public void setTitle(String value) { title = value; }
 

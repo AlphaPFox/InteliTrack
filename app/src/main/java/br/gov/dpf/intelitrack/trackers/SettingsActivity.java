@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -17,7 +16,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.Toolbar;
-import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,12 +25,10 @@ import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Date;
@@ -40,7 +36,6 @@ import java.util.Date;
 import br.gov.dpf.intelitrack.DetailActivity;
 import br.gov.dpf.intelitrack.MainActivity;
 import br.gov.dpf.intelitrack.R;
-import br.gov.dpf.intelitrack.TrackerSettingsActivity;
 import br.gov.dpf.intelitrack.components.AnimatingProgressBar;
 import br.gov.dpf.intelitrack.components.TcpTask;
 import br.gov.dpf.intelitrack.entities.Tracker;
@@ -51,7 +46,7 @@ import butterknife.OnClick;
 public class SettingsActivity extends AppCompatActivity {
 
     //Default device model
-    private String mModel = "tk102b";
+    private String mModel = "tk102";
 
     //Default color option
     private String mColor = "#99ff0000";
@@ -75,16 +70,15 @@ public class SettingsActivity extends AppCompatActivity {
     //Bind views
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.vwLoading) View vwLoading;
-    @BindView(R.id.txtTrackerIdentification) EditText txtTrackerID;
-    @BindView(R.id.txtTrackerIMEI) EditText txtTrackerIMEI;
-    @BindView(R.id.txtTrackerPassword) EditText txtTrackerPassword;
+    @BindView(R.id.vwMainScroll) ScrollView vwMainScroll;
     @BindView(R.id.txtTrackerName) EditText txtTrackerName;
-    @BindView(R.id.txtMobileNetwork) EditText txtMobileNetwork;
     @BindView(R.id.txtNoTrackerDescription) TextView txtTrackerDescription;
-    @BindView(R.id.lblTrackerIdentification) TextView lblTrackerID;
-    @BindView(R.id.lblTrackerIMEI) TextView lblTrackerIMEI;
-    @BindView(R.id.lblTrackerPassword) TextView lblTrackerPassword;
-    @BindView(R.id.lblTrackerIdentificationSubtitle) TextView lblTrackerSubtitle;
+    @BindView(R.id.txtPhoneNumber) EditText txtPhoneNumber;
+    @BindView(R.id.txtIMEI) EditText txtIMEI;
+    @BindView(R.id.txtFeedID) EditText txtFeedID;
+    @BindView(R.id.txtPassword) EditText txtPassword;
+    @BindView(R.id.txtNetwork) EditText txtNetwork;
+    @BindView(R.id.lblSubtitle) TextView txtSubtitle;
     @BindView(R.id.lblTest) TextView lblTest;
     @BindView(R.id.pgrTest) AnimatingProgressBar pgrTest;
     @BindView(R.id.btnTest) Button btnTest;
@@ -145,7 +139,7 @@ public class SettingsActivity extends AppCompatActivity {
         onSettingsConfirmed();
     }
 
-    @OnClick(R.id.txtMobileNetwork)
+    @OnClick(R.id.txtNetwork)
     public void selectMobileNetwork()
     {
         //Get mobile network list
@@ -158,7 +152,7 @@ public class SettingsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //Update value on form
-                        txtMobileNetwork.setText(mobileNetworks[which]);
+                        txtNetwork.setText(mobileNetworks[which]);
 
                         //Close dialog
                         dialog.dismiss();
@@ -173,11 +167,15 @@ public class SettingsActivity extends AppCompatActivity {
     {
         //Load tracker settings
         txtTrackerName.setText(tracker.getName());
-        txtTrackerPassword.setText(tracker.getPassword());
-        txtTrackerIMEI.setText(tracker.getIMEI());
-        txtTrackerID.setText(tracker.getIdentification());
         txtTrackerDescription.setText(tracker.getDescription());
-        txtMobileNetwork.setText(tracker.getNetwork());
+        txtPhoneNumber.setText(tracker.getPhoneNumber());
+        txtIMEI.setText(tracker.getIMEI());
+        txtPassword.setText(tracker.getPassword());
+        txtNetwork.setText(tracker.getNetwork());
+        txtFeedID.setText(tracker.getFeedID());
+
+        //IMEI field can't be edited
+        txtIMEI.setEnabled(false);
 
         //Hide model selected
         findViewById(R.id.vwModelCardView).setVisibility(View.GONE);
@@ -198,14 +196,15 @@ public class SettingsActivity extends AppCompatActivity {
     {
         //Get tracker name and identification
         String trackerName = txtTrackerName.getText().toString();
-        String trackerIdentification = txtTrackerID.getText().toString().replaceAll("[^0-9]", "");
-        String trackerIMEI = txtTrackerIMEI.getText().toString();
-        String trackerPassword = txtTrackerPassword.getText().toString();
+        String trackerPhoneNumber = txtPhoneNumber.getText().toString().replaceAll("[^0-9]", "");
+        String trackerIMEI = txtIMEI.getText().toString();
+        String trackerPassword = txtPassword.getText().toString();
         String trackerDescription = txtTrackerDescription.getText().toString();
-        String trackerNetwork = txtMobileNetwork.getText().toString();
+        String trackerNetwork = txtNetwork.getText().toString();
+        String trackerFeedID = txtFeedID.getText().toString();
 
         //Check user input
-        if(mModel.equals("pt39") || mModel.equals("gt02"))
+        if(mModel.equals("pt39") || mModel.equals("pt50x") || mModel.equals("st940") || mModel.equals("spot"))
         {
             //Alert user, unsupported models
             Snackbar.make(txtTrackerName, "Modelo atualmente não suportado pela plataforma", Snackbar.LENGTH_LONG).show();
@@ -216,24 +215,19 @@ public class SettingsActivity extends AppCompatActivity {
             txtTrackerName.setError("Campo obrigatório (mínimo 5 caracteres)");
             txtTrackerName.requestFocus();
         }
-        else if(trackerIdentification.length() < 5)
+        else if(mModel.startsWith("tk") && trackerIMEI.length() != 15 && trackerPhoneNumber.length() != 11)
         {
             //Show error
-            txtTrackerID.setError("Campo obrigatório (mínimo 5 caracteres)");
-            txtTrackerID.requestFocus();
-        }
-        else if(mModel.equals("tk102b") && trackerIdentification.length() != 11)
-        {
-            //Show error
-            txtTrackerID.setError("Preencha no formato: 6799998888");
-            txtTrackerID.requestFocus();
+            txtPhoneNumber.setError("Preencha o nº de telefone (11 dígitos) ou IMEI (15 dígitos)");
+            txtPhoneNumber.requestFocus();
         }
         else
         {
             //Save tracker data
             tracker.setName(trackerName);
             tracker.setDescription(trackerDescription);
-            tracker.setIdentification(trackerIdentification);
+            tracker.setPhoneNumber(trackerPhoneNumber);
+            tracker.setFeedID(trackerFeedID);
             tracker.setIMEI(trackerIMEI);
             tracker.setPassword(trackerPassword);
             tracker.setNetwork(trackerNetwork);
@@ -243,6 +237,13 @@ public class SettingsActivity extends AppCompatActivity {
             {
                 //Set default password
                 tracker.setPassword("123456");
+            }
+
+            //Check if user set network
+            if(tracker.getNetwork().isEmpty())
+            {
+                //Set default password
+                tracker.setNetwork("VIVO");
             }
 
             //Save tracker model
@@ -261,7 +262,7 @@ public class SettingsActivity extends AppCompatActivity {
                 FirebaseFirestore.getInstance()
                         .collection("Tracker")
                         .document(tracker.getID())
-                        .set(tracker)
+                        .update("name", trackerName, "description", trackerDescription, "phoneNumber", trackerPhoneNumber, "password", trackerPassword, "network", trackerNetwork, "backgroundColor", mColor)
                         .addOnSuccessListener(new OnSuccessListener<Void>()
                         {
                             @Override
@@ -301,124 +302,154 @@ public class SettingsActivity extends AppCompatActivity {
                         });
 
             }
-            else
+            else if(mModel.startsWith("tk"))
             {
-                //Check if already performed a test before
-                if(mConnection != null)
+                //INSERT method for TK trackers, check if IMEI manually supplied
+                if(trackerIMEI.length() == 15)
                 {
-                    //Cancel previous test
-                    mConnection.cancel(true);
+                    //If tracker IMEI defined manually, go to next activity
+                    Intent intent = new Intent(SettingsActivity.this, tracker.loadActivity());
 
-                    //Reset progress
-                    pgrTest.resetProgress();
+                    //Save create date
+                    tracker.setLastUpdate(new Date());
+
+                    //Put tracker data on intent
+                    intent.putExtra("Tracker", tracker);
+
+                    //Inform activity intention: insert new tracker
+                    intent.putExtra("Request", MainActivity.REQUEST_INSERT);
+
+                    //Inform activity intention: IMEI supplied by user
+                    intent.putExtra("UserIMEI", true);
+
+                    //Start next activity
+                    startActivityForResult(intent, MainActivity.REQUEST_INSERT);
                 }
-
-                //Perform test to contact tracker
-                mConnection = new TcpTask("192.168.1.200", "5001");
-
-                //Add expected server communication pattern
-                mConnection.addResponse("AUTH: OK", "TEST_" + tracker.getModel() + "_" + tracker.getIdentification() + "_" + tracker.getPassword());
-
-                //Initialize first step
-                vwLoading.setVisibility(View.VISIBLE);
-
-                //Scroll to top
-                ((ScrollView) findViewById(R.id.vwMainScroll)).smoothScrollTo(0, 0);
-
-                //Initialize connection
-                mConnection.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new TcpTask.OnMessageReceived()
+                else
                 {
-                    @Override
-                    public void messageReceived(String message)
+                    //Check if already performed a test before
+                    if(mConnection != null)
                     {
+                        //Cancel previous test
+                        mConnection.cancel(true);
 
-                        //Check message status
-                        if (message.equals("CONNECTED"))
-                        {
-                            //Connection OK -> Update status (step 1/5)
-                            pgrTest.setProgress(10);
-                            pgrTest.setSecondaryProgress(20);
-
-                            //Update text
-                            lblTest.setText("Autenticando com o servidor Intelitrack...");
-                        }
-                        else if (message.equals("AUTH: OK"))
-                        {
-                            //Authentication OK -> Update status (step 2/5)
-                            pgrTest.setProgress(20);
-                            pgrTest.setSecondaryProgress(45);
-
-                            //Update text
-                            lblTest.setText("Enviando mensagem ao rastreador...");
-                        }
-                        else if (message.equals("SMS SENT"))
-                        {
-                            //SMS sent to tracker -> Update status (step 3/5)
-                            pgrTest.setProgress(45);
-                            pgrTest.setSecondaryProgress(80);
-
-                            //Update text
-                            lblTest.setText("Aguardando confirmação de entrega...");
-                        }
-                        else if (message.equals("DELIVERY REPORT"))
-                        {
-                            //SMS delivered to tracker -> Update status (step 4/5)
-                            pgrTest.setProgress(80);
-                            pgrTest.setSecondaryProgress(90);
-
-                            //Update text
-                            lblTest.setText("Esperando resposta do rastreador...");
-                        }
-                        else if (message.startsWith("IMEI:"))
-                        {
-                            //Tracker IMEI received -> Update status (step 5/5)
-                            pgrTest.setIndeterminate(true);
-
-                            //Update text
-                            lblTest.setText("Teste finalizado, carregando configurações...");
-
-                            //Save IMEI from tracker
-                            tracker.setIMEI(message.substring(5).trim());
-
-                            //Test finished successfully, ending connection
-                            mConnection.cancel(true);
-
-                            //Start config activity after 1,5 secs
-                            btnTest.postDelayed(new Runnable()
-                            {
-                                @Override
-                                public void run()
-                                {
-                                    //Create intent to call next activity (Tracker Configurations)
-                                    Intent intent = new Intent(SettingsActivity.this, TK102BActivity.class);
-
-                                    //Save create date
-                                    tracker.setLastUpdate(new Date());
-
-                                    //Put tracker data on intent
-                                    intent.putExtra("Tracker", tracker);
-
-                                    //Inform activity intention: insert new tracker
-                                    intent.putExtra("Request", MainActivity.REQUEST_INSERT);
-
-                                    //Start next activity
-                                    startActivityForResult(intent, MainActivity.REQUEST_INSERT);
-                                }
-                            }, 1500);
-                        }
-                        else
-                        {
-                            //Unexpected step, show message error message to user
-                            pgrTest.setIndeterminate(true);
-
-                            //Show error message
-                            lblTest.setText(message);
-
-                            // Hide loading indicator on menu
-                            confirmMenu.setActionView(null);
-                        }
+                        //Reset progress
+                        pgrTest.resetProgress();
                     }
-                });
+
+                    //Perform test to contact tracker
+                    mConnection = new TcpTask("187.4.165.10", "5001");
+
+                    //Add expected server communication pattern
+                    mConnection.addResponse("AUTH: OK", "TEST_" + tracker.getModel() + "_" + tracker.getPhoneNumber() + "_" + tracker.getPassword());
+
+                    //Initialize first step
+                    vwLoading.setVisibility(View.VISIBLE);
+
+                    //Scroll to top to show loading bar
+                    vwMainScroll.post(new Runnable() {
+                        @Override
+                        public void run() { vwMainScroll.smoothScrollTo(0, 0);}
+                    });
+
+                    //Initialize connection
+                    mConnection.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new TcpTask.OnMessageReceived()
+                    {
+                        @Override
+                        public void messageReceived(String message)
+                        {
+
+                            //Check message status
+                            if (message.equals("CONNECTED"))
+                            {
+                                //Connection OK -> Update status (step 1/5)
+                                pgrTest.setProgress(10);
+                                pgrTest.setSecondaryProgress(20);
+
+                                //Update text
+                                lblTest.setText(R.string.lblAuth);
+                            }
+                            else if (message.equals("AUTH: OK"))
+                            {
+                                //Authentication OK -> Update status (step 2/5)
+                                pgrTest.setProgress(20);
+                                pgrTest.setSecondaryProgress(45);
+
+                                //Update text
+                                lblTest.setText(R.string.lblSending);
+                            }
+                            else if (message.equals("SMS SENT"))
+                            {
+                                //SMS sent to tracker -> Update status (step 3/5)
+                                pgrTest.setProgress(45);
+                                pgrTest.setSecondaryProgress(80);
+
+                                //Update text
+                                lblTest.setText(R.string.lblWaitingDelivery);
+                            }
+                            else if (message.equals("DELIVERY REPORT"))
+                            {
+                                //SMS delivered to tracker -> Update status (step 4/5)
+                                pgrTest.setProgress(80);
+                                pgrTest.setSecondaryProgress(90);
+
+                                //Update text
+                                lblTest.setText(R.string.lblWaitingResponse);
+                            }
+                            else if (message.startsWith("IMEI:"))
+                            {
+                                //Tracker IMEI received -> Update status (step 5/5)
+                                pgrTest.setIndeterminate(true);
+
+                                //Update text
+                                lblTest.setText(R.string.lblLoading);
+
+                                //Save IMEI from tracker
+                                tracker.setIMEI(message.substring(5).trim());
+
+                                //Save IMEI on form
+                                txtIMEI.setText(tracker.getIMEI());
+
+                                //Test finished successfully, ending connection
+                                mConnection.cancel(true);
+
+                                //Start config_edit activity after 1,5 secs
+                                btnTest.postDelayed(new Runnable()
+                                {
+                                    @Override
+                                    public void run()
+                                    {
+                                        //Create intent to call next activity (Tracker Configurations)
+                                        Intent intent = new Intent(SettingsActivity.this, tracker.loadActivity());
+
+                                        //Save create date
+                                        tracker.setLastUpdate(new Date());
+
+                                        //Put tracker data on intent
+                                        intent.putExtra("Tracker", tracker);
+
+                                        //Inform activity intention: insert new tracker
+                                        intent.putExtra("Request", MainActivity.REQUEST_INSERT);
+
+                                        //Start next activity
+                                        startActivityForResult(intent, MainActivity.REQUEST_INSERT);
+                                    }
+                                }, 1500);
+                            }
+                            else
+                            {
+                                //Unexpected step, show message error message to user
+                                pgrTest.setIndeterminate(true);
+
+                                //Show error message
+                                lblTest.setText(message);
+
+                                // Hide loading indicator on menu
+                                confirmMenu.setActionView(null);
+                            }
+                        }
+                    });
+                }
             }
         }
     }
@@ -466,6 +497,13 @@ public class SettingsActivity extends AppCompatActivity {
                     //Open second query
                     cursor2 = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + contactID, null, null);
 
+                    //Tracker name not supplied yet
+                    if(txtTrackerName.getText().toString().length() == 0)
+                    {
+                        //Update field
+                        txtTrackerName.setText(contactName);
+                    }
+
                     //Check if phone number is available
                     if (query_result.equals("1") && cursor2 != null) {
 
@@ -474,9 +512,8 @@ public class SettingsActivity extends AppCompatActivity {
                             //Get phone number
                             contactNumber = cursor2.getString(cursor2.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
 
-                            //Update text fields
-                            txtTrackerName.setText(contactName);
-                            txtTrackerID.setText(contactNumber.replaceAll("[^0-9]", ""));
+                            //Update phone field
+                            txtPhoneNumber.setText(contactNumber.replaceAll("[^0-9]", ""));
                         }
 
                         //Close second cursor
@@ -550,7 +587,7 @@ public class SettingsActivity extends AppCompatActivity {
             case R.id.action_notification_settings:
 
                 //Create intent to call next activity (Tracker Configurations)
-                Intent intent = new Intent(SettingsActivity.this, TK102BActivity.class);
+                Intent intent = new Intent(SettingsActivity.this, tracker.loadActivity());
 
                 //Put tracker data on intent
                 intent.putExtra("Tracker", tracker);
@@ -610,66 +647,67 @@ public class SettingsActivity extends AppCompatActivity {
 
     public void changeLabels(String model)
     {
-        //Get resources manager
-        Resources resources = getResources();
-
         //Check model value
-        switch (model) {
+        switch (model)
+        {
+            case "tk102":
+            case "tk103":
+            case "tk306":
+                //Show required fields
+                findViewById(R.id.vwPhoneNumber).setVisibility(View.VISIBLE);
+                findViewById(R.id.vwIMEI).setVisibility(View.VISIBLE);
+                findViewById(R.id.vwPassword).setVisibility(View.VISIBLE);
+                findViewById(R.id.vwNetwork).setVisibility(View.VISIBLE);
+
+                //Hide unused fields
+                findViewById(R.id.vwFeedID).setVisibility(View.GONE);
+
+                //Set form subtitle
+                txtSubtitle.setText(R.string.lblTKSubtitle);
+
+                break;
             case "spot":
-                //Set text values
-                lblTrackerID.setText(resources.getString(R.string.lblFeedID));
-                lblTrackerSubtitle.setText(resources.getString(R.string.lblFeedIDSubtitle));
-                txtTrackerID.setHint(resources.getString(R.string.txtFieldIDHint));
+                //Show required fields
+                findViewById(R.id.vwFeedID).setVisibility(View.VISIBLE);
+                findViewById(R.id.vwPassword).setVisibility(View.VISIBLE);
 
-                //Change input type to allow text
-                txtTrackerID.setInputType(InputType.TYPE_CLASS_TEXT);
+                //Hide unused fields
+                findViewById(R.id.vwPhoneNumber).setVisibility(View.GONE);
+                findViewById(R.id.vwIMEI).setVisibility(View.GONE);
+                findViewById(R.id.vwNetwork).setVisibility(View.GONE);
 
-                //Set password visibility
-                txtTrackerPassword.setVisibility(View.VISIBLE);
-                lblTrackerPassword.setVisibility(View.VISIBLE);
-                txtTrackerIMEI.setVisibility(View.GONE);
-                lblTrackerIMEI.setVisibility(View.GONE);
+                //Set form subtitle
+                txtSubtitle.setText(R.string.lblSpotSubtitle);
                 break;
 
             case "st940":
-                //Set text values
-                lblTrackerID.setText(resources.getString(R.string.lblSuntechID));
-                lblTrackerSubtitle.setText(resources.getString(R.string.lblSuntechSubtitle));
-                txtTrackerID.setHint(resources.getString(R.string.txtSuntechHint));
+                //Show required fields
+                findViewById(R.id.vwPhoneNumber).setVisibility(View.VISIBLE);
+                findViewById(R.id.vwIMEI).setVisibility(View.VISIBLE);
 
-                //Change input type to allow text
-                txtTrackerID.setInputType(InputType.TYPE_CLASS_NUMBER);
+                //Hide unused fields
+                findViewById(R.id.vwNetwork).setVisibility(View.GONE);
+                findViewById(R.id.vwFeedID).setVisibility(View.GONE);
+                findViewById(R.id.vwPassword).setVisibility(View.GONE);
 
-                //Set password visibility
-                txtTrackerPassword.setVisibility(View.GONE);
-                lblTrackerPassword.setVisibility(View.GONE);
-                txtTrackerIMEI.setVisibility(View.GONE);
-                lblTrackerIMEI.setVisibility(View.GONE);
+                //Set form subtitle
+                txtSubtitle.setText(R.string.lblSuntechSubtitle);
                 break;
 
-            default:
-                //Set text values
-                lblTrackerID.setText(resources.getString(R.string.lblPhoneNumber));
-                lblTrackerSubtitle.setText(resources.getString(R.string.lblPhoneNumberSubtitle));
-                txtTrackerID.setHint(resources.getString(R.string.txtPhoneNumberHint));
+            case "pt39":
+            case "pt50x":
+                //Show required fields
+                findViewById(R.id.vwPhoneNumber).setVisibility(View.VISIBLE);
+                findViewById(R.id.vwIMEI).setVisibility(View.VISIBLE);
+                findViewById(R.id.vwNetwork).setVisibility(View.VISIBLE);
 
-                //Change input type to allow text
-                txtTrackerID.setInputType(InputType.TYPE_CLASS_PHONE);
+                //Hide unused fields
+                findViewById(R.id.vwFeedID).setVisibility(View.GONE);
+                findViewById(R.id.vwPassword).setVisibility(View.GONE);
 
-                //Set password visibility
-                txtTrackerPassword.setVisibility(View.VISIBLE);
-                lblTrackerPassword.setVisibility(View.VISIBLE);
-                txtTrackerIMEI.setVisibility(View.VISIBLE);
-                lblTrackerIMEI.setVisibility(View.VISIBLE);
-
+                //Set form subtitle
+                txtSubtitle.setText(R.string.lblTechGPSSubtitle);
                 break;
-        }
-
-        //If activity is not in edit mode
-        if(!editMode)
-        {
-            //Clear any previous text on identification
-            txtTrackerID.setText("");
         }
     }
 

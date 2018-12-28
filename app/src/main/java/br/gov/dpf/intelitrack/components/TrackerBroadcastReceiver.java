@@ -44,18 +44,8 @@ public class TrackerBroadcastReceiver extends BroadcastReceiver
                 intent.setClass(context, DetailActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                //Get last updates on this tracker fom DB
-                FirebaseFirestore.getInstance().document("Tracker/" + intent.getStringExtra("GroupKey")).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot)
-                    {
-                        //Save updated tracker on intent
-                        intent.putExtra("Tracker", documentSnapshot.toObject(Tracker.class));
-
-                        //Start detail activity
-                        context.startActivity(intent);
-                    }
-                });
+                //Start detail activity
+                context.startActivity(intent);
             }
         }
     }

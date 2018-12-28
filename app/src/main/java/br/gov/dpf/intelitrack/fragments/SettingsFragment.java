@@ -130,17 +130,17 @@ public class SettingsFragment extends SlideFragment
         //Set image and title from each corresponding model
         switch (settings.get("TrackerModel"))
         {
-            case "tk102b":
-                lblSelectedModel.setText(res.getString(R.string.selected_model, "TK102B"));
-                imgSelectedModel.setImageDrawable(res.getDrawable(R.drawable.model_tk102b));
+            case "tk102":
+                lblSelectedModel.setText(res.getString(R.string.selected_model, "TK102"));
+                imgSelectedModel.setImageDrawable(res.getDrawable(R.drawable.model_tk102));
+                break;
+            case "tk103":
+                lblSelectedModel.setText(res.getString(R.string.selected_model, "TK102"));
+                imgSelectedModel.setImageDrawable(res.getDrawable(R.drawable.model_tk103));
                 break;
             case "tk306":
                 lblSelectedModel.setText(res.getString(R.string.selected_model, "TK306"));
                 imgSelectedModel.setImageDrawable(res.getDrawable(R.drawable.model_tk306));
-                break;
-            case "gt02":
-                lblSelectedModel.setText(res.getString(R.string.selected_model, "GT-02"));
-                imgSelectedModel.setImageDrawable(res.getDrawable(R.drawable.model_gt02));
                 break;
             case "spot":
                 lblSelectedModel.setText(res.getString(R.string.selected_model, "SPOT"));
@@ -153,6 +153,10 @@ public class SettingsFragment extends SlideFragment
             case "pt39":
                 lblSelectedModel.setText(res.getString(R.string.selected_model, "PT-39"));
                 imgSelectedModel.setImageDrawable(res.getDrawable(R.drawable.model_pt39));
+                break;
+            case "pt50x":
+                lblSelectedModel.setText(res.getString(R.string.selected_model, "PT-50X"));
+                imgSelectedModel.setImageDrawable(res.getDrawable(R.drawable.model_pt50x));
                 break;
         }
 

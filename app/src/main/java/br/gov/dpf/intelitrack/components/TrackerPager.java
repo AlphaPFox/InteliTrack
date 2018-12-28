@@ -1,9 +1,7 @@
 package br.gov.dpf.intelitrack.components;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerAdapter;
@@ -109,37 +107,39 @@ public class TrackerPager extends FrameLayout
 
     private class ImagePagerAdapter extends PagerAdapter {
         private int[] mImages = new int[] {
-                R.drawable.model_tk102b,
-                R.drawable.model_pt39,
-                R.drawable.model_spot,
+                R.drawable.model_tk102,
+                R.drawable.model_tk103,
                 R.drawable.model_tk306,
+                R.drawable.model_spot,
                 R.drawable.model_st940,
-                R.drawable.model_gt02
+                R.drawable.model_pt39,
+                R.drawable.model_pt50x
         };
 
         private String[] mTitles = new String[] {
-                "PowerPack TK102B",
-                "TechGPS PT-39",
-                "Spot TRACE",
+                "PowerPack TK102",
+                "Coban TK102",
                 "Coban TK306",
+                "Spot TRACE",
                 "Suntech ST940",
-                "Coban GT-02"
+                "TechGPS PT-39",
+                "TechGPS PT-50X"
         };
 
         private String[] models = new String[] {
-                "tk102b",
-                "pt39",
-                "spot",
+                "tk102",
+                "tk103",
                 "tk306",
+                "spot",
                 "st940",
-                "gt02"
+                "pt39",
+                "pt50x"
         };
 
         @Override
         public int getCount() {
             return mImages.length;
         }
-
 
         @Override
         public boolean isViewFromObject(View view, Object object) {

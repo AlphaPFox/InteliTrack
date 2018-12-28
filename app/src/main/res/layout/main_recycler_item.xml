@@ -155,7 +155,7 @@
                 android:id="@+id/vwLastCoordinate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <ImageView
                     android:id="@+id/imgLastUpdate"
@@ -221,7 +221,7 @@
                 android:id="@+id/vwConfiguration"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/imgStatus"

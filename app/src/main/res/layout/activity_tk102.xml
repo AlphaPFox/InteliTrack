@@ -1,0 +1,3486 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#E9E9E9"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="br.gov.dpf.intelitrack.trackers.TK102Activity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.NoActionBar.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.NoActionBar.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <ScrollView
+        android:id="@+id/vwMainScroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="?attr/actionBarSize">
+
+        <LinearLayout
+            android:id="@+id/vwMain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/vwConnectionCard"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp"
+                app:cardCornerRadius="2dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#F9F9F9"
+                    android:orientation="vertical"
+                    android:paddingBottom="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="serif"
+                        android:text="Configurações de conexão"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        android:textSize="14sp"
+                        android:typeface="monospace" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_margin="8dp"
+                        android:background="#644286f5" />
+
+                    <LinearLayout
+                        android:id="@+id/vwConfigurations"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:animateLayoutChanges="true"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/border_grey"
+                            android:onClick="onExpandClick"
+                            android:paddingBottom="12dp"
+                            android:paddingTop="12dp">
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginStart="8dp"
+                                android:src="@drawable/ic_settings_grey_40dp"
+                                android:tag="imgGPRS" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="30dp"
+                                android:layout_marginStart="40dp"
+                                android:text="Modo de comunicação (GPRS/SMS)" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_alignParentTop="true"
+                                android:layout_marginEnd="4dp"
+                                android:src="@drawable/ic_expand_more_grey_24dp"
+                                android:tag="expandImage" />
+
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="-1dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="-1dp"
+                            android:background="@drawable/border_grey"
+                            android:orientation="vertical"
+                            android:paddingBottom="4dp"
+                            android:paddingEnd="16dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="4dp"
+                            android:visibility="gone"
+                            tools:visibility="visible">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="Valor atual:"
+                                android:textColor="#000"
+                                android:textSize="13sp" />
+
+                            <RadioGroup
+                                android:id="@+id/communicationMode"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:checkedButton="@id/modeGPRS"
+                                android:tag="configControl">
+
+                                <RadioButton
+                                    android:id="@+id/modeSMS"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:enabled="false"
+                                    android:tag="controlSMS"
+                                    android:text="Comunicação por mensagem (SMS)"
+                                    android:textSize="13sp" />
+
+                                <RadioButton
+                                    android:id="@+id/modeGPRS"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:enabled="false"
+                                    android:tag="controlGPRS"
+                                    android:text="Comunicação por internet (GRPS)"
+                                    android:textSize="13sp" />
+                            </RadioGroup>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="8dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:text="@string/lblStatusCheck"
+                                android:textSize="12sp" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_alignParentTop="true"
+                                    android:text="Status (SMS):"
+                                    android:textColor="#000"
+                                    android:textSize="13sp" />
+
+
+                                <ImageView
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:onClick="onActionClick"
+                                    android:padding="8dp"
+                                    android:src="@drawable/ic_mode_edit_grey_24dp"
+                                    android:tag="editSMS"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentBottom="true"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_gravity="center"
+                                    android:layout_marginStart="4dp"
+                                    android:layout_marginTop="4dp"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:tag="txtSMS"
+                                    android:text="- Aguardando para ser enviada ao rastreador"
+                                    android:textColor="#FF0000"
+                                    android:textSize="12sp" />
+
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_alignParentTop="true"
+                                    android:text="Status (GPRS):"
+                                    android:textColor="#000"
+                                    android:textSize="13sp" />
+
+                                <ImageView
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:onClick="onActionClick"
+                                    android:padding="8dp"
+                                    android:src="@drawable/ic_mode_edit_grey_24dp"
+                                    android:tag="editGPRS"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentBottom="true"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_gravity="center"
+                                    android:layout_marginStart="4dp"
+                                    android:layout_marginTop="4dp"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:tag="txtGPRS"
+                                    android:text="- Aguardando para ser enviada ao rastreador"
+                                    android:textColor="#FF0000"
+                                    android:textSize="12sp" />
+
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Comandos disponíveis:"
+                                android:textColor="#000"
+                                android:textSize="13sp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <Button
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:onClick="onEditClick"
+                                    android:text="Editar"
+                                    android:textSize="13sp" />
+
+                                <Button
+                                    android:id="@+id/btnSendCommunication"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:text="Enviar configuração"
+                                    android:textSize="13sp"
+                                    android:visibility="gone"
+                                    tools:visibility="visible" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/border_grey"
+                            android:onClick="onExpandClick"
+                            android:paddingBottom="12dp"
+                            android:paddingTop="12dp">
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginStart="8dp"
+                                android:src="@drawable/ic_settings_grey_40dp"
+                                android:tag="imgAdmin" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="30dp"
+                                android:layout_marginStart="40dp"
+                                android:text="Telefone administrador (ADMIN)" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="4dp"
+                                android:src="@drawable/ic_expand_more_grey_24dp"
+                                android:tag="expandImage" />
+
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="-1dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="-1dp"
+                            android:background="@drawable/border_grey"
+                            android:orientation="vertical"
+                            android:paddingBottom="4dp"
+                            android:paddingEnd="16dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="4dp"
+                            android:visibility="gone"
+                            tools:visibility="visible">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:tag="configControl">
+
+                                <android.support.v7.widget.SwitchCompat
+                                    android:id="@+id/swAdmin"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:enabled="false"
+                                    android:text="Ativar administrador de SMS" />
+
+                                <LinearLayout
+                                    android:id="@+id/vwAdminSettings"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:gravity="center"
+                                    android:orientation="horizontal"
+                                    android:visibility="gone">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Valor atual:"
+                                        android:textColor="#000"
+                                        android:textSize="13sp" />
+
+                                    <EditText
+                                        android:id="@+id/txtAdmin"
+                                        android:layout_width="200dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="16dp"
+                                        android:enabled="false"
+                                        android:hint="@string/server"
+                                        android:singleLine="true"
+                                        android:textSize="14sp" />
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="8dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:text="@string/lblStatusCheck"
+                                android:textSize="12sp" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_alignParentTop="true"
+                                    android:text="Status:"
+                                    android:textColor="#000"
+                                    android:textSize="13sp" />
+
+                                <ImageView
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:onClick="onActionClick"
+                                    android:padding="8dp"
+                                    android:src="@drawable/ic_mode_edit_grey_24dp"
+                                    android:tag="editAdmin"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentBottom="true"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_gravity="center"
+                                    android:layout_marginStart="4dp"
+                                    android:layout_marginTop="4dp"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:tag="txtAdmin"
+                                    android:text="- Aguardando para ser enviada ao rastreador"
+                                    android:textColor="#FF0000"
+                                    android:textSize="12sp" />
+
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Comandos disponíveis:"
+                                android:textColor="#000"
+                                android:textSize="13sp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <Button
+                                    android:id="@+id/btnEditAdmin"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:text="Editar"
+                                    android:textSize="13sp" />
+
+                                <Button
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:onClick="onSendClick"
+                                    android:tag="sendAdmin"
+                                    android:text="Enviar configuração"
+                                    android:textSize="13sp"
+                                    android:visibility="gone"
+                                    tools:visibility="visible" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/border_grey"
+                            android:onClick="onExpandClick"
+                            android:paddingBottom="12dp"
+                            android:paddingTop="12dp">
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginStart="8dp"
+                                android:src="@drawable/ic_settings_grey_40dp"
+                                android:tag="imgAccessPoint" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="30dp"
+                                android:layout_marginStart="40dp"
+                                android:text="APN da operadora (APN)" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="4dp"
+                                android:src="@drawable/ic_expand_more_grey_24dp"
+                                android:tag="expandImage" />
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="-1dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="-1dp"
+                            android:background="@drawable/border_grey"
+                            android:orientation="vertical"
+                            android:paddingBottom="4dp"
+                            android:paddingEnd="16dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="4dp"
+                            android:visibility="gone"
+                            tools:visibility="visible">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Valor atual:"
+                                    android:textColor="#000"
+                                    android:textSize="13sp" />
+
+                                <EditText
+                                    android:id="@+id/txtAPN"
+                                    android:layout_width="200dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="16dp"
+                                    android:enabled="false"
+                                    android:singleLine="true"
+                                    android:tag="configControl"
+                                    android:text="zap.vivo.com.br"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="8dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:text="@string/lblStatusCheck"
+                                android:textSize="12sp" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_alignParentTop="true"
+                                    android:text="Status:"
+                                    android:textColor="#000"
+                                    android:textSize="13sp" />
+
+                                <ImageView
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:onClick="onActionClick"
+                                    android:padding="8dp"
+                                    android:src="@drawable/ic_mode_edit_grey_24dp"
+                                    android:tag="editAccessPoint"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentBottom="true"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_gravity="center"
+                                    android:layout_marginStart="4dp"
+                                    android:layout_marginTop="4dp"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:tag="txtAccessPoint"
+                                    android:text="- Aguardando para ser enviada ao rastreador"
+                                    android:textColor="#FF0000"
+                                    android:textSize="12sp" />
+
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Comandos disponíveis:"
+                                android:textColor="#000"
+                                android:textSize="13sp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <Button
+                                    android:id="@+id/btnEditAPN"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:text="Editar"
+                                    android:textSize="13sp" />
+
+                                <Button
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:onClick="onSendClick"
+                                    android:tag="sendAccessPoint"
+                                    android:text="Enviar configuração"
+                                    android:textSize="13sp"
+                                    android:visibility="gone"
+                                    tools:visibility="visible" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/border_grey"
+                            android:onClick="onExpandClick"
+                            android:paddingBottom="12dp"
+                            android:paddingTop="12dp">
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginStart="8dp"
+                                android:src="@drawable/ic_settings_grey_40dp"
+                                android:tag="imgAPNUserPass" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="30dp"
+                                android:layout_marginStart="40dp"
+                                android:text="Usuário e senha da operadora (UP)" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="4dp"
+                                android:src="@drawable/ic_expand_more_grey_24dp"
+                                android:tag="expandImage" />
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="-1dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="-1dp"
+                            android:background="@drawable/border_grey"
+                            android:orientation="vertical"
+                            android:paddingBottom="4dp"
+                            android:paddingEnd="16dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="4dp"
+                            android:visibility="gone"
+                            tools:visibility="visible">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:tag="configControl">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Usuário:"
+                                    android:textColor="#000"
+                                    android:textSize="13sp" />
+
+                                <EditText
+                                    android:id="@+id/txtAPNUser"
+                                    android:layout_width="80dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:enabled="false"
+                                    android:singleLine="true"
+                                    android:text="vivo"
+                                    android:textSize="14sp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:text="Senha:"
+                                    android:textColor="#000"
+                                    android:textSize="13sp" />
+
+                                <EditText
+                                    android:id="@+id/txtAPNPassword"
+                                    android:layout_width="80dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:enabled="false"
+                                    android:text="vivo"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="8dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:text="@string/lblStatusCheck"
+                                android:textSize="12sp" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_alignParentTop="true"
+                                    android:text="Status:"
+                                    android:textColor="#000"
+                                    android:textSize="13sp" />
+
+                                <ImageView
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:onClick="onActionClick"
+                                    android:padding="8dp"
+                                    android:src="@drawable/ic_mode_edit_grey_24dp"
+                                    android:tag="editAPNUserPass"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentBottom="true"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_gravity="center"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:tag="txtAPNUserPass"
+                                    android:text="- Aguardando para ser enviada ao rastreador"
+                                    android:textColor="#FF0000"
+                                    android:textSize="12sp" />
+
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Comandos disponíveis:"
+                                android:textColor="#000"
+                                android:textSize="13sp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <Button
+                                    android:id="@+id/btnEditUP"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:text="Editar"
+                                    android:textSize="13sp" />
+
+                                <Button
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:onClick="onSendClick"
+                                    android:tag="sendAPNUserPass"
+                                    android:text="Enviar configuração"
+                                    android:textSize="13sp"
+                                    android:visibility="gone"
+                                    tools:visibility="visible" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/border_grey"
+                            android:onClick="onExpandClick"
+                            android:paddingBottom="12dp"
+                            android:paddingTop="12dp">
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginStart="8dp"
+                                android:src="@drawable/ic_settings_grey_40dp"
+                                android:tag="imgAdminIP" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="30dp"
+                                android:layout_marginStart="40dp"
+                                android:text="IP do servidor (AdminIP)" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="4dp"
+                                android:src="@drawable/ic_expand_more_grey_24dp"
+                                android:tag="expandImage" />
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="2dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="-1dp"
+                            android:background="@drawable/border_grey"
+                            android:orientation="vertical"
+                            android:paddingBottom="4dp"
+                            android:paddingEnd="16dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="4dp"
+                            android:visibility="gone"
+                            tools:visibility="visible">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:tag="configControl">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="IP:"
+                                    android:textColor="#000"
+                                    android:textSize="13sp" />
+
+                                <EditText
+                                    android:id="@+id/txtAdminIP"
+                                    android:layout_width="125dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:digits="0123456789."
+                                    android:enabled="false"
+                                    android:hint="@string/server"
+                                    android:inputType="number"
+                                    android:singleLine="true"
+                                    android:textSize="14sp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:text="Porta:"
+                                    android:textColor="#000"
+                                    android:textSize="13sp" />
+
+                                <EditText
+                                    android:id="@+id/txtAdminIPPort"
+                                    android:layout_width="50dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:enabled="false"
+                                    android:inputType="number"
+                                    android:singleLine="true"
+                                    android:hint="5001"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="8dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:text="@string/lblStatusCheck"
+                                android:textSize="12sp" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_alignParentTop="true"
+                                    android:text="Status:"
+                                    android:textColor="#000"
+                                    android:textSize="13sp" />
+
+                                <ImageView
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:onClick="onActionClick"
+                                    android:padding="8dp"
+                                    android:src="@drawable/ic_mode_edit_grey_24dp"
+                                    android:tag="editAdminIP"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentBottom="true"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_gravity="center"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:tag="txtAdminIP"
+                                    android:text="- Aguardando para ser enviada ao rastreador"
+                                    android:textColor="#FF0000"
+                                    android:textSize="12sp" />
+
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Comandos disponíveis:"
+                                android:textColor="#000"
+                                android:textSize="13sp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <Button
+                                    android:id="@+id/btnEditAdminIP"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:text="Editar"
+                                    android:textSize="13sp" />
+
+                                <Button
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:onClick="onSendClick"
+                                    android:tag="sendAdminIP"
+                                    android:text="Enviar configuração"
+                                    android:textSize="13sp"
+                                    android:visibility="gone"
+                                    tools:visibility="visible" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/vwBatteryCard"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp"
+                app:cardCornerRadius="2dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#F9F9F9"
+                    android:orientation="vertical"
+                    android:paddingBottom="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="serif"
+                        android:text="Configurações de consumo de bateria"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        android:textSize="14sp"
+                        android:typeface="monospace" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_margin="8dp"
+                        android:background="#644286f5" />
+
+                    <LinearLayout
+                        android:id="@+id/vwBatteryConfigurations"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:animateLayoutChanges="true"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/border_grey"
+                            android:onClick="onExpandClick"
+                            android:paddingBottom="12dp"
+                            android:paddingTop="12dp">
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginStart="8dp"
+                                android:src="@drawable/ic_settings_grey_40dp"
+                                android:tag="imgSleep" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_marginEnd="30dp"
+                                android:layout_marginStart="40dp"
+                                android:text="Modo de operação (SLEEP/SCHEDULE)" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="4dp"
+                                android:src="@drawable/ic_expand_more_grey_24dp"
+                                android:tag="expandImage" />
+
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="-1dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="-1dp"
+                            android:background="@drawable/border_grey"
+                            android:orientation="vertical"
+                            android:paddingBottom="4dp"
+                            android:paddingEnd="16dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="4dp"
+                            android:visibility="gone"
+                            tools:visibility="visible">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="Valor atual:"
+                                android:textColor="#000"
+                                android:textSize="13sp" />
+
+                            <RadioGroup
+                                android:id="@+id/rdgOperationMode"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:checkedButton="@id/operationActive"
+                                android:tag="configControl">
+
+                                <RadioButton
+                                    android:id="@+id/operationActive"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:enabled="false"
+                                    android:text="Permanecer ativo (consumo alto)" />
+
+                                <RadioButton
+                                    android:id="@+id/operationStandBy"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:enabled="false"
+                                    android:text="Permanecer stand-by (consumo médio)" />
+
+                                <RadioButton
+                                    android:id="@+id/operationHibernate"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:enabled="false"
+                                    android:text="Permanecer hibernado (consumo baixo)" />
+
+                            </RadioGroup>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="8dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:text="@string/lblStatusCheck"
+                                android:textSize="12sp" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_alignParentTop="true"
+                                    android:text="Status (SLEEP):"
+                                    android:textColor="#000"
+                                    android:textSize="13sp" />
+
+                                <ImageView
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:onClick="onActionClick"
+                                    android:padding="8dp"
+                                    android:src="@drawable/ic_mode_edit_grey_24dp"
+                                    android:tag="editSleep"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentBottom="true"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_gravity="center"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:tag="txtSleep"
+                                    android:text="- Aguardando para ser enviada ao rastreador"
+                                    android:textColor="#FF0000"
+                                    android:textSize="12sp" />
+
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_alignParentTop="true"
+                                    android:text="Status (SCHEDULE):"
+                                    android:textColor="#000"
+                                    android:textSize="13sp" />
+
+                                <ImageView
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:onClick="onActionClick"
+                                    android:padding="8dp"
+                                    android:src="@drawable/ic_mode_edit_grey_24dp"
+                                    android:tag="editSchedule"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentBottom="true"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_gravity="center"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:tag="txtSchedule"
+                                    android:text="- Aguardando para ser enviada ao rastreador"
+                                    android:textColor="#FF0000"
+                                    android:textSize="12sp" />
+
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Comandos disponíveis:"
+                                android:textColor="#000"
+                                android:textSize="13sp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <Button
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:onClick="onEditClick"
+                                    android:text="Editar"
+                                    android:textSize="13sp" />
+
+                                <Button
+                                    android:id="@+id/btnSendOperationMode"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:text="Enviar configuração"
+                                    android:textSize="13sp"
+                                    android:visibility="gone"
+                                    tools:visibility="visible" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/border_grey"
+                            android:onClick="onExpandClick"
+                            android:paddingBottom="12dp"
+                            android:paddingTop="12dp">
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginStart="8dp"
+                                android:src="@drawable/ic_settings_grey_40dp"
+                                android:tag="imgPeriodicUpdate" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="30dp"
+                                android:layout_marginStart="40dp"
+                                android:text="Intervalo do envio de posições (FIX)" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="4dp"
+                                android:src="@drawable/ic_expand_more_grey_24dp"
+                                android:tag="expandImage" />
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="-1dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="-1dp"
+                            android:background="@drawable/border_grey"
+                            android:orientation="vertical"
+                            android:paddingBottom="4dp"
+                            android:paddingEnd="16dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="4dp"
+                            android:visibility="gone"
+                            tools:visibility="visible">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="Valor atual:"
+                                android:textColor="#000"
+                                android:textSize="13sp" />
+
+                            <RadioGroup
+                                android:id="@+id/rdgFix"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:checkedButton="@id/fix030s"
+                                android:tag="configControl">
+
+                                <RadioButton
+                                    android:id="@+id/fix030s"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:enabled="false"
+                                    android:tag="fix030s***n"
+                                    android:text="Enviar posição a cada 30 segundos" />
+
+                                <RadioButton
+                                    android:id="@+id/fix060s"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:enabled="false"
+                                    android:tag="fix060s***n"
+                                    android:text="Enviar uma posição por minuto" />
+
+                                <RadioButton
+                                    android:id="@+id/fix005m"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:enabled="false"
+                                    android:tag="fix005m***n"
+                                    android:text="Enviar posição a cada 5 minutos" />
+
+                                <RadioButton
+                                    android:id="@+id/fix015m"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:enabled="false"
+                                    android:tag="fix015m***n"
+                                    android:text="Enviar posição a cada 15 minutos" />
+
+                                <RadioButton
+                                    android:id="@+id/fix030m"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:enabled="false"
+                                    android:tag="fix030m***n"
+                                    android:text="Enviar posição a cada 30 minutos" />
+
+                                <RadioButton
+                                    android:id="@+id/rdRequest"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:enabled="false"
+                                    android:tag="fix060s001n"
+                                    android:text="Enviar posição ao ser requisitado"
+                                    android:visibility="gone" />
+
+                                <RadioButton
+                                    android:id="@+id/rdShock"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:enabled="false"
+                                    android:text="Enviar posição ao detectar movimento"
+                                    android:visibility="gone" />
+
+                                <RadioButton
+                                    android:id="@+id/fix001h"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:enabled="false"
+                                    android:tag="1h"
+                                    android:text="Enviar uma posição por hora"
+                                    android:visibility="gone" />
+
+                                <RadioButton
+                                    android:id="@+id/fix003h"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:enabled="false"
+                                    android:tag="3h"
+                                    android:text="Enviar posição a cada 3 horas"
+                                    android:visibility="gone" />
+
+                                <RadioButton
+                                    android:id="@+id/fix006h"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:enabled="false"
+                                    android:tag="6h"
+                                    android:text="Enviar posição a cada 6 horas"
+                                    android:visibility="gone" />
+
+                                <RadioButton
+                                    android:id="@+id/fix012h"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:enabled="false"
+                                    android:tag="12h"
+                                    android:text="Enviar posição a cada 12 horas"
+                                    android:visibility="gone" />
+
+                                <RadioButton
+                                    android:id="@+id/fix024h"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:enabled="false"
+                                    android:tag="1d"
+                                    android:text="Enviar uma posição por dia"
+                                    android:visibility="gone" />
+                            </RadioGroup>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="8dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:text="@string/lblStatusCheck"
+                                android:textSize="12sp" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_alignParentTop="true"
+                                    android:text="Status:"
+                                    android:textColor="#000"
+                                    android:textSize="13sp" />
+
+                                <ImageView
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:onClick="onActionClick"
+                                    android:padding="8dp"
+                                    android:src="@drawable/ic_mode_edit_grey_24dp"
+                                    android:tag="editPeriodicUpdate"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentBottom="true"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_gravity="center"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:tag="txtPeriodicUpdate"
+                                    android:text="- Aguardando para ser enviada ao rastreador"
+                                    android:textColor="#FF0000"
+                                    android:textSize="12sp" />
+
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Comandos disponíveis:"
+                                android:textColor="#000"
+                                android:textSize="13sp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <Button
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:onClick="onEditClick"
+                                    android:text="Editar"
+                                    android:textSize="13sp" />
+
+                                <Button
+                                    android:id="@+id/btnSendPeriodicUpdate"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:text="Enviar configuração"
+                                    android:textSize="13sp"
+                                    android:visibility="gone"
+                                    tools:visibility="visible" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/border_grey"
+                            android:onClick="onExpandClick"
+                            android:paddingBottom="12dp"
+                            android:paddingTop="12dp">
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginStart="8dp"
+                                android:src="@drawable/ic_settings_grey_40dp"
+                                android:tag="imgLessGPRS" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="30dp"
+                                android:layout_marginStart="40dp"
+                                android:text="Reduzir uso do GRPS (LESS_GPRS)" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="4dp"
+                                android:src="@drawable/ic_expand_more_grey_24dp"
+                                android:tag="expandImage" />
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="2dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="-1dp"
+                            android:background="@drawable/border_grey"
+                            android:orientation="vertical"
+                            android:paddingBottom="4dp"
+                            android:paddingEnd="16dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="4dp"
+                            android:visibility="gone"
+                            tools:visibility="visible">
+
+                            <android.support.v7.widget.SwitchCompat
+                                android:id="@+id/swLessGprs"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:checked="false"
+                                android:enabled="false"
+                                android:tag="configControl"
+                                android:text="Ativar redução de consumo GPRS" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="8dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:text="@string/lblStatusCheck"
+                                android:textSize="12sp" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_alignParentTop="true"
+                                    android:text="Status:"
+                                    android:textColor="#000"
+                                    android:textSize="13sp" />
+
+                                <ImageView
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:onClick="onActionClick"
+                                    android:padding="8dp"
+                                    android:src="@drawable/ic_mode_edit_grey_24dp"
+                                    android:tag="editLessGPRS"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentBottom="true"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_gravity="center"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:tag="txtLessGPRS"
+                                    android:text="- Aguardando para ser enviada ao rastreador"
+                                    android:textColor="#FF0000"
+                                    android:textSize="12sp" />
+
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Comandos disponíveis:"
+                                android:textColor="#000"
+                                android:textSize="13sp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <Button
+                                    android:id="@+id/btnEditLessGPRS"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:text="Editar"
+                                    android:textSize="13sp" />
+
+                                <Button
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:onClick="onSendClick"
+                                    android:tag="sendLessGPRS"
+                                    android:text="Enviar configuração"
+                                    android:textSize="13sp"
+                                    android:visibility="gone"
+                                    tools:visibility="visible" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/vwAlertCard"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp"
+                app:cardCornerRadius="2dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#F9F9F9"
+                    android:orientation="vertical"
+                    android:paddingBottom="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="serif"
+                        android:text="Configurações de alertas"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        android:textSize="14sp"
+                        android:typeface="monospace" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_margin="8dp"
+                        android:background="#644286f5" />
+
+                    <LinearLayout
+                        android:id="@+id/vwAlertConfigurations"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:animateLayoutChanges="true"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/border_grey"
+                            android:onClick="onExpandClick"
+                            android:paddingBottom="12dp"
+                            android:paddingTop="12dp">
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginStart="8dp"
+                                android:src="@drawable/ic_settings_grey_40dp"
+                                android:tag="imgMove" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_marginEnd="30dp"
+                                android:layout_marginStart="40dp"
+                                android:text="Alerta de movimentação (MOVE)" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="4dp"
+                                android:src="@drawable/ic_expand_more_grey_24dp"
+                                android:tag="expandImage" />
+
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="-1dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="-1dp"
+                            android:background="@drawable/border_grey"
+                            android:orientation="vertical"
+                            android:paddingBottom="4dp"
+                            android:paddingEnd="16dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="4dp"
+                            android:visibility="gone"
+                            tools:visibility="visible">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:tag="configControl">
+
+                                <android.support.v7.widget.SwitchCompat
+                                    android:id="@+id/swMove"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:enabled="false"
+                                    android:text="Ativar alerta de movimentação" />
+
+                                <com.xw.repo.BubbleSeekBar
+                                    android:id="@+id/sbMove"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="8dp"
+                                    android:layout_marginTop="4dp"
+                                    android:focusable="true"
+                                    android:focusableInTouchMode="true"
+                                    android:visibility="gone"
+                                    app:bsb_bubble_color="@color/colorAccent"
+                                    app:bsb_bubble_text_color="#FFF"
+                                    app:bsb_hide_bubble="false"
+                                    app:bsb_max="2000"
+                                    app:bsb_min="50"
+                                    app:bsb_progress="1000"
+                                    app:bsb_second_track_color="@color/colorAccent"
+                                    app:bsb_section_count="5"
+                                    app:bsb_section_text_position="below_section_mark"
+                                    app:bsb_show_section_mark="true"
+                                    app:bsb_show_section_text="true"
+                                    app:bsb_touch_to_seek="true"
+                                    app:bsb_track_color="#888" />
+
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="8dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:text="@string/lblStatusCheck"
+                                android:textSize="12sp" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_alignParentTop="true"
+                                    android:text="Status:"
+                                    android:textColor="#000"
+                                    android:textSize="13sp" />
+
+                                <ImageView
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:onClick="onActionClick"
+                                    android:padding="8dp"
+                                    android:src="@drawable/ic_mode_edit_grey_24dp"
+                                    android:tag="editMove"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentBottom="true"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_gravity="center"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:tag="txtMove"
+                                    android:text="- Aguardando para ser enviada ao rastreador"
+                                    android:textColor="#FF0000"
+                                    android:textSize="12sp" />
+
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Comandos disponíveis:"
+                                android:textColor="#000"
+                                android:textSize="13sp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <Button
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:onClick="onEditClick"
+                                    android:text="Editar"
+                                    android:textSize="13sp" />
+
+                                <Button
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:onClick="onSendClick"
+                                    android:tag="sendMove"
+                                    android:text="Enviar configuração"
+                                    android:textSize="13sp"
+                                    android:visibility="gone"
+                                    tools:visibility="visible" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/border_grey"
+                            android:onClick="onExpandClick"
+                            android:paddingBottom="12dp"
+                            android:paddingTop="12dp">
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginStart="8dp"
+                                android:src="@drawable/ic_settings_grey_40dp"
+                                android:tag="imgSpeed" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="30dp"
+                                android:layout_marginStart="40dp"
+                                android:text="Alerta de velocidade (SPEED)" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="4dp"
+                                android:src="@drawable/ic_expand_more_grey_24dp"
+                                android:tag="expandImage" />
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="-1dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="-1dp"
+                            android:background="@drawable/border_grey"
+                            android:orientation="vertical"
+                            android:paddingBottom="4dp"
+                            android:paddingEnd="16dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="4dp"
+                            android:visibility="gone"
+                            tools:visibility="visible">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:tag="configControl">
+
+                                <android.support.v7.widget.SwitchCompat
+                                    android:id="@+id/swSpeed"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:enabled="false"
+                                    android:text="Ativar alerta de velocidade" />
+
+                                <com.xw.repo.BubbleSeekBar
+                                    android:id="@+id/sbSpeed"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="8dp"
+                                    android:layout_marginTop="4dp"
+                                    android:focusable="true"
+                                    android:focusableInTouchMode="true"
+                                    android:visibility="gone"
+                                    app:bsb_bubble_color="@color/colorAccent"
+                                    app:bsb_bubble_text_color="#FFF"
+                                    app:bsb_hide_bubble="false"
+                                    app:bsb_max="200"
+                                    app:bsb_min="50"
+                                    app:bsb_progress="80"
+                                    app:bsb_second_track_color="@color/colorAccent"
+                                    app:bsb_section_count="3"
+                                    app:bsb_section_text_position="below_section_mark"
+                                    app:bsb_show_section_mark="true"
+                                    app:bsb_show_section_text="true"
+                                    app:bsb_touch_to_seek="true"
+                                    app:bsb_track_color="#888" />
+
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="8dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:text="@string/lblStatusCheck"
+                                android:textSize="12sp" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_alignParentTop="true"
+                                    android:text="Status:"
+                                    android:textColor="#000"
+                                    android:textSize="13sp" />
+
+                                <ImageView
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:onClick="onActionClick"
+                                    android:padding="8dp"
+                                    android:src="@drawable/ic_mode_edit_grey_24dp"
+                                    android:tag="editSpeed"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentBottom="true"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_gravity="center"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:tag="txtSpeed"
+                                    android:text="- Aguardando para ser enviada ao rastreador"
+                                    android:textColor="#FF0000"
+                                    android:textSize="12sp" />
+
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Comandos disponíveis:"
+                                android:textColor="#000"
+                                android:textSize="13sp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <Button
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:onClick="onEditClick"
+                                    android:text="Editar"
+                                    android:textSize="13sp" />
+
+                                <Button
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:onClick="onSendClick"
+                                    android:tag="sendSpeed"
+                                    android:text="Enviar configuração"
+                                    android:textSize="13sp"
+                                    android:visibility="gone"
+                                    tools:visibility="visible" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/border_grey"
+                            android:onClick="onExpandClick"
+                            android:paddingBottom="12dp"
+                            android:paddingTop="12dp">
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginStart="8dp"
+                                android:src="@drawable/ic_settings_grey_40dp"
+                                android:tag="imgShock" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="30dp"
+                                android:layout_marginStart="40dp"
+                                android:text="Alerta de vibração (SHOCK)" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="4dp"
+                                android:src="@drawable/ic_expand_more_grey_24dp"
+                                android:tag="expandImage" />
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="2dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="-1dp"
+                            android:background="@drawable/border_grey"
+                            android:orientation="vertical"
+                            android:paddingBottom="4dp"
+                            android:paddingEnd="16dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="4dp"
+                            android:visibility="gone"
+                            tools:visibility="visible">
+
+                            <android.support.v7.widget.SwitchCompat
+                                android:id="@+id/swShock"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:checked="false"
+                                android:enabled="false"
+                                android:tag="configControl"
+                                android:text="Ativar alerta de vibração" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="8dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:text="@string/lblStatusCheck"
+                                android:textSize="12sp" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_alignParentTop="true"
+                                    android:text="Status:"
+                                    android:textColor="#000"
+                                    android:textSize="13sp" />
+
+                                <ImageView
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:onClick="onActionClick"
+                                    android:padding="8dp"
+                                    android:src="@drawable/ic_mode_edit_grey_24dp"
+                                    android:tag="editShock"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentBottom="true"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_gravity="center"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:tag="txtShock"
+                                    android:text="- Aguardando para ser enviada ao rastreador"
+                                    android:textColor="#FF0000"
+                                    android:textSize="12sp" />
+
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Comandos disponíveis:"
+                                android:textColor="#000"
+                                android:textSize="13sp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <Button
+                                    android:id="@+id/btnEditShock"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:text="Editar"
+                                    android:textSize="13sp" />
+
+                                <Button
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:onClick="onSendClick"
+                                    android:tag="sendShock"
+                                    android:text="Enviar configuração"
+                                    android:textSize="13sp"
+                                    android:visibility="gone"
+                                    tools:visibility="visible" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/vwGeneralCard"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp"
+                android:visibility="gone"
+                app:cardCornerRadius="2dp"
+                app:cardElevation="2dp"
+                tools:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#F9F9F9"
+                    android:orientation="vertical"
+                    android:paddingBottom="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="serif"
+                        android:text="Configurações gerais"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        android:textSize="14sp"
+                        android:typeface="monospace" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_margin="8dp"
+                        android:background="#644286f5" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:animateLayoutChanges="true"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/border_grey"
+                            android:onClick="onExpandClick"
+                            android:paddingBottom="12dp"
+                            android:paddingTop="12dp">
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginStart="8dp"
+                                android:src="@drawable/ic_settings_grey_40dp"
+                                android:tag="imgStatusCheck" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_marginEnd="30dp"
+                                android:layout_marginStart="40dp"
+                                android:text="Solicitar status do rastreador (CHECK)" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="4dp"
+                                android:src="@drawable/ic_expand_more_grey_24dp"
+                                android:tag="expandImage" />
+
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="-1dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="-1dp"
+                            android:background="@drawable/border_grey"
+                            android:orientation="vertical"
+                            android:paddingBottom="4dp"
+                            android:paddingEnd="16dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="4dp"
+                            android:visibility="gone"
+                            tools:visibility="visible">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="Última resposta:"
+                                android:textColor="#000"
+                                android:textSize="13sp" />
+
+                            <TextView
+                                android:id="@+id/lblStatusCheck"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:background="#CCC"
+                                android:padding="16dp"
+                                android:text="Não informado pelo rastreador"
+                                android:textColor="#000"
+                                android:textSize="13sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="8dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:text="@string/lblStatusCheck"
+                                android:textSize="12sp" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_alignParentTop="true"
+                                    android:text="Status:"
+                                    android:textColor="#000"
+                                    android:textSize="13sp" />
+
+                                <ImageView
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:onClick="onActionClick"
+                                    android:padding="8dp"
+                                    android:src="@drawable/ic_mode_edit_grey_24dp"
+                                    android:tag="editStatusCheck"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentBottom="true"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_gravity="center"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:tag="txtStatusCheck"
+                                    android:text="- Aguardando para ser enviada ao rastreador"
+                                    android:textColor="#FF0000"
+                                    android:textSize="12sp" />
+
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Comandos disponíveis:"
+                                android:textColor="#000"
+                                android:textSize="13sp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <Button
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:onClick="onEditClick"
+                                    android:text="Editar"
+                                    android:textSize="13sp" />
+
+                                <Button
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:onClick="onSendClick"
+                                    android:tag="sendStatusCheck"
+                                    android:text="Enviar configuração"
+                                    android:textSize="13sp"
+                                    android:visibility="gone"
+                                    tools:visibility="visible" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/border_grey"
+                            android:onClick="onExpandClick"
+                            android:paddingBottom="12dp"
+                            android:paddingTop="12dp">
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginStart="8dp"
+                                android:src="@drawable/ic_settings_grey_40dp"
+                                android:tag="imgBegin" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="30dp"
+                                android:layout_marginStart="40dp"
+                                android:text="Inicializar configurações (BEGIN)" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="4dp"
+                                android:src="@drawable/ic_expand_more_grey_24dp"
+                                android:tag="expandImage" />
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="-1dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="-1dp"
+                            android:background="@drawable/border_grey"
+                            android:orientation="vertical"
+                            android:paddingBottom="4dp"
+                            android:paddingEnd="16dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="4dp"
+                            android:visibility="gone"
+                            tools:visibility="visible">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="8dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:text="@string/lblStatusCheck"
+                                android:textSize="12sp" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_alignParentTop="true"
+                                    android:text="Status:"
+                                    android:textColor="#000"
+                                    android:textSize="13sp" />
+
+                                <ImageView
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:onClick="onActionClick"
+                                    android:padding="8dp"
+                                    android:src="@drawable/ic_mode_edit_grey_24dp"
+                                    android:tag="editBegin"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentBottom="true"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_gravity="center"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:tag="txtBegin"
+                                    android:text="- Aguardando para ser enviada ao rastreador"
+                                    android:textColor="#FF0000"
+                                    android:textSize="12sp" />
+
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Comandos disponíveis:"
+                                android:textColor="#000"
+                                android:textSize="13sp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <Button
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:onClick="onEditClick"
+                                    android:text="Editar"
+                                    android:textSize="13sp" />
+
+                                <Button
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:onClick="onSendClick"
+                                    android:tag="sendBegin"
+                                    android:text="Enviar configuração"
+                                    android:textSize="13sp"
+                                    android:visibility="gone"
+                                    tools:visibility="visible" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/border_grey"
+                            android:onClick="onExpandClick"
+                            android:paddingBottom="12dp"
+                            android:paddingTop="12dp">
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginStart="8dp"
+                                android:src="@drawable/ic_settings_grey_40dp"
+                                android:tag="imgIMEI" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="30dp"
+                                android:layout_marginStart="40dp"
+                                android:text="Solicitar IMEI do dispositivo (IMEI)" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="4dp"
+                                android:src="@drawable/ic_expand_more_grey_24dp"
+                                android:tag="expandImage" />
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="-1dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="-1dp"
+                            android:background="@drawable/border_grey"
+                            android:orientation="vertical"
+                            android:paddingBottom="4dp"
+                            android:paddingEnd="16dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="4dp"
+                            android:visibility="gone"
+                            tools:visibility="visible">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="Última resposta:"
+                                android:textColor="#000"
+                                android:textSize="13sp" />
+
+                            <TextView
+                                android:id="@+id/lblIMEI"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:background="#CCC"
+                                android:padding="16dp"
+                                android:text="Não informado pelo rastreador"
+                                android:textColor="#000"
+                                android:textSize="13sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="8dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:text="@string/lblStatusCheck"
+                                android:textSize="12sp" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_alignParentTop="true"
+                                    android:text="Status:"
+                                    android:textColor="#000"
+                                    android:textSize="13sp" />
+
+                                <ImageView
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:onClick="onActionClick"
+                                    android:padding="8dp"
+                                    android:src="@drawable/ic_mode_edit_grey_24dp"
+                                    android:tag="editIMEI"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentBottom="true"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_gravity="center"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:tag="txtIMEI"
+                                    android:text="- Aguardando para ser enviada ao rastreador"
+                                    android:textColor="#FF0000"
+                                    android:textSize="12sp" />
+
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Comandos disponíveis:"
+                                android:textColor="#000"
+                                android:textSize="13sp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <Button
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:onClick="onEditClick"
+                                    android:text="Editar"
+                                    android:textSize="13sp" />
+
+                                <Button
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:onClick="onSendClick"
+                                    android:tag="sendIMEI"
+                                    android:text="Enviar configuração"
+                                    android:textSize="13sp"
+                                    android:visibility="gone"
+                                    tools:visibility="visible" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/border_grey"
+                            android:onClick="onExpandClick"
+                            android:paddingBottom="12dp"
+                            android:paddingTop="12dp">
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginStart="8dp"
+                                android:src="@drawable/ic_settings_grey_40dp"
+                                android:tag="imgTimeZone" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="30dp"
+                                android:layout_marginStart="40dp"
+                                android:text="Alterar fuso horário (TIMEZONE)" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="4dp"
+                                android:src="@drawable/ic_expand_more_grey_24dp"
+                                android:tag="expandImage" />
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="-1dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="-1dp"
+                            android:background="@drawable/border_grey"
+                            android:orientation="vertical"
+                            android:paddingBottom="4dp"
+                            android:paddingEnd="16dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="4dp"
+                            android:visibility="gone"
+                            tools:visibility="visible">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="8dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:text="@string/lblStatusCheck"
+                                android:textSize="12sp" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_alignParentTop="true"
+                                    android:text="Status:"
+                                    android:textColor="#000"
+                                    android:textSize="13sp" />
+
+                                <ImageView
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:onClick="onActionClick"
+                                    android:padding="8dp"
+                                    android:src="@drawable/ic_mode_edit_grey_24dp"
+                                    android:tag="editTimeZone"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentBottom="true"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_gravity="center"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:tag="txtTimeZone"
+                                    android:text="- Aguardando para ser enviada ao rastreador"
+                                    android:textColor="#FF0000"
+                                    android:textSize="12sp" />
+
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Comandos disponíveis:"
+                                android:textColor="#000"
+                                android:textSize="13sp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <Button
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:onClick="onEditClick"
+                                    android:text="Editar"
+                                    android:textSize="13sp" />
+
+                                <Button
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:onClick="onSendClick"
+                                    android:tag="sendTimeZone"
+                                    android:text="Enviar configuração"
+                                    android:textSize="13sp"
+                                    android:visibility="gone"
+                                    tools:visibility="visible" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/border_grey"
+                            android:onClick="onExpandClick"
+                            android:paddingBottom="12dp"
+                            android:paddingTop="12dp">
+
+                            <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginStart="8dp"
+                                android:src="@drawable/ic_settings_grey_40dp"
+                                android:tag="imgReset" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="30dp"
+                                android:layout_marginStart="40dp"
+                                android:text="Reiniciar rastreador (RESET)" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerInParent="true"
+                                android:layout_marginEnd="4dp"
+                                android:src="@drawable/ic_expand_more_grey_24dp"
+                                android:tag="expandImage" />
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="2dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="-1dp"
+                            android:background="@drawable/border_grey"
+                            android:orientation="vertical"
+                            android:paddingBottom="4dp"
+                            android:paddingEnd="16dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="4dp"
+                            android:visibility="gone"
+                            tools:visibility="visible">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="8dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:text="@string/lblStatusCheck"
+                                android:textSize="12sp" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:layout_alignParentTop="true"
+                                    android:text="Status:"
+                                    android:textColor="#000"
+                                    android:textSize="13sp" />
+
+                                <ImageView
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:onClick="onActionClick"
+                                    android:padding="8dp"
+                                    android:src="@drawable/ic_mode_edit_grey_24dp"
+                                    android:tag="editReset"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentBottom="true"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_gravity="center"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:tag="txtReset"
+                                    android:text="- Aguardando para ser enviada ao rastreador"
+                                    android:textColor="#FF0000"
+                                    android:textSize="12sp" />
+
+                            </RelativeLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginTop="8dp"
+                                android:background="#DDD" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Comandos disponíveis:"
+                                android:textColor="#000"
+                                android:textSize="13sp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <Button
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:layout_marginEnd="8dp"
+                                    android:onClick="onEditClick"
+                                    android:text="Editar"
+                                    android:textSize="13sp" />
+
+                                <Button
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="40dp"
+                                    android:onClick="onSendClick"
+                                    android:tag="sendReset"
+                                    android:text="Enviar configuração"
+                                    android:textSize="13sp"
+                                    android:visibility="gone"
+                                    tools:visibility="visible" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/vwNotificationCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:visibility="gone"
+                app:cardCornerRadius="2dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#F9F9F9"
+                    android:orientation="vertical"
+                    android:paddingBottom="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="serif"
+                        android:text="Opções de notificação"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        android:textSize="14sp"
+                        android:typeface="monospace" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_margin="8dp"
+                        android:background="#644286f5" />
+
+                    <LinearLayout
+                        android:id="@+id/vwNotifications"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:animateLayoutChanges="true"
+                        android:orientation="vertical"
+                        android:paddingBottom="8dp"
+                        android:paddingEnd="32dp"
+                        android:paddingStart="16dp">
+
+                        <android.support.v7.widget.SwitchCompat
+                            android:id="@+id/vwNotifyMove"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:tag="Notify_Move"
+                            android:text="Exibir notificação de movimentação" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="Exibe uma notificação neste dispositivo quando o rastreador registrar qualquer movimentação"
+                            android:textSize="12sp" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginBottom="8dp"
+                            android:layout_marginTop="8dp"
+                            android:background="#DDD" />
+
+                        <android.support.v7.widget.SwitchCompat
+                            android:id="@+id/vwNotifyStopped"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:checked="false"
+                            android:tag="Notify_Stopped"
+                            android:text="Exibir notificação de rastreador parado" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="Uma notificação será exibida mesmo quando o rastreador informar posição igual a registrada anteriormente."
+                            android:textSize="12sp" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginBottom="8dp"
+                            android:layout_marginTop="8dp"
+                            android:background="#DDD" />
+
+                        <android.support.v7.widget.SwitchCompat
+                            android:id="@+id/vwNotifySOS"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:tag="Notify_SOS"
+                            android:text="Exibir notificação de S.O.S." />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="Se habilitado, uma notificação será exibida quando o botão de S.O.S. for pressionado no rastreador."
+                            android:textSize="12sp" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginBottom="8dp"
+                            android:layout_marginTop="8dp"
+                            android:background="#DDD" />
+
+                        <android.support.v7.widget.SwitchCompat
+                            android:id="@+id/vwNotifyAlert"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:tag="Notify_Alert"
+                            android:text="Exibir notificação de alerta" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="Exibe notificações dos alertas gerados pelo rastreador (bateria fraca, vibração, velocidade, entre outros)."
+                            android:textSize="12sp" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginBottom="8dp"
+                            android:layout_marginTop="8dp"
+                            android:background="#DDD" />
+
+                        <android.support.v7.widget.SwitchCompat
+                            android:id="@+id/vwNotifyAvailable"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:checked="false"
+                            android:tag="Notify_Available"
+                            android:text="Exibir notificações de disponibilidade" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="Exibe notificações sempre que o rastreador enviar ou receber mensagens do servidor."
+                            android:textSize="12sp" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginBottom="8dp"
+                            android:layout_marginTop="8dp"
+                            android:background="#DDD" />
+
+                        <android.support.v7.widget.SwitchCompat
+                            android:id="@+id/vwNotifyStatusCheck"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:tag="Notify_StatusCheck"
+                            android:text="Exibir notificação de status" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="Exibe notificação ao receber o status do rastreador (bateria, sinal, entre outros) ."
+                            android:textSize="12sp" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginBottom="8dp"
+                            android:layout_marginTop="8dp"
+                            android:background="#DDD" />
+
+                        <android.support.v7.widget.SwitchCompat
+                            android:id="@+id/vwNotifyUpdate"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:tag="Notify_Update"
+                            android:text="Exibir o progresso de solicitações" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="Exibe uma notificação com o andamento (%) de uma solicitação ao rastreador"
+                            android:textSize="12sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</android.support.design.widget.CoordinatorLayout>

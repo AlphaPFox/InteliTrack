@@ -57,12 +57,13 @@ public class ProgressNotification implements EventListener<DocumentSnapshot>, Ru
 
         //Save notification settings
         notificationData.put("id", mTracker.getID());
+        notificationData.put("channel", "Notify_Update");
         notificationData.put("title", "Realizando solicitação...");
         notificationData.put("progress", "0");
         notificationData.put("datetime", String.valueOf(new Date().getTime()));
 
         //Build notification
-        notification = notificationController.showNotification(notificationData, "/topics/" + mTracker.getID() +"_NotifyUpdate");
+        notification = notificationController.showNotification(notificationData, "/topics/" + mTracker.getID() +"_Notify_Update");
 
         //Check if notification is created (user can disable all notifications as preference)
         if(notification != null)

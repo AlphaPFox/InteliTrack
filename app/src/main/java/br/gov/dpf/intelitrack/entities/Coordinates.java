@@ -8,7 +8,7 @@ public class Coordinates
 {
     private GeoPoint mPosition;
 
-    private String mCellID;
+    private String mType;
 
     private String mAddress;
 
@@ -91,12 +91,16 @@ public class Coordinates
         this.mSpeed = mSpeed;
     }
 
-    public String getCellID() {
-        return mCellID;
+    public String getType()
+    {
+        if(mType == null)
+            return "GPS";
+        else
+            return mType;
     }
 
-    public void setCellID(String mCellID) {
-        this.mCellID = mCellID;
+    public void setType(String mType) {
+        this.mType = mType;
     }
 
     public String getStringBatteryLevel()

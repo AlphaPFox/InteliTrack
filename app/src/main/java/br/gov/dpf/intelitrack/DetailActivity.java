@@ -77,6 +77,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -89,7 +90,6 @@ import br.gov.dpf.intelitrack.entities.Coordinates;
 import br.gov.dpf.intelitrack.entities.Tracker;
 import br.gov.dpf.intelitrack.firestore.CoordinatesAdapter;
 import br.gov.dpf.intelitrack.trackers.SettingsActivity;
-import br.gov.dpf.intelitrack.trackers.TK102BActivity;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static br.gov.dpf.intelitrack.MainActivity.REQUEST_UPDATE;
@@ -229,7 +229,7 @@ public class DetailActivity
         header.getBackground().setColorFilter(Color.parseColor(tracker.getBackgroundColor()), android.graphics.PorterDuff.Mode.SRC_IN);
 
         //Update header text fields
-        ((TextView) header.findViewById(R.id.txtName)).setText(tracker.formatName());
+        ((TextView) header.findViewById(R.id.txtName)).setText(tracker.getName());
         ((TextView) header.findViewById(R.id.txtModel)).setText(Html.fromHtml(String.format(Html.toHtml(new SpannedString(getText(R.string.txtModel))), tracker.formatTrackerModel())));
 
         //Update header image
@@ -266,7 +266,7 @@ public class DetailActivity
         circleProgressBar.setColor(imgToolbarIcon.getCircleBackgroundColor());
 
         //Set toolbar texts
-        txtToolbarTitle.setText(tracker.formatName());
+        txtToolbarTitle.setText(tracker.getName());
         txtToolbarSubtitle.setText(tracker.formatTrackerModel());
 
         //Check if device supports shared element transition
@@ -301,7 +301,7 @@ public class DetailActivity
     private void updateNavigationMenu(NavigationView navigationView) {
         //For each tracker model
         switch (tracker.getModel()) {
-            case "tk102b":
+            case "tk102":
                 //Show location and status commands
                 navigationView.getMenu().findItem(R.id.menu_request_position).setVisible(true);
                 navigationView.getMenu().findItem(R.id.menu_request_status).setVisible(true);
@@ -386,15 +386,14 @@ public class DetailActivity
     @Override
     public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
         //Check if tracker is available
-        if (documentSnapshot.exists()) {
-            //Parse DB result to tracker object
-            tracker = documentSnapshot.toObject(Tracker.class);
-
+        if (documentSnapshot.exists() && documentSnapshot.get("lastConfiguration") instanceof HashMap)
+        {
             //Try to get configuration status
-            Map<String, Object> configuration = tracker.getLastConfiguration();
+            HashMap configuration = (HashMap) documentSnapshot.get("lastConfiguration") ;
 
             //Check if configuration has not started yet
-            if (configuration != null) {
+            if (configuration != null)
+            {
                 int progress = Integer.parseInt(configuration.get("progress").toString());
 
                 //Check if progress started
@@ -507,7 +506,7 @@ public class DetailActivity
 
             //Check if tracker have pending configurations
             if (configPending) {
-                //Show config panel, hide empty message panel
+                //Show config_edit panel, hide empty message panel
                 vwConfigPanel.setVisibility(View.VISIBLE);
                 vwEmptyPanel.setVisibility(View.GONE);
 
@@ -537,7 +536,7 @@ public class DetailActivity
                 mLayout.setPanelHeight(getResources().getDimensionPixelSize(R.dimen.panel_multiple_row_height));
             }
 
-            //Show config panel
+            //Show config_edit panel
             vwConfigPanel.setVisibility(configPending ? View.VISIBLE : View.GONE);
         }
     }
@@ -565,7 +564,8 @@ public class DetailActivity
             final InfoWindow.MarkerSpecification markerSpec = new InfoWindow.MarkerSpecification((int) getResources().getDimension(R.dimen.marker_offset_x), (int) getResources().getDimension(R.dimen.marker_offset_y));
 
             //For each coordinate
-            for (DocumentSnapshot snapshot : mCoordinateSnapshots) {
+            for (DocumentSnapshot snapshot : mCoordinateSnapshots)
+            {
                 //Decode data
                 Coordinates coordinates = snapshot.toObject(Coordinates.class);
 
@@ -576,58 +576,44 @@ public class DetailActivity
                 iconFactory.setColor(Color.parseColor(tracker.getBackgroundColor()));
 
                 //If coordinates contains tower cell data (GSM location) and user selected display option
-                if (coordinates.getCellID() != null && sharedPreferences.getInt("Map_Radius", 3) > 0) {
-                    //Check if tower cell circle is already added in this position
-                    boolean is_added = false;
+                if (coordinates.getType().equals("GSM") && sharedPreferences.getInt("Map_Radius", 4) > 0)
+                {
+                    //Add circle representing cell tower coverage area
+                    Circle gsmTower = mMap.addCircle(new CircleOptions()
+                            .center(position)
+                            .strokeWidth(getResources().getDimensionPixelSize(R.dimen.map_circle_width))
+                            .strokeColor(Color.parseColor("#88" + tracker.getBackgroundColor().substring(3)))
+                            .fillColor(Color.parseColor("#55" + tracker.getBackgroundColor().substring(3))));
 
-                    //For each circle already added
-                    for (Circle gsmTower : gsmTowers) {
-                        //Check if marker is tagged (means it has a circle around)
-                        if (gsmTower.getCenter().equals(position))
-
-                            //Already drawn a circle in this position
-                            is_added = true;
+                    //Get user option
+                    switch (sharedPreferences.getInt("Map_Radius", 4)) {
+                        case 1:
+                            //Preference: 200m
+                            gsmTower.setRadius(200);
+                            break;
+                        case 2:
+                            //Preference: 500m
+                            gsmTower.setRadius(500);
+                            break;
+                        case 3:
+                            //Preference: 1km
+                            gsmTower.setRadius(1000);
+                            break;
+                        case 4:
+                            //Preference: 2km
+                            gsmTower.setRadius(2000);
+                            break;
+                        case 5:
+                            //Preference: 5km
+                            gsmTower.setRadius(5000);
+                            break;
                     }
 
-                    //If circle is not added on this position yet
-                    if (!is_added) {
-                        //Add circle representing cell tower coverage area
-                        Circle gsmTower = mMap.addCircle(new CircleOptions()
-                                .center(position)
-                                .strokeWidth(getResources().getDimensionPixelSize(R.dimen.map_circle_width))
-                                .strokeColor(Color.parseColor("#88" + tracker.getBackgroundColor().substring(3)))
-                                .fillColor(Color.parseColor("#55" + tracker.getBackgroundColor().substring(3))));
+                    //Save gsm tower on list (avoid duplicate circles on same position)
+                    gsmTowers.add(gsmTower);
 
-                        //Get user option
-                        switch (sharedPreferences.getInt("Map_Radius", 3)) {
-                            case 1:
-                                //Preference: 200m
-                                gsmTower.setRadius(200);
-                                break;
-                            case 2:
-                                //Preference: 500m
-                                gsmTower.setRadius(500);
-                                break;
-                            case 3:
-                                //Preference: 1km
-                                gsmTower.setRadius(1000);
-                                break;
-                            case 4:
-                                //Preference: 2km
-                                gsmTower.setRadius(2000);
-                                break;
-                            case 5:
-                                //Preference: 5km
-                                gsmTower.setRadius(5000);
-                                break;
-                        }
-
-                        //Save gsm tower on list (avoid duplicate circles on same position)
-                        gsmTowers.add(gsmTower);
-
-                        //Change marker color (remove transparency)
-                        iconFactory.setColor(Color.parseColor("#" + tracker.getBackgroundColor().substring(3)));
-                    }
+                    //Change marker color (remove transparency)
+                    iconFactory.setColor(Color.parseColor("#" + tracker.getBackgroundColor().substring(3)));
                 }
 
                 //Add marker on map
@@ -646,7 +632,7 @@ public class DetailActivity
                 //Set arguments
                 args.putInt("ID", mCoordinateSnapshots.size() - markers.size());
                 args.putInt("ItemCount", mCoordinateSnapshots.size());
-                args.putString("CellID", coordinates.getCellID());
+                args.putString("Type", coordinates.getType());
                 args.putString("Address", coordinates.getAddress());
                 args.putString("BatteryLevel", coordinates.getStringBatteryLevel());
                 args.putString("SignalLevel", coordinates.getStringSignalLevel());
@@ -676,8 +662,17 @@ public class DetailActivity
                 markers.add(marker);
             }
 
-            //Center map on most recent available position
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markers.get(0).getPosition(), 14));
+            //Check if last coordinate is from GSM position
+            if(tracker.getLastCoordinate() != null && tracker.getLastCoordinate().get("type").equals("GSM"))
+            {
+                //Center map on most recent available position (lower zoom for GSM position)
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markers.get(0).getPosition(), 13));
+            }
+            else
+            {
+                //Center map on most recent available position (higher zoom for GSM position)
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(markers.get(0).getPosition(), 13));
+            }
 
             //Get user preference on path between coordinates
             int map_path = sharedPreferences.getInt("Map_Path", 2);
@@ -1008,14 +1003,14 @@ public class DetailActivity
                 case R.id.menu_tracker_settings:
 
                     //Editing default settings
-                    editIntent.setClass(this, TK102BActivity.class);
+                    editIntent.setClass(this, tracker.loadActivity());
             }
 
             //Start edit activity
             startActivityForResult(editIntent, REQUEST_UPDATE);
         } else if (item.getGroupId() == R.id.tracker_commands) {
             //Create empty configuration
-            final Configuration command = new Configuration("", "", null, true);
+            final Configuration command = new Configuration("", "", null, true, null);
 
             //Create empty alert strings
             String alertTitle = "", alertDescription = "";
@@ -1029,7 +1024,7 @@ public class DetailActivity
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             //Create intent to call next activity (Tracker Configurations)
-                            Intent intent = new Intent(DetailActivity.this, TK102BActivity.class);
+                            Intent intent = new Intent(DetailActivity.this, tracker.loadActivity());
 
                             //Put tracker data on intent
                             intent.putExtra("Tracker", tracker);
@@ -1194,7 +1189,7 @@ public class DetailActivity
                     final String[] radius_options = {"Nenhum", "200m", "500m", "1km", "2km", "5km"};
 
                     //Show options to user
-                    showOptions("Raio de alcance de coordenadas por GSM", radius_options, sharedPreferences.getInt("Map_Radius", 3), new DialogInterface.OnClickListener()
+                    showOptions("Raio de alcance de coordenadas por GSM", radius_options, sharedPreferences.getInt("Map_Radius", 4), new DialogInterface.OnClickListener()
                     {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i)
@@ -1386,7 +1381,7 @@ public class DetailActivity
         //Flag pending configuration
         configPending = true;
 
-        //Load config panel
+        //Load config_edit panel
         loadBottomPanel(mCoordinatesAdapter.getItemCount());
 
         //Commit transaction

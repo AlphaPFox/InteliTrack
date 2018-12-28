@@ -66,7 +66,7 @@ public class ConfigFragment extends SlideFragment implements EventListener<Docum
     private boolean canProceed = false;
     private boolean canGoBack = true;
 
-    //Indicates error on config process
+    //Indicates error on config_edit process
     private boolean configError = false;
 
     @BindView(R.id.btnConfig) Button btnConfig;
@@ -159,7 +159,7 @@ public class ConfigFragment extends SlideFragment implements EventListener<Docum
         //Save tracker data
         tracker.setName(settings.get("TrackerName"));
         tracker.setDescription("");
-        tracker.setIdentification(settings.get("TrackerID"));
+        tracker.setPhoneNumber(settings.get("TrackerID"));
         tracker.setIMEI(settings.get("TrackerIMEI"));
         tracker.setNetwork(settings.get("TrackerNetwork"));
         tracker.setPassword("123456");
@@ -249,10 +249,10 @@ public class ConfigFragment extends SlideFragment implements EventListener<Docum
         transaction.update(trackerReference, "lastConfiguration", FieldValue.delete());
 
         //Insert general configuration
-        transaction.set(configCollection.document("Begin"), new Configuration("Begin", "Inicializando dispositivo", null, true));
-        transaction.set(configCollection.document("TimeZone"), new Configuration("TimeZone", "Configurando: Fuso horário", null, true));
-        transaction.set(configCollection.document("StatusCheck"), new Configuration("StatusCheck", "Solicitando informações", null, true));
-        transaction.set(configCollection.document("Reset"), new Configuration("Reset", "Reiniciando dispositivo", null, true, "Não solicitado até o momento."));
+        transaction.set(configCollection.document("Begin"), new Configuration("Begin", "Inicializando dispositivo", null, true, "Configuração não solicitada ao rastreador"));
+        transaction.set(configCollection.document("TimeZone"), new Configuration("TimeZone", "Configurando: Fuso horário", null, true, null));
+        transaction.set(configCollection.document("StatusCheck"), new Configuration("StatusCheck", "Solicitando informações", null, true, null));
+        transaction.set(configCollection.document("Reset"), new Configuration("Reset", "Reiniciando dispositivo", null, true, "Configuração não solicitada ao rastreador."));
 
         //Check if IMEI available (obtained during test step)
         if(tracker.getIMEI() != null)
@@ -263,48 +263,47 @@ public class ConfigFragment extends SlideFragment implements EventListener<Docum
         else
         {
             //Request confirmation
-            transaction.set(configCollection.document("IMEI"), new Configuration("IMEI", "Configurando: IMEI do dispositivo", tracker.getIMEI(), true));
+            transaction.set(configCollection.document("IMEI"), new Configuration("IMEI", "Configurando: IMEI do dispositivo", tracker.getIMEI(), true, null));
         }
 
         //Load communication settings;
-        transaction.set(configCollection.document("AccessPoint"), new Configuration("AccessPoint", "Configurando: APN", tracker.loadAPN(), true));
-        transaction.set(configCollection.document("APNUserPass"), new Configuration("APNUserPass", "Configurando: Usuário / Senha", tracker.loadAPNUserPass() + " " + tracker.loadAPNUserPass(), true));
-        transaction.set(configCollection.document("AdminIP"), new Configuration("AdminIP", "Configurando: Acesso ao Intelitrack", null, true));
-        transaction.set(configCollection.document("GPRS"), new Configuration("GPRS", "Configurando: Modo GPRS", null, true));
-        transaction.set(configCollection.document("LessGPRS"), new Configuration("LessGPRS", "Configurando: Uso reduzido de dados", null, true));
+        transaction.set(configCollection.document("AccessPoint"), new Configuration("AccessPoint", "Configurando: APN", tracker.loadAPN(), true, null));
+        transaction.set(configCollection.document("APNUserPass"), new Configuration("APNUserPass", "Configurando: Usuário / Senha", tracker.loadAPNUserPass() + " " + tracker.loadAPNUserPass(), true, null));
+        transaction.set(configCollection.document("AdminIP"), new Configuration("AdminIP", "Configurando: Acesso ao Intelitrack", null, true, null));
+        transaction.set(configCollection.document("GPRS"), new Configuration("GPRS", "Configurando: Modo GPRS", null, true, null));
+        transaction.set(configCollection.document("LessGPRS"), new Configuration("LessGPRS", "Configurando: Uso reduzido de dados", null, true, null));
         transaction.set(configCollection.document("SMS"), new Configuration("SMS", "Desativando: Modo SMS", null, false, "Modo GPRS selecionado"));
-        transaction.set(configCollection.document("Admin"), new Configuration("Admin", "Desativando: Administrador SMS", null, false));
+        transaction.set(configCollection.document("Admin"), new Configuration("Admin", "Desativando: Administrador SMS", null, false, null));
+
+        //Insert alert configs
+        transaction.set(configCollection.document("Move"), new Configuration("Move", "Desativando: Alerta de movimentação", null, false, "Modo SMS selecionado"));
+        transaction.set(configCollection.document("Speed"), new Configuration("Speed", "Desativando: Alerta de velocidade", null, false, "Modo SMS selecionado"));
+        transaction.set(configCollection.document("Shock"), new Configuration("Shock", "Desativando: Alerta de vibração", null, false, null));
 
         //Check configuration selected by user
         switch (settings.get("TrackerConfig"))
         {
             case "configBatteryTime":
-                transaction.set(configCollection.document("PeriodicUpdate"), new Configuration("PeriodicUpdate", "Configurando: Localização periódica", "fix060s***n", true));
-                transaction.set(configCollection.document("Sleep"), new Configuration("Sleep", "Configurando: Modo de hibernação", null, false));
-                transaction.set(configCollection.document("Schedule"), new Configuration("Schedule", "Configurando: Modo de hibernação", settings.get("TrackerConfigValue"), true));
+                transaction.set(configCollection.document("PeriodicUpdate"), new Configuration("PeriodicUpdate", "Solicitando: Localização do dispositivo", "fix060s***n", true, null));
+                transaction.set(configCollection.document("Sleep"), new Configuration("Sleep", "Configurando: Modo de hibernação", null, false, null));
+                transaction.set(configCollection.document("Schedule"), new Configuration("Schedule", "Configurando: Modo de hibernação", settings.get("TrackerConfigValue"), true, null));
                 break;
             case "configBatteryMove":
-                transaction.set(configCollection.document("PeriodicUpdate"), new Configuration("PeriodicUpdate", "Configurando: Localização periódica", "fix060s***n", true));
-                transaction.set(configCollection.document("Sleep"), new Configuration("Sleep", "Configurando: Modo de hibernação", settings.get("TrackerConfigValue"), true));
-                transaction.set(configCollection.document("Schedule"), new Configuration("Schedule", "Configurando: Modo de hibernação", null, false));
+                transaction.set(configCollection.document("PeriodicUpdate"), new Configuration("PeriodicUpdate", "Solicitando: Localização do dispositivo", "fix060s***n", true, null));
+                transaction.set(configCollection.document("Sleep"), new Configuration("Sleep", "Configurando: Modo de hibernação", settings.get("TrackerConfigValue"), true, null));
+                transaction.set(configCollection.document("Schedule"), new Configuration("Schedule", "Configurando: Modo de hibernação", null, false, null));
                 break;
             case "configDefault":
-                transaction.set(configCollection.document("PeriodicUpdate"), new Configuration("PeriodicUpdate", "Configurando: Localização por requisição", "fix060s001n", true));
-                transaction.set(configCollection.document("Sleep"), new Configuration("Sleep", "Configurando: Modo de hibernação", "time", true));
-                transaction.set(configCollection.document("Schedule"), new Configuration("Schedule", "Configurando: Modo de hibernação", null, false));
+                transaction.set(configCollection.document("PeriodicUpdate"), new Configuration("PeriodicUpdate", "Solicitando: Localização do dispositivo", "fix060s001n", true, null));
+                transaction.set(configCollection.document("Sleep"), new Configuration("Sleep", "Configurando: Modo de hibernação", "time", true, null));
+                transaction.set(configCollection.document("Schedule"), new Configuration("Schedule", "Configurando: Modo de hibernação", null, false, null));
                 break;
             case "configRealTime":
-                transaction.set(configCollection.document("PeriodicUpdate"), new Configuration("PeriodicUpdate", "Configurando: Localização periódica", settings.get("TrackerConfigValue"), true));
-                transaction.set(configCollection.document("Sleep"), new Configuration("Sleep", "Desativando: Modo de hibernação", null, false));
-                transaction.set(configCollection.document("Schedule"), new Configuration("Schedule", "Desativando: Agendamento", null, false));
+                transaction.set(configCollection.document("PeriodicUpdate"), new Configuration("PeriodicUpdate", "Solicitando: Localização do dispositivo", settings.get("TrackerConfigValue"), true, null));
+                transaction.set(configCollection.document("Sleep"), new Configuration("Sleep", "Desativando: Modo de hibernação", null, false, null));
+                transaction.set(configCollection.document("Schedule"), new Configuration("Schedule", "Desativando: Agendamento", null, false, null));
                 break;
         }
-
-        //Insert alert configs
-        transaction.set(configCollection.document("Move"), new Configuration("Move", "Desativando: Alerta de movimentação", null, false, "Modo SMS selecionado"));
-        transaction.set(configCollection.document("Speed"), new Configuration("Speed", "Desativando: Alerta de velocidade", null, false, "Modo SMS selecionado"));
-        transaction.set(configCollection.document("Shock"), new Configuration("Shock", "Desativando: Alerta de vibração", null, false));
-
         // Get shared preferences editor
         final SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getIntroActivity()).edit();
 
@@ -353,7 +352,7 @@ public class ConfigFragment extends SlideFragment implements EventListener<Docum
                         //Monitor for changes on configuration
                         listener = firestoreDB.document("Tracker/" + tracker.getID()).addSnapshotListener(ConfigFragment.this);
 
-                        //No errors on config so far
+                        //No errors on config_edit so far
                         configError = false;
                     }
                 })
@@ -398,7 +397,7 @@ public class ConfigFragment extends SlideFragment implements EventListener<Docum
             if (configuration != null)
             {
                 //Set configuration progress
-                txtProgress.setText(configuration.get("progress").toString() + "%");
+                txtProgress.setText(String.format("%s%%", configuration.get("progress").toString()));
 
                 //Set notification title
                 txtTitle.setText(configuration.get("description").toString());
@@ -407,7 +406,7 @@ public class ConfigFragment extends SlideFragment implements EventListener<Docum
                 //If configuration finished (no longer pending)
                 if (configuration.get("step").equals("ERROR"))
                 {
-                    //Flag config error
+                    //Flag config_edit error
                     configError = true;
 
                     //Stop rotation

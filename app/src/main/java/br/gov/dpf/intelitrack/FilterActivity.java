@@ -74,7 +74,7 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
 
         //Set show preferences
         swShowPolyline.setChecked(sharedPreferences.getInt("Map_Path", 0) > 0);
-        swShowCircle.setChecked(sharedPreferences.getInt("Map_Radius", 2) > 0);
+        swShowCircle.setChecked(sharedPreferences.getInt("Map_Radius", 4) > 0);
 
         //Set progress and listener
         seekBar.setProgress(coordinatesNumber);
@@ -134,10 +134,10 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
         }
 
         //If user selected to show radius and previous preference was to hide
-        if(swShowCircle.isChecked() &&  sharedPreferences.getInt("Map_Radius", 3) == 0)
+        if(swShowCircle.isChecked() &&  sharedPreferences.getInt("Map_Radius", 4) == 0)
         {
             //Save preference to show default option
-            editor.putInt("Map_Radius", 3);
+            editor.putInt("Map_Radius", 4);
         }
         else if(!swShowCircle.isChecked())
         {

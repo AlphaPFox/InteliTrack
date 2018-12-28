@@ -90,7 +90,7 @@ public class TrackerAdapter extends BaseAdapter<TrackerAdapter.ViewHolder>  {
         final Map<String, Object> coordinates = tracker.getLastCoordinate();
 
         // - replace the contents of the view with that element
-        holder.txtTrackerName.setText(tracker.formatName());
+        holder.txtTrackerName.setText(tracker.getName());
         holder.txtTrackerModel.setText(tracker.formatTrackerModel());
 
         //Set user defined color
@@ -133,12 +133,12 @@ public class TrackerAdapter extends BaseAdapter<TrackerAdapter.ViewHolder>  {
                     //Get central coordinates
                     LatLng location = new LatLng(dbCoordinates.getLatitude(), dbCoordinates.getLongitude());
 
-                    //Set camera position
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 14));
-
                     //If coordinates come from a GSM tower cell
-                    if(coordinates.get("type").equals("GSM") && mActivity.sharedPreferences.getInt("Map_Radius", 3) > 0)
+                    if(coordinates.get("type").equals("GSM") && mActivity.sharedPreferences.getInt("Map_Radius", 4) > 0)
                     {
+                        //Set a lower zoom to GSM coordinates
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
+
                         //Create radius to represent gsm tower range
                         Circle gsmTower = googleMap.addCircle(new CircleOptions()
                                 .center(location)
@@ -147,7 +147,7 @@ public class TrackerAdapter extends BaseAdapter<TrackerAdapter.ViewHolder>  {
                                 .fillColor(Color.parseColor("#55" + tracker.getBackgroundColor().substring(3))));
 
                         //Get user option
-                        switch (mActivity.sharedPreferences.getInt("Map_Radius", 3))
+                        switch (mActivity.sharedPreferences.getInt("Map_Radius", 4))
                         {
                             case 1:
                                 //Preference: 200m
@@ -173,6 +173,11 @@ public class TrackerAdapter extends BaseAdapter<TrackerAdapter.ViewHolder>  {
 
                         //Change marker color to be not transparent
                         iconFactory.setColor(Color.parseColor("#" + tracker.getBackgroundColor().substring(3)));
+                    }
+                    else
+                    {
+                        //Set a higher zoom to GSM coordinates
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 14));
                     }
 
                     //Define map marker settings

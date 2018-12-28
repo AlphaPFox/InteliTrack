@@ -1,5 +1,6 @@
 package br.gov.dpf.intelitrack;
 
+import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.SearchManager;
 import android.content.Context;
@@ -48,7 +49,6 @@ import br.gov.dpf.intelitrack.entities.Tracker;
 import br.gov.dpf.intelitrack.firestore.TrackerAdapter;
 import br.gov.dpf.intelitrack.trackers.AddTrackerActivity;
 import br.gov.dpf.intelitrack.trackers.SettingsActivity;
-import br.gov.dpf.intelitrack.trackers.TK102BActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -700,7 +700,7 @@ public class MainActivity
                     case R.id.action_tracker_settings:
 
                         //Set intent to open SettingsActivity
-                        intent.setClass(MainActivity.this, TK102BActivity.class);
+                        intent.setClass(MainActivity.this, tracker.loadActivity());
 
                         //Start edit activity
                         startActivity(intent);
@@ -739,7 +739,6 @@ public class MainActivity
                     public void onClick(DialogInterface dialogInterface, int i) {
                         //Get shared preferences editor
                         SharedPreferences.Editor editor = sharedPreferences.edit();
-
 
                         //On star image click, update user preference
                         editor.putBoolean("Favorite_" + tracker.getID(), favorite);
@@ -833,6 +832,22 @@ public class MainActivity
                     })
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent intent)
+    {
+        if (resultCode == Activity.RESULT_OK && requestCode == RingtoneManager.TYPE_NOTIFICATION)
+        {
+            Uri uri = intent.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+
+            if (uri != null)
+            {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("Notification_Sound", uri.toString());
+                editor.apply();
+            }
         }
     }
 }
