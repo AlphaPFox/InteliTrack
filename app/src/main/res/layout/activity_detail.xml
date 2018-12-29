@@ -13,7 +13,6 @@
             android:layout_height="match_parent"
             android:gravity="bottom"
             app:umanoOverlay="false"
-            app:umanoFadeColor="@android:color/transparent"
             app:umanoAnchorPoint="0.5"
             app:umanoShadowHeight="8dp"
             app:umanoPanelHeight="@dimen/panel_single_row_height"

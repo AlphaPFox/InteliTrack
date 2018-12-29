@@ -388,10 +388,10 @@ public class ConfigFragment extends SlideFragment implements EventListener<Docum
     public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
 
         //Check if document was not deleted
-        if(documentSnapshot != null && documentSnapshot.exists())
+        if(documentSnapshot.exists() && documentSnapshot.get("lastConfiguration") instanceof HashMap)
         {
             //Try to get configuration status
-            Map<String, Object> configuration = (Map<String, Object>) documentSnapshot.get("lastConfiguration");
+            HashMap configuration = (HashMap) documentSnapshot.get("lastConfiguration");
 
             //Check if configuration has not started yet
             if (configuration != null)
