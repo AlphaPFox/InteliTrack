@@ -1,12 +1,12 @@
 package br.gov.dpf.intelitrack.firestore;
 
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.RotateAnimation;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -51,8 +51,9 @@ public class TrackerAdapter extends BaseAdapter<TrackerAdapter.ViewHolder>  {
     }
 
     // Create new views (invoked by the layout manager)
+    @NonNull
     @Override
-    public TrackerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public TrackerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
@@ -60,24 +61,10 @@ public class TrackerAdapter extends BaseAdapter<TrackerAdapter.ViewHolder>  {
         return new ViewHolder(inflater.inflate(R.layout.main_recycler_item, parent, false));
     }
 
-    @Override
-    public void onViewAttachedToWindow(ViewHolder holder) {
-        super.onViewAttachedToWindow(holder);
-
-        int dimen[] = mActivity.mRecyclerLayoutManager.getOptimalDimension();
-
-        ViewGroup.LayoutParams layout = holder.itemView.getLayoutParams();
-        layout.width = dimen[0];
-        layout.height = dimen[1];
-
-        holder.itemView.setLayoutParams(layout);
-        holder.itemView.requestLayout();
-    }
-
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     @SuppressWarnings("ConstantConditions")
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
 
         //Get tracker using index position
         final Tracker tracker = getSnapshot(position).toObject(Tracker.class);
@@ -86,15 +73,36 @@ public class TrackerAdapter extends BaseAdapter<TrackerAdapter.ViewHolder>  {
         tracker.setID(getSnapshot(position).getId());
 
         //Get last configuration and last coordinates
-        final Map<String, Object> configuration = tracker.getLastConfiguration();
         final Map<String, Object> coordinates = tracker.getLastCoordinate();
 
         // - replace the contents of the view with that element
-        holder.txtTrackerName.setText(tracker.getName());
-        holder.txtTrackerModel.setText(tracker.formatTrackerModel());
+        holder.lblTrackerName.setText(tracker.getName());
+        holder.lblTrackerModel.setText(String.format("Modelo: %s", tracker.formatTrackerModel()));
+
+        // Check if tracker have any coordinates available
+        if(tracker.getLastCoordinate() != null)
+        {
+            //Get last coordinate datetime
+            holder.lblLastDatetime.setText(formatDateTime((Date) tracker.getLastCoordinate().get("datetime"), false, false));
+
+            //Get textual address
+            holder.lblLastPosition.setText(tracker.getLastCoordinate().get("address").toString());
+        }
+        else
+        {
+            //Get last coordinate datetime
+            holder.lblLastDatetime.setText(R.string.txtWaitingTitle);
+
+            //Get textual address
+            holder.lblLastPosition.setText(R.string.lblNoLocation);
+        }
 
         //Set user defined color
-        holder.imageView.setCircleBackgroundColor(Color.parseColor(tracker.getBackgroundColor()));
+        holder.imageView.setCircleBackgroundColor(Color.parseColor("#" + tracker.getBackgroundColor().substring(3)));
+
+        //Set button color
+        holder.btnConfigure.setTextColor(holder.imageView.getCircleBackgroundColor());
+        holder.btnExpand.setTextColor(holder.imageView.getCircleBackgroundColor());
 
         //Set model item image
         holder.imageView.setImageDrawable(mActivity.getResources().getDrawable(mActivity.getResources().getIdentifier("model_" + tracker.getModel().toLowerCase(), "drawable", mActivity.getPackageName())));
@@ -117,7 +125,7 @@ public class TrackerAdapter extends BaseAdapter<TrackerAdapter.ViewHolder>  {
                 public void onMapReady(final GoogleMap googleMap) {
 
                     //Get coordinates
-                    GeoPoint dbCoordinates = (GeoPoint) coordinates.get("location");
+                    GeoPoint dbCoordinates = (GeoPoint) coordinates.get("position");
 
                     //Initialize map
                     MapsInitializer.initialize(mActivity);
@@ -206,125 +214,6 @@ public class TrackerAdapter extends BaseAdapter<TrackerAdapter.ViewHolder>  {
             });
         }
 
-        //Check if should display on bottom panel last configuration result or last coordinate from this tracker (whichever is more recent)
-        if(configuration != null && (coordinates == null || ((Date)configuration.get("datetime")).getTime() > ((Date)coordinates.get("datetime")).getTime() + 5000))
-        {
-            //Hide last coordinate panel to show configuration status
-            holder.lastCoordinate.setVisibility(View.GONE);
-            holder.lastConfiguration.setVisibility(View.VISIBLE);
-
-            //If configuration is in progress
-            if(configuration.get("progress") != null)
-            {
-                //Get configuration progress
-                int progress = Integer.valueOf(configuration.get("progress").toString());
-
-                //Check if configuration started
-                if(progress == 0)
-                {
-                    //If configuration still at 0% set color to red
-                    holder.txtProgress.setTextColor(Color.RED);
-
-                    //Show circle progress bar to indicate configuration progress
-                    holder.indeterminateProgress.setVisibility(View.VISIBLE);
-                    holder.circleProgressBar.setVisibility(View.GONE);
-
-                    //Show configuration progress (%)
-                    holder.txtProgress.setText(mActivity.getResources().getString(R.string.txtConfigurating, progress));
-                }
-                else if(progress < 100)
-                {
-                    //Configuration stared, show progress in green color
-                    holder.txtProgress.setTextColor(Color.parseColor("#3f9d2c"));
-
-                    //Show circle progress bar to indicate configuration progress
-                    holder.indeterminateProgress.setVisibility(View.GONE);
-                    holder.circleProgressBar.setVisibility(View.VISIBLE);
-                    holder.circleProgressBar.setProgress(progress);
-
-                    //Change color to loading animation
-                    holder.circleProgressBar.setColor(holder.imageView.getCircleBackgroundColor());
-
-                    //Show configuration progress (%)
-                    holder.txtProgress.setText(mActivity.getResources().getString(R.string.txtConfigurating, progress));
-                }
-                else
-                {
-                    //Configuration finished, clear text from progress indicator
-                    holder.txtProgress.setText("");
-
-                    //Show circle progress bar to indicate configuration progress
-                    holder.indeterminateProgress.setVisibility(View.VISIBLE);
-                    holder.circleProgressBar.setVisibility(View.GONE);
-                }
-            }
-
-            //Set configuration status text
-            holder.txtConfigDescription.setText(configuration.get("description").toString());
-            holder.txtStatus.setText(configuration.get("status").toString());
-
-            //Select image to represent configuration status
-            switch (configuration.get("step").toString())
-            {
-                case "ERROR":
-                    //Configuration error
-                    holder.imgStatus.setImageResource(R.drawable.status_error);
-                    holder.txtProgress.setTextColor(Color.RED);
-                    holder.imgStatus.clearAnimation();
-                    break;
-
-                case "SUCCESS":
-                    //Configuration success
-                    holder.imgStatus.setImageResource(R.drawable.status_ok);
-                    holder.imgStatus.clearAnimation();
-                    break;
-
-                case "CANCELED":
-                    //Configuration success
-                    holder.imgStatus.setImageResource(R.drawable.status_warning);
-                    holder.imgStatus.clearAnimation();
-                    break;
-
-                default:
-                    //Configuration in progress, create loading animation
-                    RotateAnimation rotate = new RotateAnimation(
-                            0, 360,
-                            Animation.RELATIVE_TO_SELF, 0.5f,
-                            Animation.RELATIVE_TO_SELF, 0.5f
-                    );
-
-                    //Define animation settings
-                    rotate.setDuration(3000);
-                    rotate.setRepeatCount(Animation.INFINITE);
-                    holder.imgStatus.startAnimation(rotate);
-
-                    //Set loading image
-                    holder.imgStatus.setImageResource(R.drawable.ic_settings_grey_40dp);
-                    break;
-            }
-        }
-        else
-        {
-            //Show panel to indicate last coordinate available
-            holder.lastCoordinate.setVisibility(View.VISIBLE);
-            holder.lastConfiguration.setVisibility(View.GONE);
-
-            //Show last known battery level and signal level
-            holder.txtBatteryLevel.setText(tracker.getBatteryLevel());
-            holder.txtSignalLevel.setText(tracker.getSignalLevel());
-
-            //If tracker has an coordinate available
-            if(coordinates != null)
-            {
-                //Show last coordinate datetime
-                holder.txtLastUpdateValue.setText(formatDateTime((Date) coordinates.get("datetime"), false, false));
-            }
-            else
-            {
-                //No data available, show default message
-                holder.txtLastUpdateValue.setText(mActivity.getResources().getString(R.string.txtWaitingTitle));
-            }
-        }
 
         //Check if user wants to display this tracker at top
         if(mActivity.sharedPreferences.getBoolean("Favorite_" + tracker.getID(), false))
@@ -373,6 +262,30 @@ public class TrackerAdapter extends BaseAdapter<TrackerAdapter.ViewHolder>  {
                 {
                     //Cal interface method on main activity
                     mActivity.OnTrackerEdit(tracker, holder);
+                }
+            }
+        });
+
+        //Set edit click listener
+        holder.imgExpand.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //If this is the clicked panel and its currently hidden
+                if(holder.vwMoreInfo.getVisibility() == View.GONE)
+                {
+                    //Show linear layout
+                    holder.vwMoreInfo.setVisibility(View.VISIBLE);
+
+                    //Change icon from image view
+                    holder.imgExpand.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_expand_less_grey_24dp));
+                }
+                else
+                {
+                    //Show linear layout
+                    holder.vwMoreInfo.setVisibility(View.GONE);
+
+                    //Change icon from image view
+                    holder.imgExpand.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_expand_more_grey_24dp));
                 }
             }
         });
@@ -432,7 +345,7 @@ public class TrackerAdapter extends BaseAdapter<TrackerAdapter.ViewHolder>  {
 
     //Recycling GoogleMap for list item
     @Override
-    public void onViewRecycled(ViewHolder holder)
+    public void onViewRecycled(@NonNull ViewHolder holder)
     {
         // Cleanup MapView here
         if (holder.googleMap != null)
@@ -444,6 +357,10 @@ public class TrackerAdapter extends BaseAdapter<TrackerAdapter.ViewHolder>  {
         //Show loading animation again
         ((View) holder.indeterminateProgress.getParent()).animate().setDuration(500).alpha(1f);
 
+        // Hide more info panel and change expand icon
+        holder.vwMoreInfo.setVisibility(View.GONE);
+        holder.imgExpand.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.ic_expand_more_grey_24dp));
+
         super.onViewRecycled(holder);
     }
 
@@ -453,19 +370,16 @@ public class TrackerAdapter extends BaseAdapter<TrackerAdapter.ViewHolder>  {
     public static class ViewHolder
             extends RecyclerView.ViewHolder {
 
-        // each data item is just a string in this case
-        View lastCoordinate;
-        TextView txtLastUpdateValue, txtBatteryLevel, txtSignalLevel, txtProgress;
-
+        View vwMoreInfo;
         CircleProgressBar circleProgressBar;
+        Button btnExpand, btnConfigure;
         ProgressBar indeterminateProgress;
         MapView mapView;
 
         //Public layout components (used on detail activity transition)
-        public View lastConfiguration;
-        public TextView txtTrackerName, txtTrackerModel, txtConfigDescription, txtStatus;
+        public TextView lblTrackerName, lblTrackerModel, lblLastPosition, lblLastDatetime, lblBatteryValue, lblSignalValue;
         public CircleImageView imageView;
-        public ImageView imgEdit, imgStatus, imgFavorite;
+        public ImageView imgEdit, imgFavorite, imgExpand;
 
         //Google maps object
         GoogleMap googleMap;
@@ -475,25 +389,27 @@ public class TrackerAdapter extends BaseAdapter<TrackerAdapter.ViewHolder>  {
             // to access the context from any ViewHolder instance.
             super(itemView);
 
+
             //Text fields
-            txtTrackerName = itemView.findViewById(R.id.lblTrackerName);
-            txtTrackerModel = itemView.findViewById(R.id.txtTrackerModel);
-            txtLastUpdateValue = itemView.findViewById(R.id.txtLastUpdate);
-            txtBatteryLevel = itemView.findViewById(R.id.lblBatteryLevel);
-            txtSignalLevel = itemView.findViewById(R.id.lblSignalLevel);
-            txtStatus = itemView.findViewById(R.id.txtStatus);
-            txtProgress = itemView.findViewById(R.id.txtProgress);
-            txtConfigDescription = itemView.findViewById(R.id.txtConfigDescription);
+            lblTrackerName = itemView.findViewById(R.id.lblTrackerName);
+            lblTrackerModel = itemView.findViewById(R.id.lblTrackerModel);
+            lblLastPosition = itemView.findViewById(R.id.lblLastPosition);
+            lblLastDatetime = itemView.findViewById(R.id.lblLastDatetime);
+            lblBatteryValue = itemView.findViewById(R.id.lblBatteryValue);
+            lblSignalValue = itemView.findViewById(R.id.lblSignalValue);
 
             //Image views
             imageView = itemView.findViewById(R.id.imgTracker);
             imgFavorite = itemView.findViewById(R.id.imgFavorite);
-            imgStatus = itemView.findViewById(R.id.imgStatus);
             imgEdit = itemView.findViewById(R.id.imgEdit);
+            imgExpand = itemView.findViewById(R.id.imgExpand);
 
-            //Layout panels
-            lastConfiguration = itemView.findViewById(R.id.vwConfiguration);
-            lastCoordinate = itemView.findViewById(R.id.vwLastCoordinate);
+            //Buttons
+            btnExpand = itemView.findViewById(R.id.btnExpand);
+            btnConfigure = itemView.findViewById(R.id.btnConfigure);
+
+            //Views
+            vwMoreInfo = itemView.findViewById(R.id.vwMoreInfo);
 
             //Progress bars
             indeterminateProgress = itemView.findViewById(R.id.indeterminateProgress);
