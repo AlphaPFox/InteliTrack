@@ -28,6 +28,7 @@ import android.widget.TextView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
@@ -68,6 +69,9 @@ public class TK103Activity extends AppCompatActivity implements EventListener<Qu
 
     //Database instance
     private FirebaseFirestore firestoreDB;
+
+    //Get current user ID
+    private FirebaseUser currentUser;
 
     //Menu item used to confirm and refresh settings
     private MenuItem confirmMenu, refreshMenu;
@@ -110,6 +114,9 @@ public class TK103Activity extends AppCompatActivity implements EventListener<Qu
 
         //Set toolbar
         setSupportActionBar(toolbar);
+
+        //Get current user
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         //Load tracker from intent
         tracker = getIntent().getParcelableExtra("Tracker");
@@ -1107,7 +1114,7 @@ public class TK103Activity extends AppCompatActivity implements EventListener<Qu
         for(int i = 0; i < vwNotificationPanel.getChildCount(); i+=3)
         {
             //Set checked if saved on shared preferences
-            ((SwitchCompat) vwNotificationPanel.getChildAt(i)).setChecked(sharedPreferences.getBoolean(tracker.getID() + "_" + vwNotificationPanel.getChildAt(i).getTag().toString(), true));
+            ((SwitchCompat) vwNotificationPanel.getChildAt(i)).setChecked(sharedPreferences.getBoolean(currentUser.getUid() + tracker.getID() + "_" + vwNotificationPanel.getChildAt(i).getTag().toString(), false));
         }
 
         //Show only notification panel
@@ -1128,27 +1135,24 @@ public class TK103Activity extends AppCompatActivity implements EventListener<Qu
         FirebaseMessaging notifications = FirebaseMessaging.getInstance();
 
         //For each notification option (switch)
-        for(int i = 0; i < vwNotificationPanel.getChildCount(); i+=3)
+        for (int i = 0; i < vwNotificationPanel.getChildCount(); i += 3)
         {
             //Get notification switch
             SwitchCompat swNotificationOption = (SwitchCompat) vwNotificationPanel.getChildAt(i);
 
             //If user wants to receive this notification
-            if(swNotificationOption.isChecked())
-            {
+            if (swNotificationOption.isChecked()) {
                 //Subscribe to notification topic
                 notifications.subscribeToTopic(tracker.getID() + "_" + swNotificationOption.getTag().toString());
 
                 //Save option on shared preferences
-                editor.putBoolean(tracker.getID() + "_" + swNotificationOption.getTag().toString(), true);
-            }
-            else
-            {
+                editor.putBoolean(currentUser.getUid() + tracker.getID() + "_" + swNotificationOption.getTag().toString(), true);
+            } else {
                 //Unsubscribe to notification topic
                 notifications.unsubscribeFromTopic(tracker.getID() + "_" + swNotificationOption.getTag().toString());
 
                 //Remove option from shared preferences
-                editor.putBoolean(tracker.getID() + "_" + swNotificationOption.getTag().toString(), false);
+                editor.putBoolean(currentUser.getUid() + tracker.getID() + "_" + swNotificationOption.getTag().toString(), false);
             }
         }
 

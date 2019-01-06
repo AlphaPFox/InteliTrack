@@ -41,7 +41,7 @@ dependencies {
 
     //External libraries
     implementation 'br.com.simplepass:loading-button-android:1.14.0'
-    implementation 'com.heinrichreimersoftware:material-intro:1.6.2'
+    implementation 'com.heinrichreimersoftware:material-intro:1.6'
     implementation 'com.jakewharton:butterknife:8.8.1'
     implementation 'com.xw.repo:bubbleseekbar:3.13-lite'
     implementation 'com.appolica:interactive-info-window:v1.0.6'

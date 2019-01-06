@@ -194,7 +194,7 @@ public abstract class BaseAdapter<VH extends RecyclerView.ViewHolder>
         notifyDataSetChanged();
     }
 
-    protected void onError(FirebaseFirestoreException e) {};
+    protected void onError(FirebaseFirestoreException e) {}
 
     protected void onDataChanged() {}
 

@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -22,6 +21,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -31,6 +32,7 @@ import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -38,14 +40,19 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import br.gov.dpf.intelitrack.components.GridAutoLayoutManager;
 import br.gov.dpf.intelitrack.entities.Tracker;
+import br.gov.dpf.intelitrack.firestore.BaseAdapter;
+import br.gov.dpf.intelitrack.firestore.ListAdapter;
 import br.gov.dpf.intelitrack.firestore.TrackerAdapter;
 import br.gov.dpf.intelitrack.trackers.AddTrackerActivity;
 import br.gov.dpf.intelitrack.trackers.SettingsActivity;
@@ -57,10 +64,7 @@ public class MainActivity
         implements NavigationView.OnNavigationItemSelectedListener, SwipeRefreshLayout.OnRefreshListener
 {
 
-    //Components used on recycler view
-    public GridAutoLayoutManager mRecyclerLayoutManager;
-
-    private TrackerAdapter mAdapter;
+    private BaseAdapter mAdapter;
 
     //Search view action bar menu
     private SearchView searchView;
@@ -72,7 +76,6 @@ public class MainActivity
     public SharedPreferences sharedPreferences;
 
     //Define possible result operations
-    public static int RESULT_ERROR = -1;
     public static int RESULT_CANCELED = 0;
 
     //Define possible request operations
@@ -99,106 +102,154 @@ public class MainActivity
         //Load component
         ButterKnife.bind(this);
 
-        //Check if google maps is available for this device
-        checkGoogleMapsAPI();
-
-        //Build toolbar
-        setSupportActionBar(toolbar);
-
-        //Set drawer layout components
-        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-
-        //Set drawer toggle
-        drawer.addDrawerListener(mDrawerToggle);
-        mDrawerToggle.syncState();
-
-        //Initialize shared preferences
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        //Initialize navigation view
-        navigationView.setNavigationItemSelectedListener(this);
-
-        //Select on menu item representing user preferred map type
-        updateNavigationMenu();
-
-        //Get swipe refresh layout
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimaryDark, R.color.colorPrimary, R.color.colorAccent);
-        mSwipeRefreshLayout.setOnRefreshListener(this);
-
-        //Initialize db instance
-        FirebaseFirestore.setLoggingEnabled(true);
-        mFireStoreDB = FirebaseFirestore.getInstance();
-
         //Get firebase instance
-        String userID = FirebaseAuth.getInstance().getUid();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        // RecyclerView
-        mAdapter = new TrackerAdapter(this, mFireStoreDB.collection("Tracker").whereArrayContains("users", userID).orderBy("lastUpdate", Query.Direction.DESCENDING))
+        //Check if user is logged in
+        if(currentUser != null)
         {
-            @Override
-            protected void onDataChanged()
+            //Update navigation view labels
+            ((TextView) navigationView.getHeaderView(0).findViewById(R.id.lblUserName)).setText(currentUser.getDisplayName());
+            ((TextView) navigationView.getHeaderView(0).findViewById(R.id.lblUserEmail)).setText(currentUser.getEmail());
+
+            //Check if google maps is available for this device
+            checkGoogleMapsAPI();
+
+            //Build toolbar
+            setSupportActionBar(toolbar);
+
+            //Set drawer layout components
+            ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+
+            //Set drawer toggle
+            drawer.addDrawerListener(mDrawerToggle);
+            mDrawerToggle.syncState();
+
+            //Initialize shared preferences
+            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+            //Initialize navigation view
+            navigationView.setNavigationItemSelectedListener(this);
+
+            //Select on menu item representing user preferred map type
+            updateNavigationMenu();
+
+            //Get swipe refresh layout
+            mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimaryDark, R.color.colorPrimary, R.color.colorAccent);
+            mSwipeRefreshLayout.setOnRefreshListener(this);
+
+            //Initialize db instance
+            FirebaseFirestore.setLoggingEnabled(true);
+            mFireStoreDB = FirebaseFirestore.getInstance();
+
+            //Check selected layout option
+            if(sharedPreferences.getBoolean("LayoutMap", true)) {
+
+                // RecyclerView
+                mAdapter = new TrackerAdapter(this, mFireStoreDB.collection("Tracker").whereArrayContains("users", currentUser.getUid()).orderBy("lastUpdate", Query.Direction.DESCENDING)) {
+                    @Override
+                    protected void onDataChanged() {
+                        //Get data status
+                        boolean isEmpty = getItemCount() == 0;
+
+                        //Change views visibility based on data set
+                        ((View) mRecyclerView.getParent()).setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+                        mEmptyView.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+
+                        //Hide other views
+                        mLoadingView.setVisibility(View.GONE);
+                        mErrorView.setVisibility(View.GONE);
+
+                        //Cancel loading animation
+                        dismissLoading();
+                    }
+
+                    @Override
+                    protected void onError(FirebaseFirestoreException e) {
+
+                        //Hide loading view
+                        mLoadingView.setVisibility(View.GONE);
+                        mErrorView.setVisibility(View.VISIBLE);
+
+                        //Cancel loading animation
+                        dismissLoading();
+                    }
+                };
+
+                // Set layout manager to position the items
+                mRecyclerView.setLayoutManager(new GridLayoutManager(this, 1));
+            }
+            else
             {
-                //Get data status
-                boolean isEmpty = getItemCount() == 0;
+                // RecyclerView
+                mAdapter = new ListAdapter(this, mFireStoreDB.collection("Tracker").whereArrayContains("users", currentUser.getUid()).orderBy("lastUpdate", Query.Direction.DESCENDING)) {
+                    @Override
+                    protected void onDataChanged() {
+                        //Get data status
+                        boolean isEmpty = getItemCount() == 0;
 
-                //Change views visibility based on data set
-                ((View) mRecyclerView.getParent()).setVisibility(isEmpty ? View.GONE : View.VISIBLE);
-                mEmptyView.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+                        //Change views visibility based on data set
+                        ((View) mRecyclerView.getParent()).setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+                        mEmptyView.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
 
-                //Hide other views
-                mLoadingView.setVisibility(View.GONE);
-                mErrorView.setVisibility(View.GONE);
+                        //Hide other views
+                        mLoadingView.setVisibility(View.GONE);
+                        mErrorView.setVisibility(View.GONE);
 
-                //Cancel loading animation
-                dismissLoading();
+                        //Cancel loading animation
+                        dismissLoading();
+                    }
+
+                    @Override
+                    protected void onError(FirebaseFirestoreException e) {
+
+                        //Hide loading view
+                        mLoadingView.setVisibility(View.GONE);
+                        mErrorView.setVisibility(View.VISIBLE);
+
+                        //Cancel loading animation
+                        dismissLoading();
+                    }
+                };
+
+                // Set layout manager to position the items
+                mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
             }
 
-            @Override
-            protected void onError(FirebaseFirestoreException e) {
+            // Attach the adapter to the recycler view to populate items
+            mRecyclerView.setAdapter(mAdapter);
 
-                //Hide loading view
-                mLoadingView.setVisibility(View.GONE);
-                mErrorView.setVisibility(View.VISIBLE);
+            //Find add button and set click event listener
+            findViewById(R.id.btnAddTracker).setOnClickListener(new View.OnClickListener() {
 
-                //Cancel loading animation
-                dismissLoading();
-            }
-        };
+                @Override
+                public void onClick(View view) {
 
-        // Set linear layout for orientation
-        mRecyclerLayoutManager = new GridAutoLayoutManager(mRecyclerView, getResources().getDimensionPixelSize(R.dimen.recycler_item_min_width), getResources().getDimensionPixelSize(R.dimen.recycler_item_min_height));
+                    //Method invoked to add tracker
+                    addNewTracker();
+                }
+            });
 
-        // Set layout manager to position the items
-        mRecyclerView.setLayoutManager(mRecyclerLayoutManager);
+            //Find add button and set click event listener
+            findViewById(R.id.btnRefresh).setOnClickListener(new View.OnClickListener() {
 
-        // Attach the adapter to the recycler view to populate items
-        mRecyclerView.setAdapter(mAdapter);
+                @Override
+                public void onClick(View view) {
 
-        //Find add button and set click event listener
-        findViewById(R.id.btnAddTracker).setOnClickListener(new View.OnClickListener() {
+                    //Show loading view again
+                    mLoadingView.setVisibility(View.VISIBLE);
+                    mErrorView.setVisibility(View.GONE);
 
-            @Override
-            public void onClick(View view) {
-
-                //Method invoked to add tracker
-                addNewTracker();
-            }
-        });
-
-        //Find add button and set click event listener
-        findViewById(R.id.btnRefresh).setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-
-                //Show loading view again
-                mLoadingView.setVisibility(View.VISIBLE);
-                mErrorView.setVisibility(View.GONE);
-
-                //Call method to load data again
-                onRefresh();
-            }
-        });
+                    //Call method to load data again
+                    onRefresh();
+                }
+            });
+        }
+        else
+        {
+            //Redirect user to login page
+            startActivity(new Intent(this, LoginActivity.class));
+        }
     }
 
     @Override
@@ -436,6 +487,13 @@ public class MainActivity
                     // Request search from this activity
                     searchView.setIconified(false);
                     break;
+
+                case R.id.logout:
+
+                    //Request logout
+                    performLogout();
+
+                    break;
             }
         }
 
@@ -443,6 +501,63 @@ public class MainActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void performLogout()
+    {
+        //Create confirmation dialog
+        new AlertDialog.Builder(this, R.style.Theme_AppCompat_Light_Dialog_Alert)
+                .setIcon(R.drawable.ic_settings_grey_40dp)
+                .setTitle("Deseja realizar o logoff?")
+                .setMessage("Após sair, será necessário realizar o login novamente, deseja prosseguir?")
+                .setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        //Get current user data
+                        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+                        //Get messaging service
+                        FirebaseMessaging notifications = FirebaseMessaging.getInstance();
+
+                        //Check user FCM topics subscriptions
+                        if(currentUser != null)
+                        {
+                            //For each shared preference
+                            for (Map.Entry<String, ?> entry : sharedPreferences.getAll().entrySet())
+                            {
+                                //If preference is related to this user
+                                if (entry.getKey().startsWith(currentUser.getUid()) && entry.getKey().contains("Notify") && entry.getValue().equals(true))
+                                {
+                                    //Remove subscription to topic
+                                    notifications.unsubscribeFromTopic(entry.getKey().substring(currentUser.getUid().length()));
+                                }
+                            }
+
+                            //Perform sign out
+                            FirebaseAuth.getInstance().signOut();
+                        }
+
+                        //Redirect user to login page
+                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+
+                        //Set corresponding flags (don't return to this activity)
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+                        //Start login activity
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton("Não", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        //Dismiss dialog, no action
+                        dialog.cancel();
+                    }
+                })
+                .show();
     }
 
     private void addNewTracker()
@@ -497,7 +612,8 @@ public class MainActivity
     @Override
     protected void onStart() {
         super.onStart();
-        mAdapter.startListening();
+        if(mAdapter != null)
+            mAdapter.startListening();
     }
 
     @Override
@@ -524,21 +640,11 @@ public class MainActivity
     @Override
     protected void onStop() {
         super.onStop();
-        mAdapter.stopListening();
+        if(mAdapter != null)
+            mAdapter.stopListening();
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig)
-    {
-        //Change recycler view items size if orientation changes
-        mRecyclerLayoutManager.resizeOnOrientationChange();
-
-        //Call super method
-        super.onConfigurationChanged(newConfig);
-    }
-
-
-    public void OnTrackerSelected(Tracker tracker, TrackerAdapter.ViewHolder holder) {
+    public void OnTrackerSelected(Tracker tracker, RecyclerView.ViewHolder holder) {
 
         // Go to the details page for the selected restaurant
         final Intent intent = new Intent(this, DetailActivity.class);
@@ -547,8 +653,11 @@ public class MainActivity
         intent.putExtra("Tracker", tracker);
 
         //If device supports shared element transition
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && holder instanceof TrackerAdapter.ViewHolder)
         {
+            //Convert to tracker adapter holder
+            TrackerAdapter.ViewHolder mapHolder = (TrackerAdapter.ViewHolder) holder;
+
             getWindow().setEnterTransition(new Fade(Fade.IN));
             getWindow().setEnterTransition(new Fade(Fade.OUT));
 
@@ -561,41 +670,18 @@ public class MainActivity
             //Define shared elements to perform transition
             final ActivityOptions options;
 
-            // Get configuration status
-            if(holder.lastConfiguration.getVisibility() == View.VISIBLE)
-            {
-                //Perform transition with configuration layout elements
-                options = ActivityOptions
-                        .makeSceneTransitionAnimation(this,
-                                new Pair<>(holder.itemView.findViewById(transitionID),
-                                        getString(R.string.transition_drawable)),
-                                new Pair<>((View) holder.imageView,
-                                        getString(R.string.transition_icon)),
-                                new Pair<>((View) holder.txtTrackerName,
-                                        getString(R.string.transition_title)),
-                                new Pair<>((View) holder.txtTrackerModel,
-                                        getString(R.string.transition_subtitle)),
-                                new Pair<>((View) holder.txtConfigDescription,
-                                        getString(R.string.transition_config_description)),
-                                new Pair<>((View) holder.txtStatus,
-                                        getString(R.string.transition_config_status)),
-                                new Pair<>((View) holder.imgStatus,
-                                        getString(R.string.transition_config_image)));
-            }
-            else
-            {
-                //Perform transition without configuration components
-                options = ActivityOptions
-                        .makeSceneTransitionAnimation(this,
-                                new Pair<>(holder.itemView.findViewById(transitionID),
-                                        getString(R.string.transition_drawable)),
-                                new Pair<>((View) holder.imageView,
-                                        getString(R.string.transition_icon)),
-                                new Pair<>((View) holder.txtTrackerName,
-                                        getString(R.string.transition_title)),
-                                new Pair<>((View) holder.txtTrackerModel,
-                                        getString(R.string.transition_subtitle)));
-            }
+            //Perform transition without configuration components
+            options = ActivityOptions
+                    .makeSceneTransitionAnimation(this,
+                            new Pair<>(holder.itemView.findViewById(transitionID),
+                                    getString(R.string.transition_drawable)),
+                            new Pair<>((View) mapHolder.imageView,
+                                    getString(R.string.transition_icon)),
+                            new Pair<>((View) mapHolder.lblTrackerName,
+                                    getString(R.string.transition_title)),
+                            new Pair<>((View) mapHolder.lblTrackerModel,
+                                    getString(R.string.transition_subtitle)));
+
 
             //Start activity with transition elements
             startActivity(intent, options.toBundle());
@@ -648,10 +734,10 @@ public class MainActivity
                 .show();
     }
 
-    public void OnTrackerEdit(final Tracker tracker, final TrackerAdapter.ViewHolder holder)
+    public void OnTrackerEdit(final Tracker tracker, final RecyclerView.ViewHolder holder)
     {
         //Create a new popup menu
-        PopupMenu popup = new PopupMenu(this, holder.imgEdit);
+        PopupMenu popup = new PopupMenu(this, holder.itemView.findViewById(R.id.imgEdit));
 
         //Get layout inflater
         popup.getMenuInflater().inflate(R.menu.tracker, popup.getMenu());
@@ -784,30 +870,33 @@ public class MainActivity
     //Set initial menu state
     private void updateNavigationMenu()
     {
-        //Select user preferred map type
-        switch (sharedPreferences.getInt("UserMapType", GoogleMap.MAP_TYPE_NORMAL))
+        //Check if shared preferences is initialized (currentUser != null)
+        if(sharedPreferences != null)
         {
-            case GoogleMap.MAP_TYPE_NORMAL:
-                navigationView.setCheckedItem(R.id.map_default);
-                break;
-            case GoogleMap.MAP_TYPE_SATELLITE:
-                navigationView.setCheckedItem(R.id.map_satellite);
-                break;
-            case GoogleMap.MAP_TYPE_TERRAIN:
-                navigationView.setCheckedItem(R.id.map_terrain);
-                break;
-            case GoogleMap.MAP_TYPE_HYBRID:
-                navigationView.setCheckedItem(R.id.map_hybrid);
-                break;
+            //Select user preferred map type
+            switch (sharedPreferences.getInt("UserMapType", GoogleMap.MAP_TYPE_NORMAL)) {
+                case GoogleMap.MAP_TYPE_NORMAL:
+                    navigationView.setCheckedItem(R.id.map_default);
+                    break;
+                case GoogleMap.MAP_TYPE_SATELLITE:
+                    navigationView.setCheckedItem(R.id.map_satellite);
+                    break;
+                case GoogleMap.MAP_TYPE_TERRAIN:
+                    navigationView.setCheckedItem(R.id.map_terrain);
+                    break;
+                case GoogleMap.MAP_TYPE_HYBRID:
+                    navigationView.setCheckedItem(R.id.map_hybrid);
+                    break;
+            }
+
+            //Get user preference on notification
+            boolean notificationEnabled = sharedPreferences.getBoolean("Notification_Enabled", true);
+
+            //Set corresponding menu item
+            navigationView.getMenu().findItem(R.id.menu_notifications_disable)
+                    .setTitle(notificationEnabled ? "Desativar notificações" : "Reativar notificações")
+                    .setIcon(notificationEnabled ? R.drawable.ic_notifications_off_black_24dp : R.drawable.ic_notifications_black_24dp);
         }
-
-        //Get user preference on notification
-        boolean notificationEnabled = sharedPreferences.getBoolean("Notification_Enabled", true);
-
-        //Set corresponding menu item
-        navigationView.getMenu().findItem(R.id.menu_notifications_disable)
-                .setTitle(notificationEnabled ? "Desativar notificações" : "Reativar notificações")
-                .setIcon(notificationEnabled ? R.drawable.ic_notifications_off_black_24dp : R.drawable.ic_notifications_black_24dp);
     }
 
     //Check if API is available

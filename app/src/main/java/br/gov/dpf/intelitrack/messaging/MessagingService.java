@@ -2,8 +2,15 @@ package br.gov.dpf.intelitrack.messaging;
 
 import android.util.Log;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import br.gov.dpf.intelitrack.components.NotificationController;
 
@@ -20,6 +27,37 @@ public class MessagingService extends FirebaseMessagingService {
 
         //Instantiate singleton notification builder
         notificationController = NotificationController.getInstance(this);
+    }
+
+    @Override
+    public void onNewToken(String s)
+    {
+        //Update display name: currentUser.updateProfile(new UserProfileChangeRequest.Builder().setDisplayName("DISPLAY NAME").build())
+        super.onNewToken(s);
+
+        //Get firebase instance
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
+        //Try to get current user
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        //If user signed in
+        if(currentUser != null)
+        {
+            // Update one field, creating the document if it does not already exist.
+            Map<String, Object> data = new HashMap<>();
+
+            // Update user field on DB
+            data.put("token", s);
+            data.put("lastActivity", new Date());
+
+            //Get firestore DB instance
+            FirebaseFirestore firestoreDB = FirebaseFirestore.getInstance();
+
+            //Add registration token to users collection on Firestore DB
+            firestoreDB.collection("Users").document(currentUser.getUid()).set(data);
+        }
+        Log.e("NEW_TOKEN",s);
     }
 
     /**

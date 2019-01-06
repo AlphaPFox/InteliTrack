@@ -62,6 +62,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -150,46 +152,58 @@ public class DetailActivity
         //Set activity layout
         setContentView(R.layout.activity_detail);
 
-        //Get intent from previous activity
-        Intent intent = getIntent();
+        //Get firebase instance
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        //Get shared preferences
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        //Check if user is logged in
+        if(currentUser != null)
+        {
+            //Get intent from previous activity
+            Intent intent = getIntent();
 
-        //Initialize db instance
-        mFireStoreDB = FirebaseFirestore.getInstance();
+            //Get shared preferences
+            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        //Get display metrics
-        mMetrics = Resources.getSystem().getDisplayMetrics();
+            //Initialize db instance
+            mFireStoreDB = FirebaseFirestore.getInstance();
 
-        //Get tracker data from intent
-        tracker = intent.getParcelableExtra("Tracker");
+            //Get display metrics
+            mMetrics = Resources.getSystem().getDisplayMetrics();
 
-        //Get last configuration and last coordinate data from this tracker
-        Map<String, Object> configuration = tracker.getLastConfiguration();
-        Map<String, Object> coordinates = tracker.getLastCoordinate();
+            //Get tracker data from intent
+            tracker = intent.getParcelableExtra("Tracker");
 
-        //Check if last configuration update is more recent than last coordinate available
-        configPending = configuration != null && (coordinates == null || ((Date) configuration.get("datetime")).getTime() + 300000 > ((Date) coordinates.get("datetime")).getTime());
+            //Get last configuration and last coordinate data from this tracker
+            Map<String, Object> configuration = tracker.getLastConfiguration();
+            Map<String, Object> coordinates = tracker.getLastCoordinate();
 
-        // Load layout elements using tracker data
-        loadLayout(intent);
+            //Check if last configuration update is more recent than last coordinate available
+            configPending = configuration != null && (coordinates == null || ((Date) configuration.get("datetime")).getTime() + 300000 > ((Date) coordinates.get("datetime")).getTime());
 
-        // Load coordinates data
-        loadDataset();
+            // Load layout elements using tracker data
+            loadLayout(intent);
 
-        // Initialize google map
-        MapInfoWindowFragment mapFragment = (MapInfoWindowFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+            // Load coordinates data
+            loadDataset();
 
-        // Initialize info window manager
-        infoWindowManager = mapFragment.infoWindowManager();
-        infoWindowManager.setHideOnFling(true);
+            // Initialize google map
+            MapInfoWindowFragment mapFragment = (MapInfoWindowFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
 
-        //If tracker has any configuration pending
-        if (configPending && configuration != null) {
-            //Call method to show update progress
-            monitorConfiguration(configuration.get("step").toString(), configuration.get("description").toString(), configuration.get("status").toString());
+            // Initialize info window manager
+            infoWindowManager = mapFragment.infoWindowManager();
+            infoWindowManager.setHideOnFling(true);
+
+            //If tracker has any configuration pending
+            if (configPending && configuration != null) {
+                //Call method to show update progress
+                monitorConfiguration(configuration.get("step").toString(), configuration.get("description").toString(), configuration.get("status").toString());
+            }
+        }
+        else
+        {
+            //Redirect user to login page
+            startActivity(new Intent(this, LoginActivity.class));
         }
     }
 
@@ -955,13 +969,15 @@ public class DetailActivity
     @Override
     protected void onStart() {
         super.onStart();
-        mCoordinatesAdapter.startListening();
+        if(mCoordinatesAdapter != null)
+            mCoordinatesAdapter.startListening();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        mCoordinatesAdapter.stopListening();
+        if(mCoordinatesAdapter != null)
+            mCoordinatesAdapter.stopListening();
     }
 
     @Override

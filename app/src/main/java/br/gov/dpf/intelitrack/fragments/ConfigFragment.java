@@ -305,7 +305,7 @@ public class ConfigFragment extends SlideFragment implements EventListener<Docum
                 break;
         }
         // Get shared preferences editor
-        final SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getIntroActivity()).edit();
+        final SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
 
         // Check if user wants to see notifications
         boolean blnShowNotification = settings.get("TrackerNotification").equals("enabled");

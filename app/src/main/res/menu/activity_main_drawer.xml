@@ -63,4 +63,15 @@
         </menu>
     </item>
 
+    <item android:title="@string/lblOptions">
+        <menu>
+            <group android:id="@+id/menu_user">
+                <item
+                    android:id="@+id/logout"
+                    android:icon="@drawable/ic_exit_to_app_black_24dp"
+                    android:title="@string/lblLogout" />
+            </group>
+        </menu>
+    </item>
+
 </menu>

@@ -166,7 +166,7 @@
     <string name="action_edit">Editar rastreador</string>
     <string name="action_request_position">Solicitar posição atual</string>
     <string name="imgInfo">Informações sobre a localização.</string>
-    <string name="txtWaitingTitle">Aguardando dados&#8230;</string>
+    <string name="txtWaitingTitle">Aguardando dados do rastreador&#8230;</string>
     <string name="txtWaitingSubtitle">Nenhuma resposta do rastreador foi recebida até o momento. Certifique-se que o mesmo esteja ligado e com sinal da rede de celular.</string>
     <string name="txtFilterResult">Nenhuma coordenada disponível</string>
     <string name="txtFilterResultSubtitle">Não foram encontradas coordenadas com os filtros selecionados. Altere as opções de filtros para exibir mais resultados.</string>
@@ -314,6 +314,15 @@
     <string name="btnEdit">Editar</string>
     <string name="btnSendConfig">Enviar configuração</string>
     <string name="lblStatus">Status:</string>
+    <string name="lblOptions">Opções do sistema</string>
+    <string name="lblLogout">Sair</string>
+    <string name="imgExpand">Expandir</string>
+    <string name="lblNoLocation">Localização até o momento indisponível</string>
+    <string name="lblNotAvailable">Não informado até o momento</string>
+    <string name="lblBatteryLevel">Nível de bateria</string>
+    <string name="lblSignalLevel">Nível de sinal GSM</string>
+    <string name="btnShare">Compartilhar</string>
+    <string name="btnConfigure">Configurar</string>
 
 
 </resources>

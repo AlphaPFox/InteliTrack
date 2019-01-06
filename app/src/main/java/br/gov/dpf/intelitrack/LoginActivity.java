@@ -1,25 +1,15 @@
 package br.gov.dpf.intelitrack;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.VectorDrawable;
+import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v7.app.AppCompatActivity;
-
-import android.os.Bundle;
-import android.support.v7.content.res.AppCompatResources;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -32,6 +22,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.messaging.FirebaseMessaging;
+
+import java.util.Map;
 
 import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import butterknife.BindView;
@@ -187,6 +180,10 @@ public class LoginActivity extends AppCompatActivity
                                             @Override
                                             public void run()
                                             {
+
+                                                //Load user topic subscriptions (if available)
+                                                loadSubscriptions();
+
                                                 //Send to main activity screen
                                                 intent.setClass(LoginActivity.this, MainActivity.class);
 
@@ -223,20 +220,27 @@ public class LoginActivity extends AppCompatActivity
         });
     }
 
-    public static Bitmap getBitmapFromDrawable(Context context, @DrawableRes int drawableId) {
-        Drawable drawable = AppCompatResources.getDrawable(context, drawableId);
+    private void loadSubscriptions()
+    {
+        //Get current user data
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        if (drawable instanceof BitmapDrawable) {
-            return ((BitmapDrawable) drawable).getBitmap();
-        } else if (drawable instanceof VectorDrawableCompat || drawable instanceof VectorDrawable) {
-            Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(bitmap);
-            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-            drawable.draw(canvas);
+        //Get messaging service
+        FirebaseMessaging notifications = FirebaseMessaging.getInstance();
 
-            return bitmap;
-        } else {
-            throw new IllegalArgumentException("unsupported drawable type");
+        //Check user FCM topics subscriptions
+        if(currentUser != null)
+        {
+            //For each shared preference
+            for (Map.Entry<String, ?> entry : PreferenceManager.getDefaultSharedPreferences(this).getAll().entrySet())
+            {
+                //If preference is related to this user
+                if (entry.getKey().startsWith(currentUser.getUid()) && entry.getKey().contains("Notify") && entry.getValue().equals(true))
+                {
+                    //Remove subscription to topic
+                    notifications.subscribeToTopic(entry.getKey().substring(currentUser.getUid().length()));
+                }
+            }
         }
     }
 }

@@ -54,7 +54,7 @@ public class SettingsFragment extends SlideFragment
     public void importData()
     {
         //Check if permission is granted to this app already
-        if (ActivityCompat.checkSelfPermission(getIntroActivity(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED)
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED)
         {
             //Build contacts intent
             Intent contacts = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
@@ -65,7 +65,7 @@ public class SettingsFragment extends SlideFragment
         else
         {
             //If no permission yet, request from user
-            ActivityCompat.requestPermissions(getIntroActivity(), new String[]{ Manifest.permission.READ_CONTACTS}, REQUEST_PERMISSION);
+            ActivityCompat.requestPermissions(getActivity(), new String[]{ Manifest.permission.READ_CONTACTS}, REQUEST_PERMISSION);
         }
     }
 

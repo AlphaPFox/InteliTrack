@@ -26,6 +26,7 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/colorPrimary"
                 app:theme="@style/ToolBarStyle"
+                app:titleTextAppearance="@style/ToolbarTitle"
                 app:popupTheme="@style/AppTheme.NoActionBar" />
 
         </android.support.design.widget.AppBarLayout>
@@ -55,62 +56,40 @@
             <android.support.v7.widget.CardView
                 android:id="@+id/vwEmptyCardView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:visibility="gone"
                 app:cardBackgroundColor="#F7F7F7"
-                app:cardCornerRadius="8dp">
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                android:layout_gravity="center"
+                tools:visibility="visible">
 
-                <android.support.constraint.ConstraintLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.51"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
 
                     <ImageView
                         android:id="@+id/imgNoTracker"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_marginBottom="8dp"
+                        android:layout_weight="0.4"
                         android:adjustViewBounds="false"
                         android:contentDescription="@string/imgNoTracker"
                         android:cropToPadding="false"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/ic_phonelink_off_black_24dp"
-                        app:layout_constraintBottom_toTopOf="@+id/glImageHeader"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHeight_max="150dp"
-                        app:layout_constraintHorizontal_bias="0.5"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="1.0"
-                        app:layout_constraintWidth_max="150dp" />
-
-                    <android.support.constraint.Guideline
-                        android:id="@+id/glImageHeader"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        app:layout_constraintGuide_percent="0.5" />
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/img_addtrackers" />
 
                     <TextView
                         android:id="@+id/txtNoTracker"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="24dp"
                         android:fontFamily="serif"
                         android:text="@string/txtNoTracker"
-                        android:textSize="20sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.497"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/glImageHeader" />
+                        android:textSize="20sp" />
 
                     <TextView
                         android:id="@+id/txtNoTrackerDescription"
@@ -120,28 +99,23 @@
                         android:fontFamily="serif"
                         android:text="@string/txtNoTrackerDescription"
                         android:textAlignment="center"
-                        android:textSize="13sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/txtNoTracker" />
+                        android:textSize="13sp" />
 
                     <Button
                         android:id="@+id/btnAddTracker"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="32dp"
+                        android:layout_marginBottom="32dp"
+                        android:background="#489AD4"
                         android:fontFamily="sans-serif"
-                        android:paddingEnd="20dp"
                         android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
                         android:text="@string/btnAddTracker"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/txtNoTrackerDescription"
-                        app:layout_constraintVertical_bias="0.06" />
+                        android:textColor="#FFF"
+                        android:textStyle="bold" />
 
-                </android.support.constraint.ConstraintLayout>
+                </LinearLayout>
 
             </android.support.v7.widget.CardView>
 
@@ -242,7 +216,7 @@
                 android:id="@+id/vwLoadingCardView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="visible">
+                tools:visibility="gone">
 
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="0dp"
